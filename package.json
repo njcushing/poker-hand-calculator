@@ -3,6 +3,11 @@
     "version": "1.0.0",
     "private": true,
     "type": "module",
+    "scripts": {
+        "dev": "npm run start:front",
+        "start:front": "vite .",
+        "watch:front": "vite build --watch ."
+    },
     "eslintConfig": {
         "extends": [
             "react-app",
