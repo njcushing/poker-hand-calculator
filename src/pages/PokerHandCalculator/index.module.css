@@ -20,4 +20,33 @@
     -webkit-box-shadow: 0px 10px 10px 0px rgba(158, 158, 158, 1);
     -moz-box-shadow: 0px 10px 10px 0px rgba(158, 158, 158, 1);
     box-shadow: 0px 10px 10px 0px rgba(158, 158, 158, 1);
+
+    padding: 12px;
+}
+
+.left-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.title,
+.name,
+.version {
+    text-align: center;
+
+    width: 100%;
+}
+
+.title {
+    font-size: 1.6rem;
+}
+
+.name {
+    font-size: 1rem;
+}
+
+.version {
+    color: grey;
+    font-size: 0.8rem;
 }
