@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Pages } from "./pages";
+import { Theme } from "./themes";
 import config from "./appconfig.json";
 
 export function App() {
@@ -27,5 +28,9 @@ export function App() {
         rootElement.style.maxWidth = config.displayMaxWidth;
     }, [rootElement]);
 
-    return <Pages.PokerHandCalculator />;
+    return (
+        <Theme>
+            <Pages.PokerHandCalculator />
+        </Theme>
+    );
 }
