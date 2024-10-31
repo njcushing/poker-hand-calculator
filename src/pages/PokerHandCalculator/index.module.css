@@ -14,10 +14,10 @@
     padding: 16px;
 }
 
-.left-panel {
-    border: 2px solid #000;
-}
-
+.left-panel,
 .right-panel {
-    border: 2px solid #000;
+    background-color: var(--background-secondary, white);
+    -webkit-box-shadow: 0px 10px 10px 0px rgba(158, 158, 158, 1);
+    -moz-box-shadow: 0px 10px 10px 0px rgba(158, 158, 158, 1);
+    box-shadow: 0px 10px 10px 0px rgba(158, 158, 158, 1);
 }
