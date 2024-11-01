@@ -30,7 +30,17 @@ export function TabSelector({ tabs, selectedTabName }: TTabSelector) {
                         if (tab.position === "right") return null;
                         return (
                             <li className={styles["tab"]} key={key}>
-                                <button type="button" className={styles["tab-button"]}>
+                                <button
+                                    type="button"
+                                    className={styles["tab-button"]}
+                                    onClick={(e) => {
+                                        e.currentTarget.blur();
+                                        setSelectedTab(key);
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.blur();
+                                    }}
+                                >
                                     {tab.name || key}
                                 </button>
                             </li>
@@ -43,7 +53,17 @@ export function TabSelector({ tabs, selectedTabName }: TTabSelector) {
                         if (!tab.position || tab.position !== "right") return null;
                         return (
                             <li className={styles["tab"]} key={key}>
-                                <button type="button" className={styles["tab-button"]}>
+                                <button
+                                    type="button"
+                                    className={styles["tab-button"]}
+                                    onClick={(e) => {
+                                        e.currentTarget.blur();
+                                        setSelectedTab(key);
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.blur();
+                                    }}
+                                >
                                     {tab.name || key}
                                 </button>
                             </li>
