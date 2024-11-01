@@ -4,6 +4,7 @@ import styles from "./index.module.css";
 type Tab = {
     name?: string;
     content: JSX.Element | JSX.Element[];
+    position?: "left" | "right";
 };
 
 type Tabs = {
@@ -22,18 +23,34 @@ export function TabSelector({ tabs, selectedTabName }: TTabSelector) {
 
     return (
         <div className={styles["tab-selector"]}>
-            <ul className={styles["tabs"]}>
-                {Object.keys(tabs).map((key) => {
-                    const tab = tabs[key];
-                    return (
-                        <li className={styles["tab"]} key={key}>
-                            <button type="button" className={styles["tab-button"]}>
-                                {tab.name || key}
-                            </button>
-                        </li>
-                    );
-                })}
-            </ul>
+            <div className={styles["tabs"]}>
+                <ul className={styles["left"]}>
+                    {Object.keys(tabs).map((key) => {
+                        const tab = tabs[key];
+                        if (tab.position === "right") return null;
+                        return (
+                            <li className={styles["tab"]} key={key}>
+                                <button type="button" className={styles["tab-button"]}>
+                                    {tab.name || key}
+                                </button>
+                            </li>
+                        );
+                    })}
+                </ul>
+                <ul className={styles["right"]}>
+                    {Object.keys(tabs).map((key) => {
+                        const tab = tabs[key];
+                        if (!tab.position || tab.position !== "right") return null;
+                        return (
+                            <li className={styles["tab"]} key={key}>
+                                <button type="button" className={styles["tab-button"]}>
+                                    {tab.name || key}
+                                </button>
+                            </li>
+                        );
+                    })}
+                </ul>
+            </div>
             <div className={styles["tab-content"]}></div>
         </div>
     );
