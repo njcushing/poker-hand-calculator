@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import useResizeObserverElement from "@/hooks/useResizeObserverElement";
+import { Structural } from "@/components/structural";
 import { version } from "../../../package.json";
 import styles from "./index.module.css";
 
@@ -19,8 +20,21 @@ export function PokerHandCalculator() {
                 <h1 className={styles["title"]}>Poker Hand Calculator</h1>
                 <p className={styles["name"]}>by njcushing</p>
                 <p className={styles["version"]}>{`v${version}`}</p>
+                <Structural.TabSelector
+                    tabs={{
+                        design: { name: "Design", content: <p>Design</p>, position: "left" },
+                        about: { name: "About", content: <p>About</p>, position: "right" },
+                    }}
+                />
             </div>
-            <div className={styles["right-panel"]}></div>
+            <div className={styles["right-panel"]}>
+                <Structural.TabSelector
+                    tabs={{
+                        simulate: { name: "Simulate", content: <p>Simulate</p>, position: "left" },
+                        data: { name: "Data", content: <p>Data</p>, position: "left" },
+                    }}
+                />
+            </div>
         </div>
     );
 }
