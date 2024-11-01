@@ -26,10 +26,10 @@ export function TabSelector({ tabs, selectedTabName }: TTabSelector) {
             const tab = tabs[key];
             const selected = key === selectedTab;
             return (
-                <li className={styles["tab"]} key={key}>
+                <li className={`${styles["tab"]} ${styles[selected ? "selected" : ""]}`} key={key}>
                     <button
                         type="button"
-                        className={`${styles["tab-button"]} ${styles[selected ? "selected" : ""]}`}
+                        className={styles["tab-button"]}
                         onClick={(e) => {
                             e.currentTarget.blur();
                             setSelectedTab(key);
