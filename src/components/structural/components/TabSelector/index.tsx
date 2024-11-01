@@ -24,10 +24,11 @@ export function TabSelector({ tabs, selectedTabName }: TTabSelector) {
     const createButton = useCallback(
         (key: keyof Tabs) => {
             const tab = tabs[key];
+            const selected = key === selectedTab;
             return (
                 <button
                     type="button"
-                    className={styles["tab-button"]}
+                    className={`${styles["tab-button"]} ${styles[selected ? "selected" : ""]}`}
                     onClick={(e) => {
                         e.currentTarget.blur();
                         setSelectedTab(key);
@@ -40,7 +41,7 @@ export function TabSelector({ tabs, selectedTabName }: TTabSelector) {
                 </button>
             );
         },
-        [tabs],
+        [tabs, selectedTab],
     );
 
     return (
