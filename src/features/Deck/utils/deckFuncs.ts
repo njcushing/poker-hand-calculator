@@ -62,3 +62,20 @@ export const createDeck = (): Deck => {
         { rank: "K", suit: "Club", order: 13 },
     ];
 };
+
+export const shuffleDeck = (deck: Deck): Deck => {
+    let currentIndex = deck.length;
+    const mutableDeck = deck;
+
+    while (currentIndex !== 0) {
+        const randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
+
+        [mutableDeck[currentIndex], mutableDeck[randomIndex]] = [
+            deck[randomIndex],
+            deck[currentIndex],
+        ];
+    }
+
+    return mutableDeck;
+};
