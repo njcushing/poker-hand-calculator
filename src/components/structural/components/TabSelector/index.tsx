@@ -21,24 +21,26 @@ export function TabSelector({ tabs, selectedTabName }: TTabSelector) {
         selectedTabName || Object.keys(tabs)[0],
     );
 
-    const createButton = useCallback(
+    const createTab = useCallback(
         (key: keyof Tabs) => {
             const tab = tabs[key];
             const selected = key === selectedTab;
             return (
-                <button
-                    type="button"
-                    className={`${styles["tab-button"]} ${styles[selected ? "selected" : ""]}`}
-                    onClick={(e) => {
-                        e.currentTarget.blur();
-                        setSelectedTab(key);
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.blur();
-                    }}
-                >
-                    {tab.name || key}
-                </button>
+                <li className={styles["tab"]} key={key}>
+                    <button
+                        type="button"
+                        className={`${styles["tab-button"]} ${styles[selected ? "selected" : ""]}`}
+                        onClick={(e) => {
+                            e.currentTarget.blur();
+                            setSelectedTab(key);
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.blur();
+                        }}
+                    >
+                        {tab.name || key}
+                    </button>
+                </li>
             );
         },
         [tabs, selectedTab],
@@ -51,22 +53,14 @@ export function TabSelector({ tabs, selectedTabName }: TTabSelector) {
                     {Object.keys(tabs).map((key) => {
                         const tab = tabs[key];
                         if (tab.position === "right") return null;
-                        return (
-                            <li className={styles["tab"]} key={key}>
-                                {createButton(key)}
-                            </li>
-                        );
+                        return createTab(key);
                     })}
                 </ul>
                 <ul className={styles["right"]}>
                     {Object.keys(tabs).map((key) => {
                         const tab = tabs[key];
                         if (!tab.position || tab.position !== "right") return null;
-                        return (
-                            <li className={styles["tab"]} key={key}>
-                                {createButton(key)}
-                            </li>
-                        );
+                        return createTab(key);
                     })}
                 </ul>
             </div>
