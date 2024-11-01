@@ -70,7 +70,7 @@ export function TabSelector({ tabs, selectedTabName }: TTabSelector) {
                     })}
                 </ul>
             </div>
-            <div className={styles["tab-content"]}></div>
+            <div className={styles["tab-content"]}>{tabs[selectedTab].content}</div>
         </div>
     );
 }
