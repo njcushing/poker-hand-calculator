@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import styles from "./index.module.css";
 
 type Tab = {
@@ -21,6 +21,28 @@ export function TabSelector({ tabs, selectedTabName }: TTabSelector) {
         selectedTabName || Object.keys(tabs)[0],
     );
 
+    const createButton = useCallback(
+        (key: keyof Tabs) => {
+            const tab = tabs[key];
+            return (
+                <button
+                    type="button"
+                    className={styles["tab-button"]}
+                    onClick={(e) => {
+                        e.currentTarget.blur();
+                        setSelectedTab(key);
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.blur();
+                    }}
+                >
+                    {tab.name || key}
+                </button>
+            );
+        },
+        [tabs],
+    );
+
     return (
         <div className={styles["tab-selector"]}>
             <div className={styles["tabs"]}>
@@ -30,19 +52,7 @@ export function TabSelector({ tabs, selectedTabName }: TTabSelector) {
                         if (tab.position === "right") return null;
                         return (
                             <li className={styles["tab"]} key={key}>
-                                <button
-                                    type="button"
-                                    className={styles["tab-button"]}
-                                    onClick={(e) => {
-                                        e.currentTarget.blur();
-                                        setSelectedTab(key);
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.blur();
-                                    }}
-                                >
-                                    {tab.name || key}
-                                </button>
+                                {createButton(key)}
                             </li>
                         );
                     })}
@@ -53,19 +63,7 @@ export function TabSelector({ tabs, selectedTabName }: TTabSelector) {
                         if (!tab.position || tab.position !== "right") return null;
                         return (
                             <li className={styles["tab"]} key={key}>
-                                <button
-                                    type="button"
-                                    className={styles["tab-button"]}
-                                    onClick={(e) => {
-                                        e.currentTarget.blur();
-                                        setSelectedTab(key);
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.blur();
-                                    }}
-                                >
-                                    {tab.name || key}
-                                </button>
+                                {createButton(key)}
                             </li>
                         );
                     })}
