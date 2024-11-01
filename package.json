@@ -6,7 +6,9 @@
     "scripts": {
         "dev": "npm run start:front",
         "start:front": "vite .",
-        "watch:front": "vite build --watch ."
+        "watch:front": "vite build --watch .",
+        "test:front": "vitest watch --root .",
+        "coverage:front": "vitest --root . --coverage"
     },
     "eslintConfig": {
         "extends": [
