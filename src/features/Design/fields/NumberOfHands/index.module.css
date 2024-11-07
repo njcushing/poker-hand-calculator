@@ -1,0 +1,53 @@
+.field-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+
+    width: 100%;
+}
+
+.field-options {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.decrease-button,
+.increase-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    pointer-events: all;
+
+    border: 1px solid #000;
+    border-radius: 9999px;
+    background-color: transparent;
+
+    height: 100%;
+    aspect-ratio: 1;
+    padding: 1px;
+}
+
+@media (hover: hover) {
+    .decrease-button:hover,
+    .increase-button:hover {
+        cursor: pointer;
+
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+}
+
+.decrease-button:focus,
+.increase-button:focus {
+    cursor: pointer;
+
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.decrease-button > p,
+.increase-button > p {
+    color: black;
+    font-size: 18px;
+}
