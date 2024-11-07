@@ -4,6 +4,8 @@ export type Card = {
     order: number;
 };
 
+export type Hand = [Card, Card];
+
 export type Deck = Card[];
 
 export const createDeck = (): Deck => {
