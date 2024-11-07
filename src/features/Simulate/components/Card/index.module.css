@@ -1,0 +1,7 @@
+.card {
+    height: 100%;
+    aspect-ratio: 63 / 88;
+
+    border: 1px solid #000;
+    border-radius: 4px;
+}
