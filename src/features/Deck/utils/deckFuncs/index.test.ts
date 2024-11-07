@@ -2,7 +2,7 @@
 
 import { vi } from "vitest";
 import "@testing-library/jest-dom";
-import { Deck, createDeck, shuffleDeck, sortDeck, insertCards } from ".";
+import { Deck, createDeck, shuffleDeck, sortDeck, insertCards, pickCard } from ".";
 
 describe("The 'createDeck' function...", () => {
     test("Should return a full 52-card deck in the correct order", () => {
@@ -375,6 +375,42 @@ describe("The 'insertCards' function...", () => {
             { rank: "9", suit: "Club", order: 22 },
             { rank: "10", suit: "Spade", order: 49 },
             { rank: "2", suit: "Club", order: 15 },
+        ]);
+
+        (global.Math.random as jest.Mock).mockRestore();
+    });
+});
+
+describe("The 'pickCard' function...", () => {
+    test("Should pick a card in the deck at random and return it", () => {
+        const deck: Deck = [
+            { rank: "A", suit: "Diamond", order: 27 },
+            { rank: "2", suit: "Club", order: 15 },
+            { rank: "3", suit: "Spade", order: 42 },
+        ];
+
+        vi.spyOn(global.Math, "random").mockReturnValueOnce(0.4).mockReturnValueOnce(0.5);
+
+        const { card } = pickCard(deck);
+
+        expect(card).toStrictEqual({ rank: "2", suit: "Club", order: 15 });
+
+        (global.Math.random as jest.Mock).mockRestore();
+    });
+    test("Should remove the picked card from the deck and return the new deck", () => {
+        const deck: Deck = [
+            { rank: "A", suit: "Diamond", order: 27 },
+            { rank: "2", suit: "Club", order: 15 },
+            { rank: "3", suit: "Spade", order: 42 },
+        ];
+
+        vi.spyOn(global.Math, "random").mockReturnValueOnce(0.4).mockReturnValueOnce(0.5);
+
+        const result = pickCard(deck);
+
+        expect(result.deck).toStrictEqual([
+            { rank: "A", suit: "Diamond", order: 27 },
+            { rank: "3", suit: "Spade", order: 42 },
         ]);
 
         (global.Math.random as jest.Mock).mockRestore();

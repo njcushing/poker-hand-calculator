@@ -132,3 +132,12 @@ export const insertCards = (
 
     return mutableDeck;
 };
+
+export const pickCard = (deck: Deck): { card: Card; deck: Deck } => {
+    const mutableDeck = [...deck];
+    const index = Math.floor(Math.random() * mutableDeck.length);
+    const card = mutableDeck[index];
+    mutableDeck.splice(index, 1);
+
+    return { card, deck: mutableDeck };
+};
