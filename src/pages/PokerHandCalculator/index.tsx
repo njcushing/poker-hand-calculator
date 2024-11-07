@@ -2,6 +2,7 @@ import { createContext, useState, useEffect, useCallback, useRef, useMemo } from
 import useResizeObserverElement from "@/hooks/useResizeObserverElement";
 import { Structural } from "@/components/structural";
 import { Design } from "@/features/Design";
+import { Simulate } from "@/features/Simulate";
 import { version } from "../../../package.json";
 import styles from "./index.module.css";
 
@@ -79,11 +80,7 @@ export function PokerHandCalculator() {
                 <div className={styles["right-panel"]}>
                     <Structural.TabSelector
                         tabs={{
-                            simulate: {
-                                name: "Simulate",
-                                content: <p>Simulate</p>,
-                                position: "left",
-                            },
+                            simulate: { name: "Simulate", content: <Simulate />, position: "left" },
                             data: { name: "Data", content: <p>Data</p>, position: "left" },
                         }}
                     />
