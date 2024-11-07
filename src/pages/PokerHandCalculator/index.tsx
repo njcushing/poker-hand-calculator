@@ -3,18 +3,20 @@ import useResizeObserverElement from "@/hooks/useResizeObserverElement";
 import { Structural } from "@/components/structural";
 import { Design } from "@/features/Design";
 import { Simulate } from "@/features/Simulate";
-import { Deck, createDeck } from "@/features/Deck/utils/deckFuncs";
+import { Deck, Hand, createDeck } from "@/features/Deck/utils/deckFuncs";
 import { version } from "../../../package.json";
 import styles from "./index.module.css";
 
 export type PokerHandCalculatorState = {
     currentDeck: Deck;
     numberOfHands: number;
+    currentHands: Map<string, Hand>;
 };
 
 const defaultPokerHandCalculatorState: PokerHandCalculatorState = {
     currentDeck: createDeck(),
     numberOfHands: 1,
+    currentHands: new Map(),
 };
 
 interface PokerHandCalculatorContext {
