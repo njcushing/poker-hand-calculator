@@ -141,3 +141,19 @@ export const pickCard = (deck: Deck): { card: Card; deck: Deck } => {
 
     return { card, deck: mutableDeck };
 };
+
+export const createHand = (deck: Deck): { hand: Hand | null; deck: Deck } => {
+    if (deck.length < 2) return { hand: null, deck };
+
+    let mutableDeck = [...deck];
+
+    const pickCardResultOne = pickCard(mutableDeck);
+    mutableDeck = pickCardResultOne.deck;
+
+    const pickCardResultTwo = pickCard(mutableDeck);
+    mutableDeck = pickCardResultTwo.deck;
+
+    const hand: Hand = [pickCardResultOne.card, pickCardResultTwo.card];
+
+    return { hand, deck: mutableDeck };
+};

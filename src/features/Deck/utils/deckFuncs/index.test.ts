@@ -2,7 +2,7 @@
 
 import { vi } from "vitest";
 import "@testing-library/jest-dom";
-import { Deck, createDeck, shuffleDeck, sortDeck, insertCards, pickCard } from ".";
+import { Deck, createDeck, shuffleDeck, sortDeck, insertCards, pickCard, createHand } from ".";
 
 describe("The 'createDeck' function...", () => {
     test("Should return a full 52-card deck in the correct order", () => {
@@ -411,6 +411,57 @@ describe("The 'pickCard' function...", () => {
         expect(result.deck).toStrictEqual([
             { rank: "A", suit: "Diamond", order: 27 },
             { rank: "3", suit: "Spade", order: 42 },
+        ]);
+
+        (global.Math.random as jest.Mock).mockRestore();
+    });
+});
+
+describe("The 'createHand' function...", () => {
+    test("Should return a null hand if the deck contains fewer than two cards", () => {
+        const deck: Deck = [{ rank: "A", suit: "Diamond", order: 27 }];
+
+        const { hand } = createHand(deck);
+
+        expect(hand).toBeNull();
+    });
+    test("Should return a hand containing two random cards from the deck", () => {
+        const deck: Deck = [
+            { rank: "9", suit: "Club", order: 22 },
+            { rank: "A", suit: "Heart", order: 1 },
+            { rank: "4", suit: "Diamond", order: 30 },
+            { rank: "10", suit: "Spade", order: 49 },
+            { rank: "2", suit: "Club", order: 15 },
+        ];
+
+        vi.spyOn(global.Math, "random").mockReturnValueOnce(0.4).mockReturnValueOnce(0.8);
+
+        const { hand } = createHand(deck);
+
+        expect(hand).toStrictEqual([
+            { rank: "4", suit: "Diamond", order: 30 },
+            { rank: "2", suit: "Club", order: 15 },
+        ]);
+
+        (global.Math.random as jest.Mock).mockRestore();
+    });
+    test("Should remove the two picked cards from the deck and return the new deck", () => {
+        const deck: Deck = [
+            { rank: "9", suit: "Club", order: 22 },
+            { rank: "A", suit: "Heart", order: 1 },
+            { rank: "4", suit: "Diamond", order: 30 },
+            { rank: "10", suit: "Spade", order: 49 },
+            { rank: "2", suit: "Club", order: 15 },
+        ];
+
+        vi.spyOn(global.Math, "random").mockReturnValueOnce(0.4).mockReturnValueOnce(0.8);
+
+        const result = createHand(deck);
+
+        expect(result.deck).toStrictEqual([
+            { rank: "9", suit: "Club", order: 22 },
+            { rank: "A", suit: "Heart", order: 1 },
+            { rank: "10", suit: "Spade", order: 49 },
         ]);
 
         (global.Math.random as jest.Mock).mockRestore();
