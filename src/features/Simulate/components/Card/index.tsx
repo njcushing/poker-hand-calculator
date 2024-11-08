@@ -6,5 +6,10 @@ export type TCard = {
 };
 
 export function Card({ info }: TCard) {
-    return <div className={styles["card"]}></div>;
+    return (
+        <div className={styles["card"]}>
+            <p className={styles["suit"]}>{info.suit}</p>
+            <p className={styles["rank"]}>{info.rank}</p>
+        </div>
+    );
 }

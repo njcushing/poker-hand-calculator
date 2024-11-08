@@ -1,7 +1,24 @@
 .card {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+
     height: 100%;
     aspect-ratio: 63 / 88;
 
     border: 1px solid #000;
     border-radius: 4px;
+}
+
+.suit {
+    color: black;
+    font-size: 0.9rem;
+}
+
+.rank {
+    color: black;
+    font-size: 1.6rem;
+    font-weight: bold;
 }
