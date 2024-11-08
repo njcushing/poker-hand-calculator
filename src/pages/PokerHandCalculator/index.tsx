@@ -3,7 +3,7 @@ import useResizeObserverElement from "@/hooks/useResizeObserverElement";
 import { Structural } from "@/components/structural";
 import { Design } from "@/features/Design";
 import { Simulate } from "@/features/Simulate";
-import { Deck, Hand, createDeck } from "@/features/Deck/utils/deckFuncs";
+import { Deck, Hand, createDeck, createHand, insertCards } from "@/features/Deck/utils/deckFuncs";
 import { version } from "../../../package.json";
 import styles from "./index.module.css";
 
@@ -62,6 +62,27 @@ export function PokerHandCalculator() {
         },
         [],
     );
+
+    // Manage current hands
+    useEffect(() => {
+        setPokerHandCalculatorState((current) => {
+            const { currentDeck, numberOfHands, currentHands } = current;
+            let newCurrentDeck = [...currentDeck];
+            const newCurrentHands = [...currentHands];
+            while (newCurrentHands.length > numberOfHands) {
+                newCurrentDeck = insertCards(newCurrentDeck, [
+                    ...newCurrentHands[newCurrentHands.length - 1],
+                ]);
+                newCurrentHands.pop();
+            }
+            while (newCurrentHands.length < numberOfHands) {
+                const { hand, deck } = createHand(newCurrentDeck);
+                newCurrentDeck = deck;
+                if (hand) newCurrentHands.push(hand);
+            }
+            return { ...current, currentDeck: newCurrentDeck, currentHands: newCurrentHands };
+        });
+    }, [pokerHandCalculatorState.numberOfHands, setPokerHandCalculatorStateProperty]);
 
     return (
         <PokerHandCalculatorContext.Provider
