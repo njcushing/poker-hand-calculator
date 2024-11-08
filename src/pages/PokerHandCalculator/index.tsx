@@ -10,13 +10,13 @@ import styles from "./index.module.css";
 export type PokerHandCalculatorState = {
     currentDeck: Deck;
     numberOfHands: number;
-    currentHands: Map<string, Hand>;
+    currentHands: Hand[];
 };
 
 const defaultPokerHandCalculatorState: PokerHandCalculatorState = {
     currentDeck: createDeck(),
     numberOfHands: 1,
-    currentHands: new Map(),
+    currentHands: [],
 };
 
 interface PokerHandCalculatorContext {
