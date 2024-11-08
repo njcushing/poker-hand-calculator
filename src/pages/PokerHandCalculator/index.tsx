@@ -11,12 +11,14 @@ export type PokerHandCalculatorState = {
     currentDeck: Deck;
     numberOfHands: number;
     currentHands: Hand[];
+    boardStage: "pre-flop" | "flop" | "turn" | "river";
 };
 
 const defaultPokerHandCalculatorState: PokerHandCalculatorState = {
     currentDeck: createDeck(),
     numberOfHands: 1,
     currentHands: [],
+    boardStage: "pre-flop",
 };
 
 interface PokerHandCalculatorContext {
