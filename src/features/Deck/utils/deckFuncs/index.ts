@@ -92,7 +92,7 @@ export const sortDeck = (deck: Deck): Deck => {
     return mutableDeck;
 };
 
-export const insertCards = (
+export const insertRandomCards = (
     deck: Deck,
     quantity: number,
     insertAt: "front" | "back" | "random" = "back",

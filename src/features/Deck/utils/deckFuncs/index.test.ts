@@ -2,7 +2,15 @@
 
 import { vi } from "vitest";
 import "@testing-library/jest-dom";
-import { Deck, createDeck, shuffleDeck, sortDeck, insertCards, pickCard, createHand } from ".";
+import {
+    Deck,
+    createDeck,
+    shuffleDeck,
+    sortDeck,
+    insertRandomCards,
+    pickCard,
+    createHand,
+} from ".";
 
 describe("The 'createDeck' function...", () => {
     test("Should return a full 52-card deck in the correct order", () => {
@@ -122,13 +130,13 @@ describe("The 'sortDeck' function...", () => {
     });
 });
 
-describe("The 'insertCards' function...", () => {
+describe("The 'insertRandomCards' function...", () => {
     test("Should return the provided deck if the 'quantity' parameter has a value lower than 1", () => {
         const deck: Deck = [{ rank: "A", suit: "Heart", order: 1 }];
 
-        expect(insertCards([...deck], 0)).toStrictEqual(deck);
-        expect(insertCards([...deck], -10)).toStrictEqual(deck);
-        expect(insertCards([...deck], -1000)).toStrictEqual(deck);
+        expect(insertRandomCards([...deck], 0)).toStrictEqual(deck);
+        expect(insertRandomCards([...deck], -10)).toStrictEqual(deck);
+        expect(insertRandomCards([...deck], -1000)).toStrictEqual(deck);
     });
     test("Should return a deck with additional random cards (1 new card)", () => {
         const deck: Deck = [
@@ -140,7 +148,7 @@ describe("The 'insertCards' function...", () => {
 
         vi.spyOn(global.Math, "random").mockReturnValueOnce(0.4);
 
-        const newDeck = insertCards(deck, 1);
+        const newDeck = insertRandomCards(deck, 1);
 
         expect(newDeck).toStrictEqual([
             { rank: "A", suit: "Heart", order: 1 },
@@ -165,7 +173,7 @@ describe("The 'insertCards' function...", () => {
             .mockReturnValueOnce(0.3)
             .mockReturnValueOnce(0.2);
 
-        const newDeck = insertCards(deck, 3);
+        const newDeck = insertRandomCards(deck, 3);
 
         expect(newDeck).toStrictEqual([
             { rank: "A", suit: "Heart", order: 1 },
@@ -234,7 +242,7 @@ describe("The 'insertCards' function...", () => {
             { rank: "K", suit: "Spade", order: 52 },
         ];
 
-        const newDeck = insertCards(deck, 1000);
+        const newDeck = insertRandomCards(deck, 1000);
 
         expect(newDeck).toStrictEqual([
             { rank: "A", suit: "Heart", order: 1 },
@@ -301,7 +309,7 @@ describe("The 'insertCards' function...", () => {
 
         vi.spyOn(global.Math, "random").mockReturnValueOnce(0.4);
 
-        const newDeck = insertCards(deck, 1);
+        const newDeck = insertRandomCards(deck, 1);
 
         expect(newDeck).toStrictEqual([
             { rank: "A", suit: "Heart", order: 1 },
@@ -323,7 +331,7 @@ describe("The 'insertCards' function...", () => {
 
         vi.spyOn(global.Math, "random").mockReturnValueOnce(0.4);
 
-        const newDeck = insertCards(deck, 1, "back");
+        const newDeck = insertRandomCards(deck, 1, "back");
 
         expect(newDeck).toStrictEqual([
             { rank: "A", suit: "Heart", order: 1 },
@@ -345,7 +353,7 @@ describe("The 'insertCards' function...", () => {
 
         vi.spyOn(global.Math, "random").mockReturnValueOnce(0.4);
 
-        const newDeck = insertCards(deck, 1, "front");
+        const newDeck = insertRandomCards(deck, 1, "front");
 
         expect(newDeck).toStrictEqual([
             { rank: "9", suit: "Club", order: 22 },
@@ -367,7 +375,7 @@ describe("The 'insertCards' function...", () => {
 
         vi.spyOn(global.Math, "random").mockReturnValueOnce(0.4).mockReturnValueOnce(0.5);
 
-        const newDeck = insertCards(deck, 1, "random");
+        const newDeck = insertRandomCards(deck, 1, "random");
 
         expect(newDeck).toStrictEqual([
             { rank: "A", suit: "Heart", order: 1 },
