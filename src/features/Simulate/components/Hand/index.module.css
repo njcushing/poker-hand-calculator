@@ -1,10 +1,21 @@
 .hand {
+    position: relative;
+
     display: flex;
 
     border: 1px solid #000;
 
     height: 150px;
     padding: 8px;
+}
+
+.hand-id {
+    position: absolute;
+    translate: 0% -100%;
+
+    background-color: white;
+
+    padding: 0px 6px;
 }
 
 .cards {

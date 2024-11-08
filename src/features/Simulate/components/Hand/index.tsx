@@ -4,11 +4,13 @@ import styles from "./index.module.css";
 
 export type THand = {
     info: THandInfo;
+    number: number;
 };
 
-export function Hand({ info }: THand) {
+export function Hand({ info, number }: THand) {
     return (
         <div className={styles["hand"]}>
+            <p className={styles["hand-id"]}>{`Hand ${number}`}</p>
             <div className={styles["cards"]}>
                 <Card info={info[0]} />
                 <Card info={info[1]} />

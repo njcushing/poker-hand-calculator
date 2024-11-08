@@ -10,8 +10,8 @@ export function Simulate() {
     return (
         <div className={styles["simulate"]}>
             <div className={styles["hands-container"]}>
-                {pokerHandCalculatorState.currentHands.map((hand) => {
-                    return <Hand info={hand} key={`hand-${uuid()}`} />;
+                {pokerHandCalculatorState.currentHands.map((hand, i) => {
+                    return <Hand info={hand} number={i + 1} key={`hand-${uuid()}`} />;
                 })}
             </div>
         </div>
