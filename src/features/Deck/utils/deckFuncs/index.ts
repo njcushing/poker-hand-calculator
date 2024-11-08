@@ -92,6 +92,47 @@ export const sortDeck = (deck: Deck): Deck => {
     return mutableDeck;
 };
 
+export const insertCards = (
+    deck: Deck,
+    cards: Card[],
+    insertAt: "front" | "back" | "random" = "back",
+): Deck => {
+    let mutableDeck = deck;
+    const sortedDeck: Deck = sortDeck([...deck]);
+    const insertableCards: Deck = createDeck();
+    sortedDeck.reverse().forEach((card) => {
+        insertableCards.splice(card.order - 1, 1);
+    });
+    const insertableCardOrders: number[] = insertableCards.map((card) => card.order);
+
+    for (let i = 0; i < cards.length; i++) {
+        const card = cards[i];
+        if (insertableCardOrders.indexOf(card.order) !== -1) {
+            switch (insertAt) {
+                case "front":
+                    mutableDeck = [card, ...mutableDeck];
+                    break;
+                case "random": {
+                    const insertIndex = Math.floor(Math.random() * mutableDeck.length);
+                    mutableDeck = [
+                        ...mutableDeck.slice(0, insertIndex),
+                        card,
+                        ...mutableDeck.slice(insertIndex),
+                    ];
+                    break;
+                }
+                case "back":
+                default:
+                    mutableDeck.push(card);
+            }
+
+            insertableCardOrders.splice(insertableCardOrders.indexOf(card.order), 1);
+        }
+    }
+
+    return mutableDeck;
+};
+
 export const insertRandomCards = (
     deck: Deck,
     quantity: number,

@@ -7,6 +7,7 @@ import {
     createDeck,
     shuffleDeck,
     sortDeck,
+    insertCards,
     insertRandomCards,
     pickCard,
     createHand,
@@ -127,6 +128,151 @@ describe("The 'sortDeck' function...", () => {
             { rank: "3", suit: "Spade", order: 42 },
             { rank: "4", suit: "Spade", order: 43 },
         ]);
+    });
+});
+
+describe("The 'insertCards' function...", () => {
+    test("Should return the provided deck if the 'cards' array parameter has no entries", () => {
+        const deck: Deck = [{ rank: "A", suit: "Heart", order: 1 }];
+
+        expect(insertCards([...deck], [])).toStrictEqual(deck);
+        expect(insertCards([...deck], [])).toStrictEqual(deck);
+        expect(insertCards([...deck], [])).toStrictEqual(deck);
+    });
+    test("Should return a deck with additional cards (1 new card)", () => {
+        const deck: Deck = [
+            { rank: "A", suit: "Heart", order: 1 },
+            { rank: "4", suit: "Diamond", order: 30 },
+            { rank: "10", suit: "Spade", order: 49 },
+            { rank: "2", suit: "Club", order: 15 },
+        ];
+
+        const newDeck = insertCards(deck, [{ rank: "9", suit: "Club", order: 22 }]);
+
+        expect(newDeck).toStrictEqual([
+            { rank: "A", suit: "Heart", order: 1 },
+            { rank: "4", suit: "Diamond", order: 30 },
+            { rank: "10", suit: "Spade", order: 49 },
+            { rank: "2", suit: "Club", order: 15 },
+            { rank: "9", suit: "Club", order: 22 },
+        ]);
+    });
+    test("Should return a deck with additional cards (3 new cards)", () => {
+        const deck: Deck = [
+            { rank: "A", suit: "Heart", order: 1 },
+            { rank: "4", suit: "Diamond", order: 30 },
+            { rank: "10", suit: "Spade", order: 49 },
+            { rank: "2", suit: "Club", order: 15 },
+        ];
+
+        const newDeck = insertCards(deck, [
+            { rank: "9", suit: "Club", order: 22 },
+            { rank: "4", suit: "Club", order: 17 },
+            { rank: "J", suit: "Heart", order: 11 },
+        ]);
+
+        expect(newDeck).toStrictEqual([
+            { rank: "A", suit: "Heart", order: 1 },
+            { rank: "4", suit: "Diamond", order: 30 },
+            { rank: "10", suit: "Spade", order: 49 },
+            { rank: "2", suit: "Club", order: 15 },
+            { rank: "9", suit: "Club", order: 22 },
+            { rank: "4", suit: "Club", order: 17 },
+            { rank: "J", suit: "Heart", order: 11 },
+        ]);
+    });
+    test("Should not insert cards that already exist within the specified deck", () => {
+        const deck: Deck = [
+            { rank: "A", suit: "Heart", order: 1 },
+            { rank: "4", suit: "Diamond", order: 30 },
+            { rank: "10", suit: "Spade", order: 49 },
+            { rank: "2", suit: "Club", order: 15 },
+        ];
+
+        const newDeck = insertCards(deck, [{ rank: "2", suit: "Club", order: 15 }]);
+
+        expect(newDeck).toStrictEqual([
+            { rank: "A", suit: "Heart", order: 1 },
+            { rank: "4", suit: "Diamond", order: 30 },
+            { rank: "10", suit: "Spade", order: 49 },
+            { rank: "2", suit: "Club", order: 15 },
+        ]);
+    });
+    test("Should place new cards at the back by default", () => {
+        const deck: Deck = [
+            { rank: "A", suit: "Heart", order: 1 },
+            { rank: "4", suit: "Diamond", order: 30 },
+            { rank: "10", suit: "Spade", order: 49 },
+            { rank: "2", suit: "Club", order: 15 },
+        ];
+
+        const newDeck = insertCards(deck, [{ rank: "9", suit: "Club", order: 22 }]);
+
+        expect(newDeck).toStrictEqual([
+            { rank: "A", suit: "Heart", order: 1 },
+            { rank: "4", suit: "Diamond", order: 30 },
+            { rank: "10", suit: "Spade", order: 49 },
+            { rank: "2", suit: "Club", order: 15 },
+            { rank: "9", suit: "Club", order: 22 },
+        ]);
+    });
+    test("Should place new cards at the back of the deck when specified", () => {
+        const deck: Deck = [
+            { rank: "A", suit: "Heart", order: 1 },
+            { rank: "4", suit: "Diamond", order: 30 },
+            { rank: "10", suit: "Spade", order: 49 },
+            { rank: "2", suit: "Club", order: 15 },
+        ];
+
+        const newDeck = insertCards(deck, [{ rank: "9", suit: "Club", order: 22 }], "back");
+
+        expect(newDeck).toStrictEqual([
+            { rank: "A", suit: "Heart", order: 1 },
+            { rank: "4", suit: "Diamond", order: 30 },
+            { rank: "10", suit: "Spade", order: 49 },
+            { rank: "2", suit: "Club", order: 15 },
+            { rank: "9", suit: "Club", order: 22 },
+        ]);
+    });
+    test("Should place new cards at the front of the deck when specified", () => {
+        const deck: Deck = [
+            { rank: "A", suit: "Heart", order: 1 },
+            { rank: "4", suit: "Diamond", order: 30 },
+            { rank: "10", suit: "Spade", order: 49 },
+            { rank: "2", suit: "Club", order: 15 },
+        ];
+
+        const newDeck = insertCards(deck, [{ rank: "9", suit: "Club", order: 22 }], "front");
+
+        expect(newDeck).toStrictEqual([
+            { rank: "9", suit: "Club", order: 22 },
+            { rank: "A", suit: "Heart", order: 1 },
+            { rank: "4", suit: "Diamond", order: 30 },
+            { rank: "10", suit: "Spade", order: 49 },
+            { rank: "2", suit: "Club", order: 15 },
+        ]);
+    });
+    test("Should place new cards in a random position in the deck when specified", () => {
+        const deck: Deck = [
+            { rank: "A", suit: "Heart", order: 1 },
+            { rank: "4", suit: "Diamond", order: 30 },
+            { rank: "10", suit: "Spade", order: 49 },
+            { rank: "2", suit: "Club", order: 15 },
+        ];
+
+        vi.spyOn(global.Math, "random").mockReturnValueOnce(0.4);
+
+        const newDeck = insertCards(deck, [{ rank: "9", suit: "Club", order: 22 }], "random");
+
+        expect(newDeck).toStrictEqual([
+            { rank: "A", suit: "Heart", order: 1 },
+            { rank: "9", suit: "Club", order: 22 },
+            { rank: "4", suit: "Diamond", order: 30 },
+            { rank: "10", suit: "Spade", order: 49 },
+            { rank: "2", suit: "Club", order: 15 },
+        ]);
+
+        (global.Math.random as jest.Mock).mockRestore();
     });
 });
 
