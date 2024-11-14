@@ -1,7 +1,8 @@
 .simulate {
-    display: flex;
-    flex-direction: column;
-    justify-content: start;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    grid-template-columns: 100%;
+    gap: 8px;
 
     overflow-y: auto;
 

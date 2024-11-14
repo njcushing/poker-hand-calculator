@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { PokerHandCalculatorContext } from "@/pages/PokerHandCalculator";
 import { v4 as uuid } from "uuid";
 import { Hand } from "./components/Hand";
+import { Board } from "./components/Board";
 import styles from "./index.module.css";
 
 export function Simulate() {
@@ -14,6 +15,7 @@ export function Simulate() {
                     return <Hand info={hand} number={i + 1} key={`hand-${uuid()}`} />;
                 })}
             </div>
+            <Board />
         </div>
     );
 }
