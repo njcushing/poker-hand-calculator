@@ -15,6 +15,22 @@ export type Board =
     | [Card, Card, Card, Card]
     | [Card, Card, Card, Card, Card];
 
+export type HandStrength = {
+    strength: number;
+    cards: Card[];
+    rank:
+        | "High Card"
+        | "One Pair"
+        | "Two Pair"
+        | "Three of a Kind"
+        | "Straight"
+        | "Flush"
+        | "Full House"
+        | "Four of a Kind"
+        | "Straight Flush"
+        | "Royal Flush";
+};
+
 export const createDeck = (): Deck => {
     return [
         { rank: "A", suit: "Heart", value: 13, order: 1 },
