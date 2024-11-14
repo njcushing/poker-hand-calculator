@@ -3,7 +3,14 @@ import useResizeObserverElement from "@/hooks/useResizeObserverElement";
 import { Structural } from "@/components/structural";
 import { Design } from "@/features/Design";
 import { Simulate } from "@/features/Simulate";
-import { Deck, Hand, createDeck, createHand, insertCards } from "@/features/Deck/utils/deckFuncs";
+import {
+    Card,
+    Deck,
+    Hand,
+    createDeck,
+    createHand,
+    insertCards,
+} from "@/features/Deck/utils/deckFuncs";
 import { version } from "../../../package.json";
 import styles from "./index.module.css";
 
@@ -12,6 +19,7 @@ export type PokerHandCalculatorState = {
     numberOfHands: number;
     currentHands: Hand[];
     boardStage: "pre-flop" | "flop" | "turn" | "river";
+    board: Card[];
 };
 
 const defaultPokerHandCalculatorState: PokerHandCalculatorState = {
@@ -19,6 +27,7 @@ const defaultPokerHandCalculatorState: PokerHandCalculatorState = {
     numberOfHands: 1,
     currentHands: [],
     boardStage: "pre-flop",
+    board: [],
 };
 
 interface PokerHandCalculatorContext {
