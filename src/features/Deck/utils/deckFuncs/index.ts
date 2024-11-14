@@ -8,6 +8,12 @@ export type Hand = [Card, Card];
 
 export type Deck = Card[];
 
+export type Board =
+    | []
+    | [Card, Card, Card]
+    | [Card, Card, Card, Card]
+    | [Card, Card, Card, Card, Card];
+
 export const createDeck = (): Deck => {
     return [
         { rank: "A", suit: "Heart", order: 1 },
