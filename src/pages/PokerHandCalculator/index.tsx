@@ -10,6 +10,7 @@ import {
     createDeck,
     createHand,
     insertCards,
+    pickCard,
 } from "@/features/Deck/utils/deckFuncs";
 import { version } from "../../../package.json";
 import styles from "./index.module.css";
@@ -93,7 +94,42 @@ export function PokerHandCalculator() {
             }
             return { ...current, currentDeck: newCurrentDeck, currentHands: newCurrentHands };
         });
-    }, [pokerHandCalculatorState.numberOfHands, setPokerHandCalculatorStateProperty]);
+    }, [pokerHandCalculatorState.numberOfHands]);
+
+    // Manage current board
+    useEffect(() => {
+        let requiredNumberOfCards = 0;
+        switch (pokerHandCalculatorState.boardStage) {
+            case "flop":
+                requiredNumberOfCards = 3;
+                break;
+            case "turn":
+                requiredNumberOfCards = 4;
+                break;
+            case "river":
+                requiredNumberOfCards = 5;
+                break;
+            default:
+        }
+
+        setPokerHandCalculatorState((current) => {
+            const { currentDeck, board } = current;
+
+            const newBoard = [...board];
+            let newCurrentDeck = [...currentDeck];
+
+            while (newBoard.length < requiredNumberOfCards) {
+                const { card, deck } = pickCard(newCurrentDeck);
+                newCurrentDeck = deck;
+                if (card) newBoard.push(card);
+            }
+            while (newBoard.length > requiredNumberOfCards) {
+                const card = newBoard.pop();
+                if (card) newCurrentDeck = insertCards(newCurrentDeck, [card], "random");
+            }
+            return { ...current, currentDeck: newCurrentDeck, board: newBoard };
+        });
+    }, [pokerHandCalculatorState.boardStage, setPokerHandCalculatorStateProperty]);
 
     return (
         <PokerHandCalculatorContext.Provider
