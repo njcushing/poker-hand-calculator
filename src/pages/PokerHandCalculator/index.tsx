@@ -7,6 +7,7 @@ import {
     Card,
     Deck,
     Hand,
+    Board,
     createDeck,
     createHand,
     insertCards,
@@ -20,7 +21,7 @@ export type PokerHandCalculatorState = {
     numberOfHands: number;
     currentHands: Hand[];
     boardStage: "pre-flop" | "flop" | "turn" | "river";
-    board: Card[];
+    board: Board;
 };
 
 const defaultPokerHandCalculatorState: PokerHandCalculatorState = {
@@ -115,18 +116,32 @@ export function PokerHandCalculator() {
         setPokerHandCalculatorState((current) => {
             const { currentDeck, board } = current;
 
-            const newBoard = [...board];
+            let newBoard: Board = [...board];
             let newCurrentDeck = [...currentDeck];
 
-            while (newBoard.length < requiredNumberOfCards) {
-                const { card, deck } = pickCard(newCurrentDeck);
-                newCurrentDeck = deck;
-                if (card) newBoard.push(card);
+            if (newBoard.length < requiredNumberOfCards) {
+                const cardsToAdd = requiredNumberOfCards - newBoard.length;
+                const newCards: Card[] = [];
+                for (let i = 0; i < cardsToAdd; i++) {
+                    const { card, deck } = pickCard(newCurrentDeck);
+                    if (card) newCards.push(card);
+                    newCurrentDeck = deck;
+                }
+                if (newBoard.length + newCards.length === requiredNumberOfCards) {
+                    newBoard = [...newBoard, ...newCards] as Board;
+                } else {
+                    newCurrentDeck = currentDeck;
+                }
             }
-            while (newBoard.length > requiredNumberOfCards) {
-                const card = newBoard.pop();
-                if (card) newCurrentDeck = insertCards(newCurrentDeck, [card], "random");
+
+            if (newBoard.length > requiredNumberOfCards) {
+                const cardsToRemove = newBoard.length - requiredNumberOfCards;
+                for (let i = 0; i < cardsToRemove; i++) {
+                    const card = newBoard.pop();
+                    if (card) newCurrentDeck = insertCards(newCurrentDeck, [card], "random");
+                }
             }
+
             return { ...current, currentDeck: newCurrentDeck, board: newBoard };
         });
     }, [pokerHandCalculatorState.boardStage, setPokerHandCalculatorStateProperty]);
