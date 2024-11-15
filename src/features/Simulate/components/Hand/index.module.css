@@ -1,24 +1,23 @@
 .hand {
-    position: relative;
-
     display: grid;
-    grid-template-rows: 1fr auto;
+    grid-template-rows: auto 1fr auto;
     grid-template-columns: auto;
     gap: 8px;
 
     border: 1px solid #000;
 
-    height: 170px;
-    padding: 12px 8px 8px;
+    height: 200px;
+    padding: 8px;
 }
 
 .hand-id {
-    position: absolute;
-    translate: 10% -50%;
+    display: flex;
+    justify-content: start;
 
-    background-color: white;
+    color: black;
+    font-size: 1rem;
 
-    padding: 0px 6px;
+    width: 100%;
 }
 
 .cards {
