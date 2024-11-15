@@ -8,10 +8,12 @@ import {
     Deck,
     Hand,
     Board,
+    HandStrength,
     createDeck,
     createHand,
     insertCards,
     pickCard,
+    calculateHandStrength,
 } from "@/features/Deck/utils/deckFuncs";
 import { version } from "../../../package.json";
 import styles from "./index.module.css";
@@ -19,7 +21,7 @@ import styles from "./index.module.css";
 export type PokerHandCalculatorState = {
     currentDeck: Deck;
     numberOfHands: number;
-    currentHands: Hand[];
+    currentHands: { hand: Hand; strength: HandStrength }[];
     boardStage: "pre-flop" | "flop" | "turn" | "river";
     board: Board;
 };
@@ -79,20 +81,25 @@ export function PokerHandCalculator() {
     // Manage current hands
     useEffect(() => {
         setPokerHandCalculatorState((current) => {
-            const { currentDeck, numberOfHands, currentHands } = current;
+            const { currentDeck, numberOfHands, currentHands, board } = current;
             let newCurrentDeck = [...currentDeck];
             const newCurrentHands = [...currentHands];
+
             while (newCurrentHands.length > numberOfHands) {
                 newCurrentDeck = insertCards(newCurrentDeck, [
-                    ...newCurrentHands[newCurrentHands.length - 1],
+                    ...newCurrentHands[newCurrentHands.length - 1].hand,
                 ]);
                 newCurrentHands.pop();
             }
+
             while (newCurrentHands.length < numberOfHands) {
                 const { hand, deck } = createHand(newCurrentDeck);
                 newCurrentDeck = deck;
-                if (hand) newCurrentHands.push(hand);
+                if (hand) {
+                    newCurrentHands.push({ hand, strength: calculateHandStrength(hand, board) });
+                }
             }
+
             return { ...current, currentDeck: newCurrentDeck, currentHands: newCurrentHands };
         });
     }, [pokerHandCalculatorState.numberOfHands]);
@@ -145,6 +152,20 @@ export function PokerHandCalculator() {
             return { ...current, currentDeck: newCurrentDeck, board: newBoard };
         });
     }, [pokerHandCalculatorState.boardStage, setPokerHandCalculatorStateProperty]);
+
+    // Manage hand strengths
+    useEffect(() => {
+        setPokerHandCalculatorState((current) => {
+            const { currentHands, board } = current;
+
+            const newCurrentHands = [...currentHands].map((hand) => ({
+                ...hand,
+                strength: calculateHandStrength(hand.hand, board),
+            }));
+
+            return { ...current, currentHands: newCurrentHands };
+        });
+    }, [pokerHandCalculatorState.board]);
 
     return (
         <PokerHandCalculatorContext.Provider
