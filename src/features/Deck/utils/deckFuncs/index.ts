@@ -221,3 +221,235 @@ export const createHand = (deck: Deck): { hand: Hand | null; deck: Deck } => {
 
     return { hand, deck: mutableDeck };
 };
+
+export const calculateHandStrength = (hand: Hand, board: Board): HandStrength => {
+    const areCardsConsecutive = (cards: Card[]): boolean => {
+        for (let i = 1; i < cards.length; i++) {
+            if (
+                cards[i].value !== cards[i - 1].value + 1 &&
+                !(cards[i].value === 13 && cards[i - 1].value === 4) // Account for A-5 straight
+            ) {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    const sumRanks = (cards: Card[]): Map<Card["rank"], number> => {
+        const ranks = new Map<Card["rank"], number>();
+        cards.forEach((card) => {
+            const { rank } = card;
+            if (!ranks.get(rank)) ranks.set(rank, 0);
+            ranks.set(rank, ranks.get(rank)! + 1);
+        });
+        return ranks;
+    };
+
+    const sumSuits = (cards: Card[]): Map<Card["suit"], number> => {
+        const suits = new Map<Card["suit"], number>();
+        cards.forEach((card) => {
+            const { suit } = card;
+            if (!suits.get(suit)) suits.set(suit, 0);
+            suits.set(suit, suits.get(suit)! + 1);
+        });
+        return suits;
+    };
+
+    const getKickers = (cards: Card[], quantity: number): Card[] => {
+        return cards
+            .sort((a, b) => a.value - b.value)
+            .slice(Math.max(0, cards.length - quantity), cards.length);
+    };
+
+    const cards: Card[] = [...hand, ...board];
+    const ranks: Map<Card["rank"], number> = sumRanks(cards);
+    const suits: Map<Card["suit"], number> = sumSuits(cards);
+
+    const largestRankSize = Math.max(...Array.from(ranks.values()));
+    const largestSuitSize = Math.max(...Array.from(suits.values()));
+
+    const cardsByAscendingValue = [...cards].sort((a, b) => a.value - b.value);
+    const cardsBySuitAndAscendingValue = [...cards].sort(
+        (a, b) => a.suit.localeCompare(b.suit) || a.value - b.value,
+    );
+
+    if (cards.length >= 5 && largestSuitSize >= 5) {
+        const mutableCards = [...cardsBySuitAndAscendingValue];
+
+        for (let i = mutableCards.length - 1; i > 3; i--) {
+            if (mutableCards[i].suit === mutableCards[i - 4].suit) {
+                const suitedCards = [...mutableCards].splice(i - 4, 5);
+                const areConsecutive = areCardsConsecutive(suitedCards);
+                if (areConsecutive) {
+                    // Royal Flush
+                    if (suitedCards[0].value === 9) {
+                        return {
+                            strength: 0,
+                            cards: suitedCards,
+                            rank: "Royal Flush",
+                        };
+                    }
+
+                    // Straight Flush
+                    return {
+                        strength: 0,
+                        cards: suitedCards,
+                        rank: "Straight Flush",
+                    };
+                }
+            }
+        }
+    }
+
+    // Four of a Kind
+    if (cards.length >= 4 && largestRankSize >= 4) {
+        const mutableCards = [...cardsByAscendingValue];
+
+        for (let i = 3; i < mutableCards.length; i++) {
+            if (mutableCards[i].value === mutableCards[i - 3].value) {
+                const quads = mutableCards.slice(i - 3, i + 1);
+                mutableCards.splice(i - 3, 4);
+                return {
+                    strength: 0,
+                    cards: [...quads, ...getKickers(mutableCards, 1)],
+                    rank: "Four of a Kind",
+                };
+            }
+        }
+    }
+
+    // Full House
+    if (cards.length >= 4 && largestRankSize >= 3) {
+        const mutableCards = [...cardsByAscendingValue];
+        const tripsRemoved = [...mutableCards];
+
+        const trips: Card[][] = [];
+        for (let i = mutableCards.length - 1; i > 1; i--) {
+            if (mutableCards[i].value === mutableCards[i - 2].value) {
+                trips.push(mutableCards.slice(i - 2, i + 1));
+                tripsRemoved.splice(i - 2, 3);
+                i -= 2;
+            }
+        }
+
+        const pairs: Card[][] = [];
+        for (let i = tripsRemoved.length - 1; i > 0; i--) {
+            if (tripsRemoved[i].value === tripsRemoved[i - 1].value) {
+                pairs.push(tripsRemoved.slice(i - 1, i + 1));
+                i -= 1;
+            }
+        }
+
+        if (trips.length > 1) {
+            trips.sort((a, b) => b[0].value - a[0].value);
+            return {
+                strength: 0,
+                cards: [...trips[0], trips[1][0], trips[1][1]],
+                rank: "Full House",
+            };
+        }
+
+        if (trips.length === 1 && pairs.length >= 1) {
+            pairs.sort((a, b) => b[0].value - a[0].value);
+            return {
+                strength: 0,
+                cards: [...trips[0], ...pairs[0]],
+                rank: "Full House",
+            };
+        }
+    }
+
+    // Flush
+    if (cards.length >= 5 && largestSuitSize >= 5) {
+        const mutableCards = [...cardsBySuitAndAscendingValue];
+
+        for (let i = mutableCards.length - 1; i > 3; i--) {
+            if (mutableCards[i].suit === mutableCards[i - 4].suit) {
+                return {
+                    strength: 0,
+                    cards: mutableCards.slice(i - 4, i + 1),
+                    rank: "Flush",
+                };
+            }
+        }
+    }
+
+    // Straight
+    if (cards.length >= 5) {
+        const mutableCards = [...cardsByAscendingValue];
+        const noDuplicates = [...mutableCards];
+
+        for (let i = mutableCards.length - 2; i > 0; i--) {
+            if (mutableCards[i].value === mutableCards[i + 1].value) {
+                noDuplicates.splice(i + 1, 1);
+            }
+        }
+
+        if (noDuplicates.length >= 5) {
+            for (let i = noDuplicates.length - 1; i > 3; i--) {
+                if (areCardsConsecutive(noDuplicates.slice(i - 4, i + 1))) {
+                    return {
+                        strength: 0,
+                        cards: noDuplicates.slice(i - 4, i + 1),
+                        rank: "Straight",
+                    };
+                }
+            }
+        }
+    }
+
+    // Three of a Kind
+    if (cards.length >= 3 && largestRankSize >= 3) {
+        const mutableCards = [...cardsByAscendingValue];
+
+        for (let i = 2; i < mutableCards.length; i++) {
+            if (mutableCards[i].value === mutableCards[i - 2].value) {
+                const trips = mutableCards.slice(i - 2, i + 1);
+                mutableCards.splice(i - 2, i + 1);
+                return {
+                    strength: 0,
+                    cards: [...trips, ...getKickers(mutableCards, 2)],
+                    rank: "Three of a Kind",
+                };
+            }
+        }
+    }
+
+    if (cards.length >= 2 && largestRankSize >= 2) {
+        const mutableCards = [...cardsByAscendingValue];
+        const pairsRemoved = [...mutableCards];
+
+        const pairs: Card[][] = [];
+        for (let i = mutableCards.length - 1; i > 0; i--) {
+            if (mutableCards[i].value === mutableCards[i - 1].value) {
+                pairs.push(mutableCards.slice(i - 1, i + 1));
+                pairsRemoved.splice(i - 1, 2);
+                i -= 1;
+            }
+        }
+
+        // Two Pair
+        if (pairs.length >= 2) {
+            pairs.sort((a, b) => b[0].value - a[0].value);
+            return {
+                strength: 0,
+                cards: [...pairs[0], ...pairs[1], ...getKickers(pairsRemoved, 1)],
+                rank: "Two Pair",
+            };
+        }
+
+        // One Pair
+        return {
+            strength: 0,
+            cards: [...pairs[0], ...getKickers(pairsRemoved, 3)],
+            rank: "One Pair",
+        };
+    }
+
+    // High Card
+    return {
+        strength: 0,
+        cards: getKickers([...cards], 5),
+        rank: "High Card",
+    };
+};
