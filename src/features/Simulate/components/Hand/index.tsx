@@ -16,6 +16,32 @@ export function Hand({ info, number }: THand) {
                 <Card info={info.hand[1]} />
             </div>
             <p className={styles["hand-strength"]}>{info.strength.rank}</p>
+            <div className={styles["hand-options"]}>
+                <button
+                    type="button"
+                    className={`${styles["shuffle-hand-button"]} material-symbols-sharp`}
+                    onClick={(e) => {
+                        e.currentTarget.blur();
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.blur();
+                    }}
+                >
+                    Cycle
+                </button>
+                <button
+                    type="button"
+                    className={`${styles["delete-hand-button"]} material-symbols-sharp`}
+                    onClick={(e) => {
+                        e.currentTarget.blur();
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.blur();
+                    }}
+                >
+                    Delete
+                </button>
+            </div>
         </div>
     );
 }
