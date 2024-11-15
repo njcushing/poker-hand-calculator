@@ -11,6 +11,9 @@ import {
     insertRandomCards,
     pickCard,
     createHand,
+    calculateHandStrength,
+    Hand,
+    Board,
 } from ".";
 
 describe("The 'createDeck' function...", () => {
@@ -632,5 +635,308 @@ describe("The 'createHand' function...", () => {
         ]);
 
         (global.Math.random as jest.Mock).mockRestore();
+    });
+});
+
+describe("The 'calculateHandStrength' function...", () => {
+    test("Should return the correct result (Royal Flush)", () => {
+        const hand: Hand = [
+            { rank: "A", suit: "Diamond", value: 13, order: 27 },
+            { rank: "K", suit: "Diamond", value: 12, order: 26 },
+        ];
+
+        const board: Board = [
+            { rank: "Q", suit: "Diamond", value: 11, order: 25 },
+            { rank: "J", suit: "Diamond", value: 10, order: 24 },
+            { rank: "10", suit: "Diamond", value: 9, order: 23 },
+            { rank: "2", suit: "Club", value: 1, order: 15 },
+            { rank: "2", suit: "Diamond", value: 1, order: 28 },
+        ];
+
+        const result = calculateHandStrength(hand, board);
+
+        expect(result).toEqual(
+            expect.objectContaining({
+                strength: 0,
+                rank: "Royal Flush",
+                cards: expect.arrayContaining([
+                    { rank: "A", suit: "Diamond", value: 13, order: 27 },
+                    { rank: "K", suit: "Diamond", value: 12, order: 26 },
+                    { rank: "Q", suit: "Diamond", value: 11, order: 25 },
+                    { rank: "J", suit: "Diamond", value: 10, order: 24 },
+                    { rank: "10", suit: "Diamond", value: 9, order: 23 },
+                ]),
+            }),
+        );
+    });
+    test("Should return the correct result (Straight Flush)", () => {
+        const hand: Hand = [
+            { rank: "Q", suit: "Diamond", value: 11, order: 25 },
+            { rank: "J", suit: "Diamond", value: 10, order: 24 },
+        ];
+
+        const board: Board = [
+            { rank: "10", suit: "Diamond", value: 9, order: 23 },
+            { rank: "9", suit: "Diamond", value: 8, order: 22 },
+            { rank: "8", suit: "Diamond", value: 7, order: 21 },
+            { rank: "2", suit: "Club", value: 1, order: 15 },
+            { rank: "2", suit: "Diamond", value: 1, order: 28 },
+        ];
+
+        const result = calculateHandStrength(hand, board);
+
+        expect(result).toEqual(
+            expect.objectContaining({
+                strength: 0,
+                rank: "Straight Flush",
+                cards: expect.arrayContaining([
+                    { rank: "Q", suit: "Diamond", value: 11, order: 25 },
+                    { rank: "J", suit: "Diamond", value: 10, order: 24 },
+                    { rank: "10", suit: "Diamond", value: 9, order: 23 },
+                    { rank: "9", suit: "Diamond", value: 8, order: 22 },
+                    { rank: "8", suit: "Diamond", value: 7, order: 21 },
+                ]),
+            }),
+        );
+    });
+    test("Should return the correct result (Four of a Kind) with the correct kicker", () => {
+        const hand: Hand = [
+            { rank: "10", suit: "Diamond", value: 9, order: 36 },
+            { rank: "10", suit: "Club", value: 9, order: 23 },
+        ];
+
+        const board: Board = [
+            { rank: "10", suit: "Heart", value: 9, order: 10 },
+            { rank: "10", suit: "Spade", value: 9, order: 49 },
+            { rank: "3", suit: "Diamond", value: 2, order: 29 },
+            { rank: "2", suit: "Diamond", value: 1, order: 28 },
+            { rank: "4", suit: "Diamond", value: 3, order: 30 },
+        ];
+
+        const result = calculateHandStrength(hand, board);
+
+        expect(result).toEqual(
+            expect.objectContaining({
+                strength: 0,
+                rank: "Four of a Kind",
+                cards: expect.arrayContaining([
+                    { rank: "10", suit: "Diamond", value: 9, order: 36 },
+                    { rank: "10", suit: "Club", value: 9, order: 23 },
+                    { rank: "10", suit: "Heart", value: 9, order: 10 },
+                    { rank: "10", suit: "Spade", value: 9, order: 49 },
+                    { rank: "4", suit: "Diamond", value: 3, order: 30 },
+                ]),
+            }),
+        );
+    });
+    test("Should return the correct result (Full House)", () => {
+        const hand: Hand = [
+            { rank: "10", suit: "Diamond", value: 9, order: 36 },
+            { rank: "10", suit: "Club", value: 9, order: 23 },
+        ];
+
+        const board: Board = [
+            { rank: "10", suit: "Heart", value: 9, order: 10 },
+            { rank: "4", suit: "Spade", value: 3, order: 43 },
+            { rank: "3", suit: "Diamond", value: 2, order: 29 },
+            { rank: "2", suit: "Diamond", value: 1, order: 28 },
+            { rank: "4", suit: "Diamond", value: 3, order: 30 },
+        ];
+
+        const result = calculateHandStrength(hand, board);
+
+        expect(result).toEqual(
+            expect.objectContaining({
+                strength: 0,
+                rank: "Full House",
+                cards: expect.arrayContaining([
+                    { rank: "10", suit: "Diamond", value: 9, order: 36 },
+                    { rank: "10", suit: "Club", value: 9, order: 23 },
+                    { rank: "10", suit: "Heart", value: 9, order: 10 },
+                    { rank: "4", suit: "Spade", value: 3, order: 43 },
+                    { rank: "4", suit: "Diamond", value: 3, order: 30 },
+                ]),
+            }),
+        );
+    });
+    test("Should return the correct result (Flush)", () => {
+        const hand: Hand = [
+            { rank: "10", suit: "Diamond", value: 9, order: 36 },
+            { rank: "10", suit: "Club", value: 9, order: 23 },
+        ];
+
+        const board: Board = [
+            { rank: "10", suit: "Heart", value: 9, order: 10 },
+            { rank: "7", suit: "Diamond", value: 6, order: 46 },
+            { rank: "3", suit: "Diamond", value: 2, order: 29 },
+            { rank: "2", suit: "Diamond", value: 1, order: 28 },
+            { rank: "4", suit: "Diamond", value: 3, order: 30 },
+        ];
+
+        const result = calculateHandStrength(hand, board);
+
+        expect(result).toEqual(
+            expect.objectContaining({
+                strength: 0,
+                rank: "Flush",
+                cards: expect.arrayContaining([
+                    { rank: "10", suit: "Diamond", value: 9, order: 36 },
+                    { rank: "7", suit: "Diamond", value: 6, order: 46 },
+                    { rank: "3", suit: "Diamond", value: 2, order: 29 },
+                    { rank: "2", suit: "Diamond", value: 1, order: 28 },
+                    { rank: "4", suit: "Diamond", value: 3, order: 30 },
+                ]),
+            }),
+        );
+    });
+    test("Should return the correct result (Straight)", () => {
+        const hand: Hand = [
+            { rank: "5", suit: "Diamond", value: 4, order: 31 },
+            { rank: "10", suit: "Club", value: 9, order: 23 },
+        ];
+
+        const board: Board = [
+            { rank: "6", suit: "Spade", value: 5, order: 45 },
+            { rank: "7", suit: "Heart", value: 6, order: 7 },
+            { rank: "3", suit: "Diamond", value: 2, order: 29 },
+            { rank: "2", suit: "Club", value: 1, order: 15 },
+            { rank: "4", suit: "Diamond", value: 3, order: 30 },
+        ];
+
+        const result = calculateHandStrength(hand, board);
+
+        expect(result).toEqual(
+            expect.objectContaining({
+                strength: 0,
+                rank: "Straight",
+                cards: expect.arrayContaining([
+                    { rank: "3", suit: "Diamond", value: 2, order: 29 },
+                    { rank: "4", suit: "Diamond", value: 3, order: 30 },
+                    { rank: "5", suit: "Diamond", value: 4, order: 31 },
+                    { rank: "6", suit: "Spade", value: 5, order: 45 },
+                    { rank: "7", suit: "Heart", value: 6, order: 7 },
+                ]),
+            }),
+        );
+    });
+    test("Should return the correct result (Three of a Kind) with the correct kickers", () => {
+        const hand: Hand = [
+            { rank: "5", suit: "Diamond", value: 4, order: 31 },
+            { rank: "10", suit: "Club", value: 9, order: 23 },
+        ];
+
+        const board: Board = [
+            { rank: "10", suit: "Spade", value: 9, order: 49 },
+            { rank: "7", suit: "Heart", value: 6, order: 7 },
+            { rank: "10", suit: "Diamond", value: 9, order: 36 },
+            { rank: "2", suit: "Club", value: 1, order: 15 },
+            { rank: "4", suit: "Diamond", value: 3, order: 30 },
+        ];
+
+        const result = calculateHandStrength(hand, board);
+
+        expect(result).toEqual(
+            expect.objectContaining({
+                strength: 0,
+                rank: "Three of a Kind",
+                cards: expect.arrayContaining([
+                    { rank: "10", suit: "Club", value: 9, order: 23 },
+                    { rank: "10", suit: "Spade", value: 9, order: 49 },
+                    { rank: "10", suit: "Diamond", value: 9, order: 36 },
+                    { rank: "7", suit: "Heart", value: 6, order: 7 },
+                    { rank: "5", suit: "Diamond", value: 4, order: 31 },
+                ]),
+            }),
+        );
+    });
+    test("Should return the correct result (Two Pair) with the correct kicker", () => {
+        const hand: Hand = [
+            { rank: "5", suit: "Diamond", value: 4, order: 31 },
+            { rank: "10", suit: "Club", value: 9, order: 23 },
+        ];
+
+        const board: Board = [
+            { rank: "5", suit: "Spade", value: 4, order: 44 },
+            { rank: "7", suit: "Heart", value: 6, order: 7 },
+            { rank: "10", suit: "Diamond", value: 9, order: 36 },
+            { rank: "2", suit: "Club", value: 1, order: 15 },
+            { rank: "4", suit: "Diamond", value: 3, order: 30 },
+        ];
+
+        const result = calculateHandStrength(hand, board);
+
+        expect(result).toEqual(
+            expect.objectContaining({
+                strength: 0,
+                rank: "Two Pair",
+                cards: expect.arrayContaining([
+                    { rank: "10", suit: "Club", value: 9, order: 23 },
+                    { rank: "10", suit: "Diamond", value: 9, order: 36 },
+                    { rank: "5", suit: "Spade", value: 4, order: 44 },
+                    { rank: "5", suit: "Diamond", value: 4, order: 31 },
+                    { rank: "7", suit: "Heart", value: 6, order: 7 },
+                ]),
+            }),
+        );
+    });
+    test("Should return the correct result (One Pair) with the correct kickers", () => {
+        const hand: Hand = [
+            { rank: "5", suit: "Diamond", value: 4, order: 31 },
+            { rank: "9", suit: "Club", value: 8, order: 22 },
+        ];
+
+        const board: Board = [
+            { rank: "5", suit: "Spade", value: 4, order: 44 },
+            { rank: "7", suit: "Heart", value: 6, order: 7 },
+            { rank: "10", suit: "Diamond", value: 9, order: 36 },
+            { rank: "2", suit: "Club", value: 1, order: 15 },
+            { rank: "4", suit: "Diamond", value: 3, order: 30 },
+        ];
+
+        const result = calculateHandStrength(hand, board);
+
+        expect(result).toEqual(
+            expect.objectContaining({
+                strength: 0,
+                rank: "One Pair",
+                cards: expect.arrayContaining([
+                    { rank: "5", suit: "Spade", value: 4, order: 44 },
+                    { rank: "5", suit: "Diamond", value: 4, order: 31 },
+                    { rank: "10", suit: "Diamond", value: 9, order: 36 },
+                    { rank: "9", suit: "Club", value: 8, order: 22 },
+                    { rank: "7", suit: "Heart", value: 6, order: 7 },
+                ]),
+            }),
+        );
+    });
+    test("Should return the correct result (High Card)", () => {
+        const hand: Hand = [
+            { rank: "5", suit: "Diamond", value: 4, order: 31 },
+            { rank: "9", suit: "Club", value: 8, order: 22 },
+        ];
+
+        const board: Board = [
+            { rank: "3", suit: "Spade", value: 2, order: 42 },
+            { rank: "7", suit: "Heart", value: 6, order: 7 },
+            { rank: "10", suit: "Diamond", value: 9, order: 36 },
+            { rank: "2", suit: "Club", value: 1, order: 15 },
+            { rank: "4", suit: "Diamond", value: 3, order: 30 },
+        ];
+
+        const result = calculateHandStrength(hand, board);
+
+        expect(result).toEqual(
+            expect.objectContaining({
+                strength: 0,
+                rank: "High Card",
+                cards: expect.arrayContaining([
+                    { rank: "10", suit: "Diamond", value: 9, order: 36 },
+                    { rank: "9", suit: "Club", value: 8, order: 22 },
+                    { rank: "7", suit: "Heart", value: 6, order: 7 },
+                    { rank: "5", suit: "Diamond", value: 4, order: 31 },
+                    { rank: "4", suit: "Diamond", value: 3, order: 30 },
+                ]),
+            }),
+        );
     });
 });
