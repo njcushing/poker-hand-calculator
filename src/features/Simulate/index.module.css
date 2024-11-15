@@ -19,8 +19,10 @@
 .hands-container {
     display: flex;
     justify-content: center;
+    align-items: center;
     flex-wrap: wrap;
     gap: 12px 8px;
 
     width: 100%;
+    height: 100%;
 }
