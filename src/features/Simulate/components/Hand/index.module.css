@@ -1,7 +1,7 @@
 .hand {
     display: grid;
     grid-template-rows: auto 1fr auto;
-    grid-template-columns: auto;
+    grid-template-columns: 1fr auto;
     gap: 8px;
 
     border: 1px solid #000;
@@ -11,6 +11,8 @@
 }
 
 .hand-id {
+    grid-area: 1 / 1 / 2 / -1;
+
     display: flex;
     justify-content: start;
 
@@ -21,12 +23,16 @@
 }
 
 .cards {
+    grid-area: 2 / 1 / 3 / 2;
+
     display: flex;
     flex-direction: row;
     gap: 8px;
 }
 
 .hand-strength {
+    grid-area: 3 / 1 / -1 / 2;
+
     display: flex;
     justify-content: center;
 
@@ -34,4 +40,66 @@
     font-size: 0.9rem;
 
     width: 100%;
+}
+
+.hand-options {
+    grid-area: 2 / 2 / -1 / -1;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    height: 100%;
+}
+
+.shuffle-hand-button,
+.delete-hand-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    pointer-events: all;
+
+    color: rgba(0, 0, 0, 0.7);
+    font-size: 4px;
+
+    border: none;
+    border-radius: 9999px;
+    background-color: transparent;
+
+    aspect-ratio: 1;
+    padding: 4px;
+}
+
+@media (hover: hover) {
+    .shuffle-hand-button:hover,
+    .delete-hand-button:hover {
+        cursor: pointer;
+
+        outline: 1px solid #000;
+    }
+
+    .shuffle-hand-button:hover {
+        color: rgb(15, 192, 53);
+    }
+
+    .delete-hand-button:hover {
+        color: rgb(221, 8, 8);
+    }
+}
+
+.shuffle-hand-button:focus,
+.delete-hand-button:focus {
+    cursor: pointer;
+
+    outline: 1px solid #000;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.shuffle-hand-button:focus {
+    color: rgb(15, 192, 53);
+}
+
+.delete-hand-button:focus {
+    color: rgb(221, 8, 8);
 }
