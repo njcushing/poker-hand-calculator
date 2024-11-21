@@ -4,7 +4,7 @@ import styles from "./index.module.css";
 import { Card } from "../Card";
 
 export function Board() {
-    const { pokerHandCalculatorState } = useContext(PokerHandCalculatorContext);
+    const { pokerHandCalculatorState, shuffleBoard } = useContext(PokerHandCalculatorContext);
 
     return (
         <div className={styles["board"]}>
@@ -19,6 +19,7 @@ export function Board() {
                     type="button"
                     className={`${styles["shuffle-board-button"]} material-symbols-sharp`}
                     onClick={(e) => {
+                        shuffleBoard();
                         e.currentTarget.blur();
                     }}
                     onMouseLeave={(e) => {
