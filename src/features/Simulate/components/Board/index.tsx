@@ -15,19 +15,21 @@ export function Board() {
                 })}
             </div>
             <div className={styles["board-options"]}>
-                <button
-                    type="button"
-                    className={`${styles["shuffle-board-button"]} material-symbols-sharp`}
-                    onClick={(e) => {
-                        shuffleBoard();
-                        e.currentTarget.blur();
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.blur();
-                    }}
-                >
-                    Cycle
-                </button>
+                {pokerHandCalculatorState.board.length > 0 && (
+                    <button
+                        type="button"
+                        className={`${styles["shuffle-board-button"]} material-symbols-sharp`}
+                        onClick={(e) => {
+                            shuffleBoard();
+                            e.currentTarget.blur();
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.blur();
+                        }}
+                    >
+                        Cycle
+                    </button>
+                )}
             </div>
         </div>
     );
