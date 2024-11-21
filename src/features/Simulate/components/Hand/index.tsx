@@ -1,4 +1,5 @@
-import { PokerHandCalculatorState } from "@/pages/PokerHandCalculator";
+import { useContext } from "react";
+import { PokerHandCalculatorState, PokerHandCalculatorContext } from "@/pages/PokerHandCalculator";
 import { Card } from "../Card";
 import styles from "./index.module.css";
 
@@ -8,6 +9,8 @@ export type THand = {
 };
 
 export function Hand({ info, number }: THand) {
+    const { shuffleHand, deleteHand } = useContext(PokerHandCalculatorContext);
+
     return (
         <div className={styles["hand"]}>
             <p className={styles["hand-id"]}>{`Hand ${number}`}</p>
@@ -21,6 +24,7 @@ export function Hand({ info, number }: THand) {
                     type="button"
                     className={`${styles["shuffle-hand-button"]} material-symbols-sharp`}
                     onClick={(e) => {
+                        shuffleHand(number - 1);
                         e.currentTarget.blur();
                     }}
                     onMouseLeave={(e) => {
@@ -33,6 +37,7 @@ export function Hand({ info, number }: THand) {
                     type="button"
                     className={`${styles["delete-hand-button"]} material-symbols-sharp`}
                     onClick={(e) => {
+                        deleteHand(number - 1);
                         e.currentTarget.blur();
                     }}
                     onMouseLeave={(e) => {
