@@ -196,7 +196,7 @@ export function PokerHandCalculator() {
             let { currentDeck } = pokerHandCalculatorState;
             const { currentHands } = pokerHandCalculatorState;
 
-            if (index >= currentHands.length) return;
+            if (index >= currentHands.length || currentHands.length === 1) return;
 
             const hand = currentHands[index];
             currentDeck = insertCards(currentDeck, hand.cards, "random");
