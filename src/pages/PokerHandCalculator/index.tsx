@@ -173,7 +173,7 @@ export function PokerHandCalculator() {
     const shuffleHand = useCallback(
         (index: number) => {
             let { currentDeck } = pokerHandCalculatorState;
-            const { currentHands } = pokerHandCalculatorState;
+            const { currentHands, board } = pokerHandCalculatorState;
 
             if (index >= currentHands.length) return;
 
@@ -182,6 +182,7 @@ export function PokerHandCalculator() {
             const { cards, deck } = pickCards(currentDeck, 2);
 
             hand.hand = [cards[0], cards[1]];
+            hand.strength = calculateHandStrength(hand.hand, board);
 
             setPokerHandCalculatorState({
                 ...pokerHandCalculatorState,
