@@ -9,7 +9,7 @@ import {
     sortDeck,
     insertCards,
     insertRandomCards,
-    pickCard,
+    pickCards,
     createHand,
     calculateHandStrength,
     Hand,
@@ -551,7 +551,7 @@ describe("The 'insertRandomCards' function...", () => {
     });
 });
 
-describe("The 'pickCard' function...", () => {
+describe("The 'pickCards' function...", () => {
     test("Should pick a card in the deck at random and return it", () => {
         const deck: Deck = [
             { rank: "A", suit: "Diamond", value: 13, order: 27 },
@@ -561,11 +561,27 @@ describe("The 'pickCard' function...", () => {
 
         vi.spyOn(global.Math, "random").mockReturnValueOnce(0.4).mockReturnValueOnce(0.5);
 
-        const { card } = pickCard(deck);
+        const { cards } = pickCards(deck, 1);
 
-        expect(card).toStrictEqual({ rank: "2", suit: "Club", value: 1, order: 15 });
+        expect(cards).toStrictEqual([{ rank: "2", suit: "Club", value: 1, order: 15 }]);
 
         (global.Math.random as jest.Mock).mockRestore();
+    });
+    test("Should not pick more cards than there are cards remaining in the deck", () => {
+        const deck: Deck = [
+            { rank: "A", suit: "Diamond", value: 13, order: 27 },
+            { rank: "2", suit: "Club", value: 1, order: 15 },
+            { rank: "3", suit: "Spade", value: 2, order: 42 },
+        ];
+
+        const { cards, deck: newDeck } = pickCards(deck, 100);
+
+        expect(cards).toEqual([
+            { rank: "A", suit: "Diamond", value: 13, order: 27 },
+            { rank: "2", suit: "Club", value: 1, order: 15 },
+            { rank: "3", suit: "Spade", value: 2, order: 42 },
+        ]);
+        expect(newDeck).toStrictEqual([]);
     });
     test("Should remove the picked card from the deck and return the new deck", () => {
         const deck: Deck = [
@@ -576,7 +592,7 @@ describe("The 'pickCard' function...", () => {
 
         vi.spyOn(global.Math, "random").mockReturnValueOnce(0.4).mockReturnValueOnce(0.5);
 
-        const result = pickCard(deck);
+        const result = pickCards(deck, 1);
 
         expect(result.deck).toStrictEqual([
             { rank: "A", suit: "Diamond", value: 13, order: 27 },

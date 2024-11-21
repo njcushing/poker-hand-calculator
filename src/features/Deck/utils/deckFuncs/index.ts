@@ -197,13 +197,19 @@ export const insertRandomCards = (
     return mutableDeck;
 };
 
-export const pickCard = (deck: Deck): { card: Card; deck: Deck } => {
+export const pickCards = (deck: Deck, quantity: number): { cards: Card[]; deck: Deck } => {
     const mutableDeck = [...deck];
-    const index = Math.floor(Math.random() * mutableDeck.length);
-    const card = mutableDeck[index];
-    mutableDeck.splice(index, 1);
+    const cards = [];
 
-    return { card, deck: mutableDeck };
+    const cardsToAdd = Math.min(quantity, deck.length);
+    for (let i = 0; i < cardsToAdd; i++) {
+        const index = Math.floor(Math.random() * mutableDeck.length);
+        const card = mutableDeck[index];
+        mutableDeck.splice(index, 1);
+        cards.push(card);
+    }
+
+    return { cards, deck: mutableDeck };
 };
 
 export const createHand = (deck: Deck): { hand: Hand | null; deck: Deck } => {
@@ -211,13 +217,10 @@ export const createHand = (deck: Deck): { hand: Hand | null; deck: Deck } => {
 
     let mutableDeck = [...deck];
 
-    const pickCardResultOne = pickCard(mutableDeck);
-    mutableDeck = pickCardResultOne.deck;
+    const { cards, deck: newDeck } = pickCards(mutableDeck, 2);
+    mutableDeck = newDeck;
 
-    const pickCardResultTwo = pickCard(mutableDeck);
-    mutableDeck = pickCardResultTwo.deck;
-
-    const hand: Hand = [pickCardResultOne.card, pickCardResultTwo.card];
+    const hand: Hand = [cards[0], cards[1]];
 
     return { hand, deck: mutableDeck };
 };

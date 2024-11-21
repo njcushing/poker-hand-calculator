@@ -4,7 +4,6 @@ import { Structural } from "@/components/structural";
 import { Design } from "@/features/Design";
 import { Simulate } from "@/features/Simulate";
 import {
-    Card,
     Deck,
     Hand,
     Board,
@@ -12,7 +11,7 @@ import {
     createDeck,
     createHand,
     insertCards,
-    pickCard,
+    pickCards,
     calculateHandStrength,
 } from "@/features/Deck/utils/deckFuncs";
 import { version } from "../../../package.json";
@@ -128,14 +127,12 @@ export function PokerHandCalculator() {
 
             if (newBoard.length < requiredNumberOfCards) {
                 const cardsToAdd = requiredNumberOfCards - newBoard.length;
-                const newCards: Card[] = [];
-                for (let i = 0; i < cardsToAdd; i++) {
-                    const { card, deck } = pickCard(newCurrentDeck);
-                    if (card) newCards.push(card);
-                    newCurrentDeck = deck;
-                }
-                if (newBoard.length + newCards.length === requiredNumberOfCards) {
-                    newBoard = [...newBoard, ...newCards] as Board;
+
+                const { cards, deck } = pickCards(newCurrentDeck, cardsToAdd);
+                newCurrentDeck = deck;
+
+                if (newBoard.length + cards.length === requiredNumberOfCards) {
+                    newBoard = [...newBoard, ...cards] as Board;
                 } else {
                     newCurrentDeck = currentDeck;
                 }
