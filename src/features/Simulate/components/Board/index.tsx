@@ -14,6 +14,20 @@ export function Board() {
                     return <Card info={card} key={card.order} />;
                 })}
             </div>
+            <div className={styles["board-options"]}>
+                <button
+                    type="button"
+                    className={`${styles["shuffle-board-button"]} material-symbols-sharp`}
+                    onClick={(e) => {
+                        e.currentTarget.blur();
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.blur();
+                    }}
+                >
+                    Cycle
+                </button>
+            </div>
         </div>
     );
 }

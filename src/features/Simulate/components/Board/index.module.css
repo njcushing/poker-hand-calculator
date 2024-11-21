@@ -1,8 +1,10 @@
 .board {
     position: relative;
 
-    display: flex;
-    justify-content: center;
+    display: grid;
+    grid-template-rows: 100%;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
 
     border: 1px solid #000;
 
@@ -13,7 +15,7 @@
 
 .board-name {
     position: absolute;
-    translate: 0% -100%;
+    translate: 4px -50%;
 
     background-color: white;
 
@@ -21,6 +23,8 @@
 }
 
 .cards {
+    grid-area: 1 / 1 / -1 / 2;
+
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -30,4 +34,49 @@
 
     height: 100%;
     padding: 4px 0px 0px;
+}
+
+.board-options {
+    grid-area: 1 / 2 / -1 / -1;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    height: 100%;
+}
+
+.shuffle-board-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    pointer-events: all;
+
+    color: rgba(0, 0, 0, 0.7);
+    font-size: 4px;
+
+    border: none;
+    border-radius: 9999px;
+    background-color: transparent;
+
+    aspect-ratio: 1;
+    padding: 4px;
+}
+
+@media (hover: hover) {
+    .shuffle-board-button:hover {
+        cursor: pointer;
+
+        color: rgb(15, 192, 53);
+        outline: 1px solid #000;
+    }
+}
+
+.shuffle-board-button:focus {
+    cursor: pointer;
+
+    color: rgb(15, 192, 53);
+    outline: 1px solid #000;
+    background-color: rgba(0, 0, 0, 0.1);
 }
