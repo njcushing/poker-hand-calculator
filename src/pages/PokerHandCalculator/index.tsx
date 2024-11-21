@@ -39,11 +39,15 @@ interface PokerHandCalculatorContext {
         property: K,
         value: PokerHandCalculatorState[K],
     ) => void;
+
+    shuffleHand: (index: number) => void;
 }
 
 const defaultPokerHandCalculatorContext: PokerHandCalculatorContext = {
     pokerHandCalculatorState: defaultPokerHandCalculatorState,
     setPokerHandCalculatorStateProperty: () => {},
+
+    shuffleHand: () => {},
 };
 
 export const PokerHandCalculatorContext = createContext<PokerHandCalculatorContext>(
@@ -164,11 +168,38 @@ export function PokerHandCalculator() {
         });
     }, [pokerHandCalculatorState.board]);
 
+    const shuffleHand = useCallback(
+        (index: number) => {
+            let { currentDeck } = pokerHandCalculatorState;
+            const { currentHands } = pokerHandCalculatorState;
+
+            if (index >= currentHands.length) return;
+
+            const hand = currentHands[index];
+            currentDeck = insertCards(currentDeck, hand.hand, "random");
+            const { cards, deck } = pickCards(currentDeck, 2);
+
+            hand.hand = [cards[0], cards[1]];
+
+            setPokerHandCalculatorState({
+                ...pokerHandCalculatorState,
+                currentDeck: deck,
+                currentHands,
+            });
+        },
+        [pokerHandCalculatorState],
+    );
+
     return (
         <PokerHandCalculatorContext.Provider
             value={useMemo(
-                () => ({ pokerHandCalculatorState, setPokerHandCalculatorStateProperty }),
-                [pokerHandCalculatorState, setPokerHandCalculatorStateProperty],
+                () => ({
+                    pokerHandCalculatorState,
+                    setPokerHandCalculatorStateProperty,
+
+                    shuffleHand,
+                }),
+                [pokerHandCalculatorState, setPokerHandCalculatorStateProperty, shuffleHand],
             )}
         >
             <div className={`${styles["page"]} ${styles[`${layout}`]}`} ref={containerRef}>
