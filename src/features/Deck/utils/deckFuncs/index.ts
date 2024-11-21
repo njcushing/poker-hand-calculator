@@ -5,8 +5,6 @@ export type Card = {
     order: number;
 };
 
-export type Hand = [Card, Card];
-
 export type Deck = Card[];
 
 export type Board =
@@ -29,6 +27,11 @@ export type HandStrength = {
         | "Four of a Kind"
         | "Straight Flush"
         | "Royal Flush";
+};
+
+export type Hand = {
+    cards: [Card, Card];
+    strength: HandStrength;
 };
 
 export const createDeck = (): Deck => {
@@ -212,7 +215,7 @@ export const pickCards = (deck: Deck, quantity: number): { cards: Card[]; deck: 
     return { cards, deck: mutableDeck };
 };
 
-export const createHand = (deck: Deck): { hand: Hand | null; deck: Deck } => {
+export const createHand = (deck: Deck, board: Board): { hand: Hand | null; deck: Deck } => {
     if (deck.length < 2) return { hand: null, deck };
 
     let mutableDeck = [...deck];
@@ -220,12 +223,13 @@ export const createHand = (deck: Deck): { hand: Hand | null; deck: Deck } => {
     const { cards, deck: newDeck } = pickCards(mutableDeck, 2);
     mutableDeck = newDeck;
 
-    const hand: Hand = [cards[0], cards[1]];
+    const strength = calculateHandStrength([cards[0], cards[1]], board);
+    const hand: Hand = { cards: cards as Hand["cards"], strength };
 
     return { hand, deck: mutableDeck };
 };
 
-export const calculateHandStrength = (hand: Hand, board: Board): HandStrength => {
+export const calculateHandStrength = (handCards: Hand["cards"], board: Board): HandStrength => {
     const areCardsConsecutive = (cards: Card[]): boolean => {
         for (let i = 1; i < cards.length; i++) {
             if (
@@ -264,7 +268,7 @@ export const calculateHandStrength = (hand: Hand, board: Board): HandStrength =>
             .slice(Math.max(0, cards.length - quantity), cards.length);
     };
 
-    const cards: Card[] = [...hand, ...board];
+    const cards: Card[] = [...handCards, ...board];
     const ranks: Map<Card["rank"], number> = sumRanks(cards);
     const suits: Map<Card["suit"], number> = sumSuits(cards);
 

@@ -7,7 +7,6 @@ import {
     Deck,
     Hand,
     Board,
-    HandStrength,
     createDeck,
     createHand,
     insertCards,
@@ -20,7 +19,7 @@ import styles from "./index.module.css";
 export type PokerHandCalculatorState = {
     currentDeck: Deck;
     numberOfHands: number;
-    currentHands: { hand: Hand; strength: HandStrength }[];
+    currentHands: Hand[];
     boardStage: "pre-flop" | "flop" | "turn" | "river";
     board: Board;
 };
@@ -94,17 +93,15 @@ export function PokerHandCalculator() {
 
             while (newCurrentHands.length > numberOfHands) {
                 newCurrentDeck = insertCards(newCurrentDeck, [
-                    ...newCurrentHands[newCurrentHands.length - 1].hand,
+                    ...newCurrentHands[newCurrentHands.length - 1].cards,
                 ]);
                 newCurrentHands.pop();
             }
 
             while (newCurrentHands.length < numberOfHands) {
-                const { hand, deck } = createHand(newCurrentDeck);
+                const { hand, deck } = createHand(newCurrentDeck, board);
                 newCurrentDeck = deck;
-                if (hand) {
-                    newCurrentHands.push({ hand, strength: calculateHandStrength(hand, board) });
-                }
+                if (hand) newCurrentHands.push(hand);
             }
 
             return { ...current, currentDeck: newCurrentDeck, currentHands: newCurrentHands };
@@ -165,7 +162,7 @@ export function PokerHandCalculator() {
 
             const newCurrentHands = [...currentHands].map((hand) => ({
                 ...hand,
-                strength: calculateHandStrength(hand.hand, board),
+                strength: calculateHandStrength(hand.cards, board),
             }));
 
             return { ...current, currentHands: newCurrentHands };
@@ -179,12 +176,11 @@ export function PokerHandCalculator() {
 
             if (index >= currentHands.length) return;
 
-            const hand = currentHands[index];
-            currentDeck = insertCards(currentDeck, hand.hand, "random");
-            const { cards, deck } = pickCards(currentDeck, 2);
+            currentDeck = insertCards(currentDeck, currentHands[index].cards, "random");
 
-            hand.hand = [cards[0], cards[1]];
-            hand.strength = calculateHandStrength(hand.hand, board);
+            const { hand, deck } = createHand(currentDeck, board);
+            if (!hand) return;
+            currentHands[index] = hand;
 
             setPokerHandCalculatorState({
                 ...pokerHandCalculatorState,
@@ -203,7 +199,7 @@ export function PokerHandCalculator() {
             if (index >= currentHands.length) return;
 
             const hand = currentHands[index];
-            currentDeck = insertCards(currentDeck, hand.hand, "random");
+            currentDeck = insertCards(currentDeck, hand.cards, "random");
 
             currentHands.splice(index, 1);
 

@@ -574,14 +574,18 @@ describe("The 'pickCards' function...", () => {
             { rank: "3", suit: "Spade", value: 2, order: 42 },
         ];
 
+        vi.spyOn(global.Math, "random").mockReturnValueOnce(0.4).mockReturnValueOnce(0.5);
+
         const { cards, deck: newDeck } = pickCards(deck, 100);
 
         expect(cards).toEqual([
-            { rank: "A", suit: "Diamond", value: 13, order: 27 },
             { rank: "2", suit: "Club", value: 1, order: 15 },
             { rank: "3", suit: "Spade", value: 2, order: 42 },
+            { rank: "A", suit: "Diamond", value: 13, order: 27 },
         ]);
         expect(newDeck).toStrictEqual([]);
+
+        (global.Math.random as jest.Mock).mockRestore();
     });
     test("Should remove the picked card from the deck and return the new deck", () => {
         const deck: Deck = [
@@ -607,7 +611,7 @@ describe("The 'createHand' function...", () => {
     test("Should return a null hand if the deck contains fewer than two cards", () => {
         const deck: Deck = [{ rank: "A", suit: "Diamond", value: 13, order: 27 }];
 
-        const { hand } = createHand(deck);
+        const { hand } = createHand(deck, []);
 
         expect(hand).toBeNull();
     });
@@ -622,9 +626,10 @@ describe("The 'createHand' function...", () => {
 
         vi.spyOn(global.Math, "random").mockReturnValueOnce(0.4).mockReturnValueOnce(0.8);
 
-        const { hand } = createHand(deck);
+        const { hand } = createHand(deck, []);
 
-        expect(hand).toStrictEqual([
+        expect(hand).not.toBeNull();
+        expect(hand!.cards).toStrictEqual([
             { rank: "4", suit: "Diamond", value: 3, order: 30 },
             { rank: "2", suit: "Club", value: 1, order: 15 },
         ]);
@@ -642,7 +647,7 @@ describe("The 'createHand' function...", () => {
 
         vi.spyOn(global.Math, "random").mockReturnValueOnce(0.4).mockReturnValueOnce(0.8);
 
-        const result = createHand(deck);
+        const result = createHand(deck, []);
 
         expect(result.deck).toStrictEqual([
             { rank: "9", suit: "Club", value: 8, order: 22 },
@@ -656,7 +661,7 @@ describe("The 'createHand' function...", () => {
 
 describe("The 'calculateHandStrength' function...", () => {
     test("Should return the correct result (Royal Flush)", () => {
-        const hand: Hand = [
+        const hand: Hand["cards"] = [
             { rank: "A", suit: "Diamond", value: 13, order: 27 },
             { rank: "K", suit: "Diamond", value: 12, order: 26 },
         ];
@@ -686,7 +691,7 @@ describe("The 'calculateHandStrength' function...", () => {
         );
     });
     test("Should return the correct result (Straight Flush)", () => {
-        const hand: Hand = [
+        const hand: Hand["cards"] = [
             { rank: "Q", suit: "Diamond", value: 11, order: 25 },
             { rank: "J", suit: "Diamond", value: 10, order: 24 },
         ];
@@ -716,7 +721,7 @@ describe("The 'calculateHandStrength' function...", () => {
         );
     });
     test("Should return the correct result (Four of a Kind) with the correct kicker", () => {
-        const hand: Hand = [
+        const hand: Hand["cards"] = [
             { rank: "10", suit: "Diamond", value: 9, order: 36 },
             { rank: "10", suit: "Club", value: 9, order: 23 },
         ];
@@ -746,7 +751,7 @@ describe("The 'calculateHandStrength' function...", () => {
         );
     });
     test("Should return the correct result (Full House)", () => {
-        const hand: Hand = [
+        const hand: Hand["cards"] = [
             { rank: "10", suit: "Diamond", value: 9, order: 36 },
             { rank: "10", suit: "Club", value: 9, order: 23 },
         ];
@@ -776,7 +781,7 @@ describe("The 'calculateHandStrength' function...", () => {
         );
     });
     test("Should return the correct result (Flush)", () => {
-        const hand: Hand = [
+        const hand: Hand["cards"] = [
             { rank: "10", suit: "Diamond", value: 9, order: 36 },
             { rank: "10", suit: "Club", value: 9, order: 23 },
         ];
@@ -806,7 +811,7 @@ describe("The 'calculateHandStrength' function...", () => {
         );
     });
     test("Should return the correct result (Straight)", () => {
-        const hand: Hand = [
+        const hand: Hand["cards"] = [
             { rank: "5", suit: "Diamond", value: 4, order: 31 },
             { rank: "10", suit: "Club", value: 9, order: 23 },
         ];
@@ -836,7 +841,7 @@ describe("The 'calculateHandStrength' function...", () => {
         );
     });
     test("Should return the correct result (Three of a Kind) with the correct kickers", () => {
-        const hand: Hand = [
+        const hand: Hand["cards"] = [
             { rank: "5", suit: "Diamond", value: 4, order: 31 },
             { rank: "10", suit: "Club", value: 9, order: 23 },
         ];
@@ -866,7 +871,7 @@ describe("The 'calculateHandStrength' function...", () => {
         );
     });
     test("Should return the correct result (Two Pair) with the correct kicker", () => {
-        const hand: Hand = [
+        const hand: Hand["cards"] = [
             { rank: "5", suit: "Diamond", value: 4, order: 31 },
             { rank: "10", suit: "Club", value: 9, order: 23 },
         ];
@@ -896,7 +901,7 @@ describe("The 'calculateHandStrength' function...", () => {
         );
     });
     test("Should return the correct result (One Pair) with the correct kickers", () => {
-        const hand: Hand = [
+        const hand: Hand["cards"] = [
             { rank: "5", suit: "Diamond", value: 4, order: 31 },
             { rank: "9", suit: "Club", value: 8, order: 22 },
         ];
@@ -926,7 +931,7 @@ describe("The 'calculateHandStrength' function...", () => {
         );
     });
     test("Should return the correct result (High Card)", () => {
-        const hand: Hand = [
+        const hand: Hand["cards"] = [
             { rank: "5", suit: "Diamond", value: 4, order: 31 },
             { rank: "9", suit: "Club", value: 8, order: 22 },
         ];

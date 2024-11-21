@@ -1,10 +1,11 @@
 import { useContext } from "react";
-import { PokerHandCalculatorState, PokerHandCalculatorContext } from "@/pages/PokerHandCalculator";
+import { PokerHandCalculatorContext } from "@/pages/PokerHandCalculator";
+import { Hand as THandInfo } from "@/features/Deck/utils/deckFuncs";
 import { Card } from "../Card";
 import styles from "./index.module.css";
 
 export type THand = {
-    info: PokerHandCalculatorState["currentHands"][number];
+    info: THandInfo;
     number: number;
 };
 
@@ -15,8 +16,8 @@ export function Hand({ info, number }: THand) {
         <div className={styles["hand"]}>
             <p className={styles["hand-id"]}>{`Hand ${number}`}</p>
             <div className={styles["cards"]}>
-                <Card info={info.hand[0]} />
-                <Card info={info.hand[1]} />
+                <Card info={info.cards[0]} />
+                <Card info={info.cards[1]} />
             </div>
             <p className={styles["hand-strength"]}>{info.strength.rank}</p>
             <div className={styles["hand-options"]}>
