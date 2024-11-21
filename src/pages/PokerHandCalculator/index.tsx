@@ -42,6 +42,7 @@ interface PokerHandCalculatorContext {
 
     shuffleHand: (index: number) => void;
     deleteHand: (index: number) => void;
+    shuffleBoard: () => void;
 }
 
 const defaultPokerHandCalculatorContext: PokerHandCalculatorContext = {
@@ -50,6 +51,7 @@ const defaultPokerHandCalculatorContext: PokerHandCalculatorContext = {
 
     shuffleHand: () => {},
     deleteHand: () => {},
+    shuffleBoard: () => {},
 };
 
 export const PokerHandCalculatorContext = createContext<PokerHandCalculatorContext>(
@@ -215,6 +217,23 @@ export function PokerHandCalculator() {
         [pokerHandCalculatorState],
     );
 
+    const shuffleBoard = useCallback(() => {
+        let { currentDeck, board } = pokerHandCalculatorState;
+
+        const boardSize = board.length;
+
+        currentDeck = insertCards(currentDeck, board, "random");
+        const { cards, deck } = pickCards(currentDeck, boardSize);
+
+        board = cards as Board;
+
+        setPokerHandCalculatorState({
+            ...pokerHandCalculatorState,
+            currentDeck: deck,
+            board,
+        });
+    }, [pokerHandCalculatorState]);
+
     return (
         <PokerHandCalculatorContext.Provider
             value={useMemo(
@@ -224,6 +243,7 @@ export function PokerHandCalculator() {
 
                     shuffleHand,
                     deleteHand,
+                    shuffleBoard,
                 }),
                 [
                     pokerHandCalculatorState,
@@ -231,6 +251,7 @@ export function PokerHandCalculator() {
 
                     shuffleHand,
                     deleteHand,
+                    shuffleBoard,
                 ],
             )}
         >
