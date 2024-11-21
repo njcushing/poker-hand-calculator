@@ -41,6 +41,7 @@ interface PokerHandCalculatorContext {
     ) => void;
 
     shuffleHand: (index: number) => void;
+    deleteHand: (index: number) => void;
 }
 
 const defaultPokerHandCalculatorContext: PokerHandCalculatorContext = {
@@ -48,6 +49,7 @@ const defaultPokerHandCalculatorContext: PokerHandCalculatorContext = {
     setPokerHandCalculatorStateProperty: () => {},
 
     shuffleHand: () => {},
+    deleteHand: () => {},
 };
 
 export const PokerHandCalculatorContext = createContext<PokerHandCalculatorContext>(
@@ -190,6 +192,28 @@ export function PokerHandCalculator() {
         [pokerHandCalculatorState],
     );
 
+    const deleteHand = useCallback(
+        (index: number) => {
+            let { currentDeck } = pokerHandCalculatorState;
+            const { currentHands } = pokerHandCalculatorState;
+
+            if (index >= currentHands.length) return;
+
+            const hand = currentHands[index];
+            currentDeck = insertCards(currentDeck, hand.hand, "random");
+
+            currentHands.splice(index, 1);
+
+            setPokerHandCalculatorState({
+                ...pokerHandCalculatorState,
+                numberOfHands: currentHands.length,
+                currentDeck,
+                currentHands,
+            });
+        },
+        [pokerHandCalculatorState],
+    );
+
     return (
         <PokerHandCalculatorContext.Provider
             value={useMemo(
@@ -198,8 +222,15 @@ export function PokerHandCalculator() {
                     setPokerHandCalculatorStateProperty,
 
                     shuffleHand,
+                    deleteHand,
                 }),
-                [pokerHandCalculatorState, setPokerHandCalculatorStateProperty, shuffleHand],
+                [
+                    pokerHandCalculatorState,
+                    setPokerHandCalculatorStateProperty,
+
+                    shuffleHand,
+                    deleteHand,
+                ],
             )}
         >
             <div className={`${styles["page"]} ${styles[`${layout}`]}`} ref={containerRef}>
