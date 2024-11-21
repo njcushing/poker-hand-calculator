@@ -14,6 +14,7 @@ import {
     calculateHandStrength,
     Hand,
     Board,
+    findStrongestHands,
 } from ".";
 
 describe("The 'createDeck' function...", () => {
@@ -678,7 +679,7 @@ describe("The 'calculateHandStrength' function...", () => {
 
         expect(result).toEqual(
             expect.objectContaining({
-                strength: 0,
+                value: 3622684,
                 rank: "Royal Flush",
                 cards: expect.arrayContaining([
                     { rank: "A", suit: "Diamond", value: 13, order: 27 },
@@ -708,7 +709,7 @@ describe("The 'calculateHandStrength' function...", () => {
 
         expect(result).toEqual(
             expect.objectContaining({
-                strength: 0,
+                value: 3189509,
                 rank: "Straight Flush",
                 cards: expect.arrayContaining([
                     { rank: "Q", suit: "Diamond", value: 11, order: 25 },
@@ -738,7 +739,7 @@ describe("The 'calculateHandStrength' function...", () => {
 
         expect(result).toEqual(
             expect.objectContaining({
-                strength: 0,
+                value: 2877514,
                 rank: "Four of a Kind",
                 cards: expect.arrayContaining([
                     { rank: "10", suit: "Diamond", value: 9, order: 36 },
@@ -768,7 +769,7 @@ describe("The 'calculateHandStrength' function...", () => {
 
         expect(result).toEqual(
             expect.objectContaining({
-                strength: 0,
+                value: 2506143,
                 rank: "Full House",
                 cards: expect.arrayContaining([
                     { rank: "10", suit: "Diamond", value: 9, order: 36 },
@@ -798,7 +799,7 @@ describe("The 'calculateHandStrength' function...", () => {
 
         expect(result).toEqual(
             expect.objectContaining({
-                strength: 0,
+                value: 1890014,
                 rank: "Flush",
                 cards: expect.arrayContaining([
                     { rank: "10", suit: "Diamond", value: 9, order: 36 },
@@ -828,7 +829,7 @@ describe("The 'calculateHandStrength' function...", () => {
 
         expect(result).toEqual(
             expect.objectContaining({
-                strength: 0,
+                value: 1549632,
                 rank: "Straight",
                 cards: expect.arrayContaining([
                     { rank: "3", suit: "Diamond", value: 2, order: 29 },
@@ -858,7 +859,7 @@ describe("The 'calculateHandStrength' function...", () => {
 
         expect(result).toEqual(
             expect.objectContaining({
-                strength: 0,
+                value: 1392304,
                 rank: "Three of a Kind",
                 cards: expect.arrayContaining([
                     { rank: "10", suit: "Club", value: 9, order: 23 },
@@ -888,7 +889,7 @@ describe("The 'calculateHandStrength' function...", () => {
 
         expect(result).toEqual(
             expect.objectContaining({
-                strength: 0,
+                value: 1020142,
                 rank: "Two Pair",
                 cards: expect.arrayContaining([
                     { rank: "10", suit: "Club", value: 9, order: 23 },
@@ -918,7 +919,7 @@ describe("The 'calculateHandStrength' function...", () => {
 
         expect(result).toEqual(
             expect.objectContaining({
-                strength: 0,
+                value: 495956,
                 rank: "One Pair",
                 cards: expect.arrayContaining([
                     { rank: "5", suit: "Spade", value: 4, order: 44 },
@@ -948,7 +949,7 @@ describe("The 'calculateHandStrength' function...", () => {
 
         expect(result).toEqual(
             expect.objectContaining({
-                strength: 0,
+                value: 275694,
                 rank: "High Card",
                 cards: expect.arrayContaining([
                     { rank: "10", suit: "Diamond", value: 9, order: 36 },
@@ -959,5 +960,51 @@ describe("The 'calculateHandStrength' function...", () => {
                 ]),
             }),
         );
+    });
+});
+
+describe("The 'findStrongestHands' function...", () => {
+    test("Should return an array containing the strongest hands", () => {
+        const hand1: Hand = {
+            cards: [
+                { rank: "10", suit: "Diamond", value: 9, order: 36 },
+                { rank: "9", suit: "Club", value: 8, order: 22 },
+            ],
+            strength: {
+                value: 275694,
+                rank: "High Card",
+                cards: [
+                    { rank: "10", suit: "Diamond", value: 9, order: 36 },
+                    { rank: "9", suit: "Club", value: 8, order: 22 },
+                    { rank: "7", suit: "Heart", value: 6, order: 7 },
+                    { rank: "5", suit: "Diamond", value: 4, order: 31 },
+                    { rank: "4", suit: "Diamond", value: 3, order: 30 },
+                ],
+            },
+        };
+
+        const hand2: Hand = {
+            cards: [
+                { rank: "5", suit: "Spade", value: 4, order: 44 },
+                { rank: "5", suit: "Diamond", value: 4, order: 31 },
+            ],
+            strength: {
+                value: 495956,
+                rank: "One Pair",
+                cards: [
+                    { rank: "5", suit: "Spade", value: 4, order: 44 },
+                    { rank: "5", suit: "Diamond", value: 4, order: 31 },
+                    { rank: "10", suit: "Diamond", value: 9, order: 36 },
+                    { rank: "9", suit: "Club", value: 8, order: 22 },
+                    { rank: "7", suit: "Heart", value: 6, order: 7 },
+                ],
+            },
+        };
+
+        const hands: Hand[] = [hand1, hand2];
+
+        const strongestHands = findStrongestHands(hands);
+
+        expect(strongestHands).toStrictEqual([hand2]);
     });
 });

@@ -13,20 +13,23 @@ export type Board =
     | [Card, Card, Card, Card]
     | [Card, Card, Card, Card, Card];
 
+const handStrengthRankOrder = [
+    "High Card",
+    "One Pair",
+    "Two Pair",
+    "Three of a Kind",
+    "Straight",
+    "Flush",
+    "Full House",
+    "Four of a Kind",
+    "Straight Flush",
+    "Royal Flush",
+];
+
 export type HandStrength = {
-    strength: number;
+    value: number;
     cards: Card[];
-    rank:
-        | "High Card"
-        | "One Pair"
-        | "Two Pair"
-        | "Three of a Kind"
-        | "Straight"
-        | "Flush"
-        | "Full House"
-        | "Four of a Kind"
-        | "Straight Flush"
-        | "Royal Flush";
+    rank: (typeof handStrengthRankOrder)[number];
 };
 
 export type Hand = {
@@ -263,9 +266,20 @@ export const calculateHandStrength = (handCards: Hand["cards"], board: Board): H
     };
 
     const getKickers = (cards: Card[], quantity: number): Card[] => {
-        return cards
-            .sort((a, b) => a.value - b.value)
-            .slice(Math.max(0, cards.length - quantity), cards.length);
+        return cards.sort((a, b) => b.value - a.value).slice(0, Math.min(cards.length, quantity));
+    };
+
+    const getStrength = (rank: (typeof handStrengthRankOrder)[number], cards: Card[]): number => {
+        if (cards.length < 5) return 0;
+        const uniqueValues = 13;
+        return (
+            handStrengthRankOrder.indexOf(rank) * uniqueValues ** 5 +
+            cards[0].value * uniqueValues ** 4 +
+            cards[1].value * uniqueValues ** 3 +
+            cards[2].value * uniqueValues ** 2 +
+            cards[3].value * uniqueValues +
+            cards[4].value
+        );
     };
 
     const cards: Card[] = [...handCards, ...board];
@@ -291,7 +305,7 @@ export const calculateHandStrength = (handCards: Hand["cards"], board: Board): H
                     // Royal Flush
                     if (suitedCards[0].value === 9) {
                         return {
-                            strength: 0,
+                            value: getStrength("Royal Flush", suitedCards),
                             cards: suitedCards,
                             rank: "Royal Flush",
                         };
@@ -299,7 +313,7 @@ export const calculateHandStrength = (handCards: Hand["cards"], board: Board): H
 
                     // Straight Flush
                     return {
-                        strength: 0,
+                        value: getStrength("Straight Flush", suitedCards),
                         cards: suitedCards,
                         rank: "Straight Flush",
                     };
@@ -316,9 +330,11 @@ export const calculateHandStrength = (handCards: Hand["cards"], board: Board): H
             if (mutableCards[i].value === mutableCards[i - 3].value) {
                 const quads = mutableCards.slice(i - 3, i + 1);
                 mutableCards.splice(i - 3, 4);
+                const kickers = getKickers(mutableCards, 1);
+                const bestCards = [...quads, ...kickers];
                 return {
-                    strength: 0,
-                    cards: [...quads, ...getKickers(mutableCards, 1)],
+                    value: getStrength("Four of a Kind", bestCards),
+                    cards: bestCards,
                     rank: "Four of a Kind",
                 };
             }
@@ -349,18 +365,20 @@ export const calculateHandStrength = (handCards: Hand["cards"], board: Board): H
 
         if (trips.length > 1) {
             trips.sort((a, b) => b[0].value - a[0].value);
+            const bestCards = [...trips[0], trips[1][0], trips[1][1]];
             return {
-                strength: 0,
-                cards: [...trips[0], trips[1][0], trips[1][1]],
+                value: getStrength("Full House", bestCards),
+                cards: bestCards,
                 rank: "Full House",
             };
         }
 
         if (trips.length === 1 && pairs.length >= 1) {
             pairs.sort((a, b) => b[0].value - a[0].value);
+            const bestCards = [...trips[0], ...pairs[0]];
             return {
-                strength: 0,
-                cards: [...trips[0], ...pairs[0]],
+                value: getStrength("Full House", bestCards),
+                cards: bestCards,
                 rank: "Full House",
             };
         }
@@ -372,9 +390,10 @@ export const calculateHandStrength = (handCards: Hand["cards"], board: Board): H
 
         for (let i = mutableCards.length - 1; i > 3; i--) {
             if (mutableCards[i].suit === mutableCards[i - 4].suit) {
+                const bestCards = mutableCards.slice(i - 4, i + 1);
                 return {
-                    strength: 0,
-                    cards: mutableCards.slice(i - 4, i + 1),
+                    value: getStrength("Flush", bestCards),
+                    cards: bestCards,
                     rank: "Flush",
                 };
             }
@@ -395,9 +414,10 @@ export const calculateHandStrength = (handCards: Hand["cards"], board: Board): H
         if (noDuplicates.length >= 5) {
             for (let i = noDuplicates.length - 1; i > 3; i--) {
                 if (areCardsConsecutive(noDuplicates.slice(i - 4, i + 1))) {
+                    const bestCards = noDuplicates.slice(i - 4, i + 1);
                     return {
-                        strength: 0,
-                        cards: noDuplicates.slice(i - 4, i + 1),
+                        value: getStrength("Straight", bestCards),
+                        cards: bestCards,
                         rank: "Straight",
                     };
                 }
@@ -413,9 +433,11 @@ export const calculateHandStrength = (handCards: Hand["cards"], board: Board): H
             if (mutableCards[i].value === mutableCards[i - 2].value) {
                 const trips = mutableCards.slice(i - 2, i + 1);
                 mutableCards.splice(i - 2, i + 1);
+                const kickers = getKickers(mutableCards, 2);
+                const bestCards = [...trips, ...kickers];
                 return {
-                    strength: 0,
-                    cards: [...trips, ...getKickers(mutableCards, 2)],
+                    value: getStrength("Three of a Kind", bestCards),
+                    cards: bestCards,
                     rank: "Three of a Kind",
                 };
             }
@@ -438,25 +460,34 @@ export const calculateHandStrength = (handCards: Hand["cards"], board: Board): H
         // Two Pair
         if (pairs.length >= 2) {
             pairs.sort((a, b) => b[0].value - a[0].value);
+            const kickers = getKickers(pairsRemoved, 1);
+            const bestCards = [...pairs[0], ...pairs[1], ...kickers];
             return {
-                strength: 0,
-                cards: [...pairs[0], ...pairs[1], ...getKickers(pairsRemoved, 1)],
+                value: getStrength("Two Pair", bestCards),
+                cards: bestCards,
                 rank: "Two Pair",
             };
         }
 
         // One Pair
+        const bestCards = [...pairs[0], ...getKickers(pairsRemoved, 3)];
         return {
-            strength: 0,
-            cards: [...pairs[0], ...getKickers(pairsRemoved, 3)],
+            value: getStrength("One Pair", bestCards),
+            cards: bestCards,
             rank: "One Pair",
         };
     }
 
     // High Card
+    const bestCards = getKickers([...cards], 5);
     return {
-        strength: 0,
-        cards: getKickers([...cards], 5),
+        value: getStrength("High Card", bestCards),
+        cards: bestCards,
         rank: "High Card",
     };
+};
+
+export const findStrongestHands = (hands: Hand[]): Hand[] => {
+    const highestValue = hands.reduce((acc, val) => Math.max(acc, val.strength.value), 0);
+    return hands.filter((hand) => hand.strength.value === highestValue);
 };
