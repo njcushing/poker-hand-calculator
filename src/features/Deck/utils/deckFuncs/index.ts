@@ -270,16 +270,16 @@ export const calculateHandStrength = (handCards: Hand["cards"], board: Board): H
     };
 
     const getStrength = (rank: (typeof handStrengthRankOrder)[number], cards: Card[]): number => {
-        if (cards.length < 5) return 0;
         const uniqueValues = 13;
-        return (
-            handStrengthRankOrder.indexOf(rank) * uniqueValues ** 5 +
-            cards[0].value * uniqueValues ** 4 +
-            cards[1].value * uniqueValues ** 3 +
-            cards[2].value * uniqueValues ** 2 +
-            cards[3].value * uniqueValues +
-            cards[4].value
-        );
+        const additiveValues = [
+            handStrengthRankOrder.indexOf(rank) * uniqueValues ** 5,
+            cards.length > 0 ? cards[0].value * uniqueValues ** 4 : 0,
+            cards.length > 1 ? cards[1].value * uniqueValues ** 3 : 0,
+            cards.length > 2 ? cards[2].value * uniqueValues ** 2 : 0,
+            cards.length > 3 ? cards[3].value * uniqueValues : 0,
+            cards.length > 4 ? cards[4].value : 0,
+        ];
+        return additiveValues.reduce((acc, val) => acc + val, 0);
     };
 
     const cards: Card[] = [...handCards, ...board];
