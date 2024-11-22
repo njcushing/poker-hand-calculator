@@ -35,7 +35,9 @@ export function Hand({ info, number }: THand) {
                 <Card info={info.cards[0]} />
                 <Card info={info.cards[1]} />
             </div>
-            <p className={styles["hand-strength"]}>{info.strength.rank}</p>
+            <p
+                className={styles["hand-strength"]}
+            >{`${info.strength.rank} - ${info.strength.information}`}</p>
             <div className={styles["hand-options"]}>
                 <button
                     type="button"
