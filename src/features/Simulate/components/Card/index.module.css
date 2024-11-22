@@ -5,6 +5,7 @@
     align-items: center;
     gap: 8px;
 
+    min-width: 0;
     height: 100%;
     aspect-ratio: 63 / 88;
 
