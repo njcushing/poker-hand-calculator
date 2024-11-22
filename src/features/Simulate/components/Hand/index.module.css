@@ -15,16 +15,26 @@
     outline: 3px solid #000;
 }
 
-.hand-id {
+.top-row {
+    position: relative;
+
     grid-area: 1 / 1 / 2 / -1;
 
     display: flex;
-    justify-content: start;
+    justify-content: space-between;
+    align-items: center;
+}
 
+.hand-id {
     color: black;
     font-size: 1rem;
+}
 
-    width: 100%;
+.strongest-hand-check-mark {
+    position: absolute;
+    right: 0;
+
+    color: rgb(94, 230, 16);
 }
 
 .cards {

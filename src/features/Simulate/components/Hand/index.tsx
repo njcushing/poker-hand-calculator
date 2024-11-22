@@ -20,7 +20,17 @@ export function Hand({ info, number }: THand) {
 
     return (
         <div className={`${styles["hand"]} ${styles[isStrongest ? "is-strongest" : ""]}`}>
-            <p className={styles["hand-id"]}>{`Hand ${number}`}</p>
+            <div className={styles["top-row"]}>
+                <p className={styles["hand-id"]}>{`Hand ${number}`}</p>
+                {isStrongest && (
+                    <p
+                        className={`${styles["strongest-hand-check-mark"]} material-symbols-sharp`}
+                        style={{ fontSize: "2rem" }}
+                    >
+                        Check
+                    </p>
+                )}
+            </div>
             <div className={styles["cards"]}>
                 <Card info={info.cards[0]} />
                 <Card info={info.cards[1]} />
