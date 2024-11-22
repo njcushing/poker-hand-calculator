@@ -10,10 +10,16 @@ export type THand = {
 };
 
 export function Hand({ info, number }: THand) {
-    const { shuffleHand, deleteHand } = useContext(PokerHandCalculatorContext);
+    const { pokerHandCalculatorState, shuffleHand, deleteHand } = useContext(
+        PokerHandCalculatorContext,
+    );
+
+    const isStrongest = pokerHandCalculatorState.strongestHands.some(
+        (hand) => hand.index === number - 1,
+    );
 
     return (
-        <div className={styles["hand"]}>
+        <div className={`${styles["hand"]} ${styles[isStrongest ? "is-strongest" : ""]}`}>
             <p className={styles["hand-id"]}>{`Hand ${number}`}</p>
             <div className={styles["cards"]}>
                 <Card info={info.cards[0]} />
