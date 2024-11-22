@@ -12,6 +12,7 @@ import {
     insertCards,
     pickCards,
     calculateHandStrength,
+    findStrongestHands,
 } from "@/features/Deck/utils/deckFuncs";
 import { version } from "../../../package.json";
 import styles from "./index.module.css";
@@ -20,6 +21,7 @@ export type PokerHandCalculatorState = {
     currentDeck: Deck;
     numberOfHands: number;
     currentHands: Hand[];
+    strongestHands: { hand: Hand; index: number }[];
     boardStage: "pre-flop" | "flop" | "turn" | "river";
     board: Board;
 };
@@ -28,6 +30,7 @@ const defaultPokerHandCalculatorState: PokerHandCalculatorState = {
     currentDeck: createDeck(),
     numberOfHands: 1,
     currentHands: [],
+    strongestHands: [],
     boardStage: "pre-flop",
     board: [],
 };
@@ -104,7 +107,12 @@ export function PokerHandCalculator() {
                 if (hand) newCurrentHands.push(hand);
             }
 
-            return { ...current, currentDeck: newCurrentDeck, currentHands: newCurrentHands };
+            return {
+                ...current,
+                currentDeck: newCurrentDeck,
+                currentHands: newCurrentHands,
+                strongestHands: findStrongestHands(newCurrentHands),
+            };
         });
     }, [pokerHandCalculatorState.numberOfHands]);
 
@@ -165,7 +173,11 @@ export function PokerHandCalculator() {
                 strength: calculateHandStrength(hand.cards, board),
             }));
 
-            return { ...current, currentHands: newCurrentHands };
+            return {
+                ...current,
+                currentHands: newCurrentHands,
+                strongestHands: findStrongestHands(newCurrentHands),
+            };
         });
     }, [pokerHandCalculatorState.board]);
 
@@ -186,6 +198,7 @@ export function PokerHandCalculator() {
                 ...pokerHandCalculatorState,
                 currentDeck: deck,
                 currentHands,
+                strongestHands: findStrongestHands(currentHands),
             });
         },
         [pokerHandCalculatorState],
@@ -208,6 +221,7 @@ export function PokerHandCalculator() {
                 numberOfHands: currentHands.length,
                 currentDeck,
                 currentHands,
+                strongestHands: findStrongestHands(currentHands),
             });
         },
         [pokerHandCalculatorState],
