@@ -7,9 +7,18 @@ export type TCard = {
 
 export function Card({ info }: TCard) {
     return (
-        <div className={styles["card"]}>
+        <button
+            type="button"
+            className={styles["card"]}
+            onClick={(e) => {
+                e.currentTarget.blur();
+            }}
+            onMouseLeave={(e) => {
+                e.currentTarget.blur();
+            }}
+        >
             <p className={styles["suit"]}>{info.suit}</p>
             <p className={styles["rank"]}>{info.rank}</p>
-        </div>
+        </button>
     );
 }

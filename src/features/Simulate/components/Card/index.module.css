@@ -8,8 +8,22 @@
     height: 100%;
     aspect-ratio: 63 / 88;
 
-    border: 1px solid #000;
     border-radius: 4px;
+    border: none;
+    outline: 1px solid #000;
+    background-color: transparent;
+}
+
+@media (hover: hover) {
+    .card:hover {
+        cursor: pointer;
+
+        outline: 3px solid black;
+    }
+}
+
+.card:focus {
+    outline: 3px solid black;
 }
 
 .suit {
