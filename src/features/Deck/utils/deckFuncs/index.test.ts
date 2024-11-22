@@ -688,6 +688,7 @@ describe("The 'calculateHandStrength' function...", () => {
                     { rank: "J", suit: "Diamond", value: 10, order: 24 },
                     { rank: "10", suit: "Diamond", value: 9, order: 23 },
                 ]),
+                information: "Diamonds",
             }),
         );
     });
@@ -718,6 +719,7 @@ describe("The 'calculateHandStrength' function...", () => {
                     { rank: "9", suit: "Diamond", value: 8, order: 22 },
                     { rank: "8", suit: "Diamond", value: 7, order: 21 },
                 ]),
+                information: "Diamonds, 8 to Q",
             }),
         );
     });
@@ -748,6 +750,7 @@ describe("The 'calculateHandStrength' function...", () => {
                     { rank: "10", suit: "Spade", value: 9, order: 49 },
                     { rank: "4", suit: "Diamond", value: 3, order: 30 },
                 ]),
+                information: "10s",
             }),
         );
     });
@@ -778,6 +781,7 @@ describe("The 'calculateHandStrength' function...", () => {
                     { rank: "4", suit: "Spade", value: 3, order: 43 },
                     { rank: "4", suit: "Diamond", value: 3, order: 30 },
                 ]),
+                information: "10s full of 4s",
             }),
         );
     });
@@ -808,6 +812,7 @@ describe("The 'calculateHandStrength' function...", () => {
                     { rank: "2", suit: "Diamond", value: 1, order: 28 },
                     { rank: "4", suit: "Diamond", value: 3, order: 30 },
                 ]),
+                information: "Diamonds, 10-high",
             }),
         );
     });
@@ -838,6 +843,7 @@ describe("The 'calculateHandStrength' function...", () => {
                     { rank: "6", suit: "Spade", value: 5, order: 45 },
                     { rank: "7", suit: "Heart", value: 6, order: 7 },
                 ]),
+                information: "3 to 7",
             }),
         );
     });
@@ -868,6 +874,7 @@ describe("The 'calculateHandStrength' function...", () => {
                     { rank: "7", suit: "Heart", value: 6, order: 7 },
                     { rank: "5", suit: "Diamond", value: 4, order: 31 },
                 ]),
+                information: "10s",
             }),
         );
     });
@@ -898,6 +905,7 @@ describe("The 'calculateHandStrength' function...", () => {
                     { rank: "5", suit: "Diamond", value: 4, order: 31 },
                     { rank: "7", suit: "Heart", value: 6, order: 7 },
                 ]),
+                information: "10s and 5s",
             }),
         );
     });
@@ -928,6 +936,7 @@ describe("The 'calculateHandStrength' function...", () => {
                     { rank: "9", suit: "Club", value: 8, order: 22 },
                     { rank: "7", suit: "Heart", value: 6, order: 7 },
                 ]),
+                information: "5s",
             }),
         );
     });
@@ -947,7 +956,7 @@ describe("The 'calculateHandStrength' function...", () => {
 
         const result = calculateHandStrength(hand, board);
 
-        expect(result).toEqual(
+        expect(result).toStrictEqual(
             expect.objectContaining({
                 value: 275694,
                 rank: "High Card",
@@ -958,6 +967,7 @@ describe("The 'calculateHandStrength' function...", () => {
                     { rank: "5", suit: "Diamond", value: 4, order: 31 },
                     { rank: "4", suit: "Diamond", value: 3, order: 30 },
                 ]),
+                information: "10",
             }),
         );
     });
@@ -980,6 +990,7 @@ describe("The 'findStrongestHands' function...", () => {
                     { rank: "5", suit: "Diamond", value: 4, order: 31 },
                     { rank: "4", suit: "Diamond", value: 3, order: 30 },
                 ],
+                information: "10",
             },
         };
 
@@ -998,6 +1009,7 @@ describe("The 'findStrongestHands' function...", () => {
                     { rank: "9", suit: "Club", value: 8, order: 22 },
                     { rank: "7", suit: "Heart", value: 6, order: 7 },
                 ],
+                information: "5s",
             },
         };
 

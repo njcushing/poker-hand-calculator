@@ -30,6 +30,7 @@ export type HandStrength = {
     value: number;
     cards: Card[];
     rank: (typeof handStrengthRankOrder)[number];
+    information: string;
 };
 
 export type Hand = {
@@ -308,6 +309,7 @@ export const calculateHandStrength = (handCards: Hand["cards"], board: Board): H
                             value: getStrength("Royal Flush", suitedCards),
                             cards: suitedCards,
                             rank: "Royal Flush",
+                            information: `${suitedCards[0].suit}s`,
                         };
                     }
 
@@ -316,6 +318,14 @@ export const calculateHandStrength = (handCards: Hand["cards"], board: Board): H
                         value: getStrength("Straight Flush", suitedCards),
                         cards: suitedCards,
                         rank: "Straight Flush",
+                        information: (() => {
+                            const { suit } = suitedCards[0];
+                            const range =
+                                suitedCards[4].value === 13 && suitedCards[3].value === 4
+                                    ? `${suitedCards[4].rank} to ${suitedCards[3].rank}`
+                                    : `${suitedCards[0].rank} to ${suitedCards[4].rank}`;
+                            return `${suit}s, ${range}`;
+                        })(),
                     };
                 }
             }
@@ -336,6 +346,7 @@ export const calculateHandStrength = (handCards: Hand["cards"], board: Board): H
                     value: getStrength("Four of a Kind", bestCards),
                     cards: bestCards,
                     rank: "Four of a Kind",
+                    information: `${bestCards[0].rank}s`,
                 };
             }
         }
@@ -370,6 +381,7 @@ export const calculateHandStrength = (handCards: Hand["cards"], board: Board): H
                 value: getStrength("Full House", bestCards),
                 cards: bestCards,
                 rank: "Full House",
+                information: `${bestCards[0].rank}s full of ${bestCards[3].rank}s`,
             };
         }
 
@@ -380,6 +392,7 @@ export const calculateHandStrength = (handCards: Hand["cards"], board: Board): H
                 value: getStrength("Full House", bestCards),
                 cards: bestCards,
                 rank: "Full House",
+                information: `${bestCards[0].rank}s full of ${bestCards[3].rank}s`,
             };
         }
     }
@@ -395,6 +408,7 @@ export const calculateHandStrength = (handCards: Hand["cards"], board: Board): H
                     value: getStrength("Flush", bestCards),
                     cards: bestCards,
                     rank: "Flush",
+                    information: `${bestCards[0].suit}s, ${bestCards[4].rank}-high`,
                 };
             }
         }
@@ -419,6 +433,13 @@ export const calculateHandStrength = (handCards: Hand["cards"], board: Board): H
                         value: getStrength("Straight", bestCards),
                         cards: bestCards,
                         rank: "Straight",
+                        information: (() => {
+                            const range =
+                                bestCards[4].value === 13 && bestCards[3].value === 4
+                                    ? `${bestCards[4].rank} to ${bestCards[3].rank}`
+                                    : `${bestCards[0].rank} to ${bestCards[4].rank}`;
+                            return `${range}`;
+                        })(),
                     };
                 }
             }
@@ -439,6 +460,7 @@ export const calculateHandStrength = (handCards: Hand["cards"], board: Board): H
                     value: getStrength("Three of a Kind", bestCards),
                     cards: bestCards,
                     rank: "Three of a Kind",
+                    information: `${bestCards[0].rank}s`,
                 };
             }
         }
@@ -466,6 +488,7 @@ export const calculateHandStrength = (handCards: Hand["cards"], board: Board): H
                 value: getStrength("Two Pair", bestCards),
                 cards: bestCards,
                 rank: "Two Pair",
+                information: `${bestCards[0].rank}s and ${bestCards[2].rank}s`,
             };
         }
 
@@ -475,6 +498,7 @@ export const calculateHandStrength = (handCards: Hand["cards"], board: Board): H
             value: getStrength("One Pair", bestCards),
             cards: bestCards,
             rank: "One Pair",
+            information: `${bestCards[0].rank}s`,
         };
     }
 
@@ -484,6 +508,7 @@ export const calculateHandStrength = (handCards: Hand["cards"], board: Board): H
         value: getStrength("High Card", bestCards),
         cards: bestCards,
         rank: "High Card",
+        information: `${bestCards[0].rank}`,
     };
 };
 
