@@ -1005,6 +1005,6 @@ describe("The 'findStrongestHands' function...", () => {
 
         const strongestHands = findStrongestHands(hands);
 
-        expect(strongestHands).toStrictEqual([hand2]);
+        expect(strongestHands).toStrictEqual([{ hand: hand2, index: 1 }]);
     });
 });

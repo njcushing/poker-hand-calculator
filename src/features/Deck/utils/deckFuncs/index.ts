@@ -487,7 +487,8 @@ export const calculateHandStrength = (handCards: Hand["cards"], board: Board): H
     };
 };
 
-export const findStrongestHands = (hands: Hand[]): Hand[] => {
+export const findStrongestHands = (hands: Hand[]): { hand: Hand; index: number }[] => {
     const highestValue = hands.reduce((acc, val) => Math.max(acc, val.strength.value), 0);
-    return hands.filter((hand) => hand.strength.value === highestValue);
+    const mappedHands = hands.map((hand, i) => ({ hand, index: i }));
+    return mappedHands.filter((obj) => obj.hand.strength.value === highestValue);
 };
