@@ -23,6 +23,7 @@ export type PokerHandCalculatorState = {
     numberOfHands: number;
     currentHands: Hand[];
     strongestHands: { hand: Hand; index: number }[];
+    showingHand: number;
     boardStage: "pre-flop" | "flop" | "turn" | "river";
     board: Board;
 };
@@ -32,6 +33,7 @@ const defaultPokerHandCalculatorState: PokerHandCalculatorState = {
     numberOfHands: 1,
     currentHands: [],
     strongestHands: [],
+    showingHand: -1,
     boardStage: "pre-flop",
     board: [],
 };
@@ -208,7 +210,7 @@ export function PokerHandCalculator() {
     const deleteHand = useCallback(
         (index: number) => {
             let { currentDeck } = pokerHandCalculatorState;
-            const { currentHands } = pokerHandCalculatorState;
+            const { currentHands, showingHand } = pokerHandCalculatorState;
 
             if (index >= currentHands.length || currentHands.length === 1) return;
 
@@ -217,12 +219,17 @@ export function PokerHandCalculator() {
 
             currentHands.splice(index, 1);
 
+            let newShowingHand = showingHand;
+            if (showingHand > index) newShowingHand -= 1;
+            if (showingHand === index) newShowingHand = -1;
+
             setPokerHandCalculatorState({
                 ...pokerHandCalculatorState,
                 numberOfHands: currentHands.length,
                 currentDeck,
                 currentHands,
                 strongestHands: findStrongestHands(currentHands),
+                showingHand: newShowingHand,
             });
         },
         [pokerHandCalculatorState],
