@@ -67,6 +67,20 @@ export function Hand({ info, number }: THand) {
                         Delete
                     </button>
                 )}
+                <button
+                    type="button"
+                    className={`${styles["show-hand-button"]} material-symbols-sharp`}
+                    onClick={(e) => {
+                        e.currentTarget.blur();
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.blur();
+                    }}
+                >
+                    {pokerHandCalculatorState.showingHand === number - 1
+                        ? "Visibility"
+                        : "Visibility_Off"}
+                </button>
             </div>
         </div>
     );

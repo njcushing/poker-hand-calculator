@@ -69,7 +69,8 @@
 }
 
 .shuffle-hand-button,
-.delete-hand-button {
+.delete-hand-button,
+.show-hand-button {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -89,7 +90,8 @@
 
 @media (hover: hover) {
     .shuffle-hand-button:hover,
-    .delete-hand-button:hover {
+    .delete-hand-button:hover,
+    .show-hand-button:hover {
         cursor: pointer;
 
         outline: 1px solid #000;
@@ -102,10 +104,15 @@
     .delete-hand-button:hover {
         color: rgb(221, 8, 8);
     }
+
+    .show-hand-button:hover {
+        color: rgb(221, 170, 2);
+    }
 }
 
 .shuffle-hand-button:focus,
-.delete-hand-button:focus {
+.delete-hand-button:focus,
+.show-hand-button:focus {
     cursor: pointer;
 
     outline: 1px solid #000;
@@ -118,4 +125,8 @@
 
 .delete-hand-button:focus {
     color: rgb(221, 8, 8);
+}
+
+.show-hand-button:focus {
+    color: rgb(221, 170, 2);
 }
