@@ -52,19 +52,21 @@ export function Hand({ info, number }: THand) {
                 >
                     Cycle
                 </button>
-                <button
-                    type="button"
-                    className={`${styles["delete-hand-button"]} material-symbols-sharp`}
-                    onClick={(e) => {
-                        deleteHand(number - 1);
-                        e.currentTarget.blur();
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.blur();
-                    }}
-                >
-                    Delete
-                </button>
+                {pokerHandCalculatorState.numberOfHands > 1 && (
+                    <button
+                        type="button"
+                        className={`${styles["delete-hand-button"]} material-symbols-sharp`}
+                        onClick={(e) => {
+                            deleteHand(number - 1);
+                            e.currentTarget.blur();
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.blur();
+                        }}
+                    >
+                        Delete
+                    </button>
+                )}
             </div>
         </div>
     );
