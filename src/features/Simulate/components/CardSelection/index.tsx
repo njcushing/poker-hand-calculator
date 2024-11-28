@@ -6,7 +6,7 @@ import styles from "./index.module.css";
 
 export function CardSelection() {
     const { pokerHandCalculatorState, swapCard } = useContext(PokerHandCalculatorContext);
-    const { selectingCard } = useContext(SimulateContext);
+    const { selectingCard, setSelectingCard } = useContext(SimulateContext);
 
     return (
         <div className={styles["card-selection"]}>
@@ -36,6 +36,21 @@ export function CardSelection() {
                         );
                     })}
             </ul>
+            <div className={styles["card-selection-options"]}>
+                <button
+                    type="button"
+                    className={`${styles["close-button"]} material-symbols-sharp`}
+                    onClick={(e) => {
+                        if (selectingCard) setSelectingCard(selectingCard[0], selectingCard[1]);
+                        e.currentTarget.blur();
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.blur();
+                    }}
+                >
+                    Close
+                </button>
+            </div>
         </div>
     );
 }

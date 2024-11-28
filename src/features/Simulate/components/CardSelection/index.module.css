@@ -1,6 +1,11 @@
 .card-selection {
     position: relative;
 
+    display: grid;
+    grid-template-rows: 100%;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+
     border: 1px solid #000;
 
     width: 100%;
@@ -66,4 +71,49 @@
     color: black;
     font-size: 1.4rem;
     font-weight: bold;
+}
+
+.card-selection-options {
+    grid-area: 1 / 2 / -1 / -1;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    height: 100%;
+}
+
+.close-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    pointer-events: all;
+
+    color: rgba(0, 0, 0, 0.7);
+    font-size: 4px;
+
+    border: none;
+    border-radius: 9999px;
+    background-color: transparent;
+
+    aspect-ratio: 1;
+    padding: 4px;
+}
+
+@media (hover: hover) {
+    .close-button:hover {
+        cursor: pointer;
+
+        color: rgb(207, 28, 28);
+        outline: 1px solid #000;
+    }
+}
+
+.close-button:focus {
+    cursor: pointer;
+
+    color: rgb(207, 28, 28);
+    outline: 1px solid #000;
+    background-color: rgba(0, 0, 0, 0.1);
 }
