@@ -9,6 +9,7 @@ import {
     sortDeck,
     insertCards,
     insertRandomCards,
+    pickCard,
     pickCards,
     createHand,
     calculateHandStrength,
@@ -549,6 +550,45 @@ describe("The 'insertRandomCards' function...", () => {
         ]);
 
         (global.Math.random as jest.Mock).mockRestore();
+    });
+});
+
+describe("The 'pickCard' function...", () => {
+    test("Should return null if the 'order' argument provided doesn't match a card in the deck", () => {
+        const deck: Deck = [
+            { rank: "A", suit: "Diamond", value: 13, order: 27 },
+            { rank: "2", suit: "Club", value: 1, order: 15 },
+            { rank: "3", suit: "Spade", value: 2, order: 42 },
+        ];
+
+        const result = pickCard(deck, 1);
+
+        expect(result).toBeNull();
+    });
+    test("Should pick the card whose 'order' field matches the value of the 'order' argument", () => {
+        const deck: Deck = [
+            { rank: "A", suit: "Diamond", value: 13, order: 27 },
+            { rank: "2", suit: "Club", value: 1, order: 15 },
+            { rank: "3", suit: "Spade", value: 2, order: 42 },
+        ];
+
+        const result = pickCard(deck, 15);
+
+        expect(result?.card).toStrictEqual({ rank: "2", suit: "Club", value: 1, order: 15 });
+    });
+    test("Should remove the picked card from the deck", () => {
+        const deck: Deck = [
+            { rank: "A", suit: "Diamond", value: 13, order: 27 },
+            { rank: "2", suit: "Club", value: 1, order: 15 },
+            { rank: "3", suit: "Spade", value: 2, order: 42 },
+        ];
+
+        const result = pickCard(deck, 15);
+
+        expect(result?.deck).toStrictEqual([
+            { rank: "A", suit: "Diamond", value: 13, order: 27 },
+            { rank: "3", suit: "Spade", value: 2, order: 42 },
+        ]);
     });
 });
 

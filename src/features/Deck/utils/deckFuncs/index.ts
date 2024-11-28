@@ -204,6 +204,18 @@ export const insertRandomCards = (
     return mutableDeck;
 };
 
+export const pickCard = (deck: Deck, order: number): { card: Card; deck: Deck } | null => {
+    const mutableDeck = [...deck];
+
+    const cardIndex = mutableDeck.findIndex((card) => card.order === order);
+    if (cardIndex === -1) return null;
+
+    const newCard = mutableDeck[cardIndex];
+    mutableDeck.splice(cardIndex, 1);
+
+    return { card: newCard, deck: mutableDeck };
+};
+
 export const pickCards = (deck: Deck, quantity: number): { cards: Card[]; deck: Deck } => {
     const mutableDeck = [...deck];
     const cards = [];
