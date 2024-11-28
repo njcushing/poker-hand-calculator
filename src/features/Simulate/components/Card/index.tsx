@@ -5,14 +5,16 @@ import styles from "./index.module.css";
 export type TCard = {
     info: TCardInfo;
     showing?: boolean;
+    onClick?: () => unknown;
 };
 
-export function Card({ info, showing = false }: TCard) {
+export function Card({ info, showing = false, onClick }: TCard) {
     return (
         <button
             type="button"
             className={`${styles["card"]} ${styles[showing ? "showing" : ""]}`}
             onClick={(e) => {
+                if (onClick) onClick();
                 e.currentTarget.blur();
             }}
             onMouseLeave={(e) => {
