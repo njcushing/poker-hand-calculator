@@ -32,7 +32,7 @@ export function Board() {
                         <Card
                             info={card}
                             showing={showingCards[i]}
-                            onClick={() => setSelectingCard([-1, i])}
+                            onClick={() => setSelectingCard(-1, i)}
                             key={card.order}
                         />
                     );

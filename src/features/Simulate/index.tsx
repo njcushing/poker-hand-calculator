@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useMemo, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import { PokerHandCalculatorContext } from "@/pages/PokerHandCalculator";
 import { v4 as uuid } from "uuid";
 import { Hand } from "./components/Hand";
@@ -9,7 +9,7 @@ type TSelectingCard = [number, number] | null;
 
 interface SimulateContext {
     selectingCard: TSelectingCard;
-    setSelectingCard: React.Dispatch<React.SetStateAction<TSelectingCard>>;
+    setSelectingCard: (handIndex: number, cardIndex: number) => void;
 }
 
 const defaultSimulateContext: SimulateContext = {
@@ -22,8 +22,19 @@ export const SimulateContext = createContext<SimulateContext>(defaultSimulateCon
 export function Simulate() {
     const { pokerHandCalculatorState } = useContext(PokerHandCalculatorContext);
 
-    const [selectingCard, setSelectingCard] = useState<TSelectingCard>(null);
-    useEffect(() => setSelectingCard(null), [pokerHandCalculatorState]);
+    const [selectingCard, setSelectingCardSetter] = useState<TSelectingCard>(null);
+    useEffect(() => setSelectingCardSetter(null), [pokerHandCalculatorState]);
+
+    const setSelectingCard = useCallback(
+        (handIndex: number, cardIndex: number) => {
+            if (selectingCard && handIndex === selectingCard[0] && cardIndex === selectingCard[1]) {
+                setSelectingCardSetter(null);
+            } else {
+                setSelectingCardSetter([handIndex, cardIndex]);
+            }
+        },
+        [selectingCard, setSelectingCardSetter],
+    );
 
     return (
         <SimulateContext.Provider

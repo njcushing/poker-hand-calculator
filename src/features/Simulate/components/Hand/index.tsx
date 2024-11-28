@@ -47,12 +47,12 @@ export function Hand({ info, number }: THand) {
                 <Card
                     info={info.cards[0]}
                     showing={showingCards[0]}
-                    onClick={() => setSelectingCard([number - 1, 0])}
+                    onClick={() => setSelectingCard(number - 1, 0)}
                 />
                 <Card
                     info={info.cards[1]}
                     showing={showingCards[1]}
-                    onClick={() => setSelectingCard([number - 1, 1])}
+                    onClick={() => setSelectingCard(number - 1, 1)}
                 />
             </div>
             <p
