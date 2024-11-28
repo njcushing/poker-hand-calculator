@@ -1,10 +1,12 @@
 import { useContext } from "react";
 import { PokerHandCalculatorContext } from "@/pages/PokerHandCalculator";
+import { SimulateContext } from "../..";
 import { suitSVG } from "../Card/utils/suitSVGs";
 import styles from "./index.module.css";
 
 export function CardSelection() {
-    const { pokerHandCalculatorState } = useContext(PokerHandCalculatorContext);
+    const { pokerHandCalculatorState, swapCard } = useContext(PokerHandCalculatorContext);
+    const { selectingCard } = useContext(SimulateContext);
 
     return (
         <div className={styles["card-selection"]}>
@@ -18,6 +20,9 @@ export function CardSelection() {
                                 type="button"
                                 className={styles["card"]}
                                 onClick={(e) => {
+                                    if (selectingCard) {
+                                        swapCard(selectingCard[0], selectingCard[1], card.order);
+                                    }
                                     e.currentTarget.blur();
                                 }}
                                 onMouseLeave={(e) => {
