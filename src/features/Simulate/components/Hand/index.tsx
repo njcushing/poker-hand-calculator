@@ -18,6 +18,16 @@ export function Hand({ info, number }: THand) {
         (hand) => hand.index === number - 1,
     );
 
+    const showingCards =
+        pokerHandCalculatorState.showingHand === number - 1
+            ? info.cards.map(
+                  (handCard) =>
+                      pokerHandCalculatorState.currentHands[number - 1].strength.cards.findIndex(
+                          (strengthCard) => strengthCard.order === handCard.order,
+                      ) > -1,
+              )
+            : info.cards.map(() => false);
+
     return (
         <div className={`${styles["hand"]} ${styles[isStrongest ? "is-strongest" : ""]}`}>
             <div className={styles["top-row"]}>
@@ -32,8 +42,8 @@ export function Hand({ info, number }: THand) {
                 )}
             </div>
             <div className={styles["cards"]}>
-                <Card info={info.cards[0]} />
-                <Card info={info.cards[1]} />
+                <Card info={info.cards[0]} showing={showingCards[0]} />
+                <Card info={info.cards[1]} showing={showingCards[1]} />
             </div>
             <p
                 className={styles["hand-strength"]}
