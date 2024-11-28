@@ -4,13 +4,14 @@ import styles from "./index.module.css";
 
 export type TCard = {
     info: TCardInfo;
+    showing?: boolean;
 };
 
-export function Card({ info }: TCard) {
+export function Card({ info, showing = false }: TCard) {
     return (
         <button
             type="button"
-            className={styles["card"]}
+            className={`${styles["card"]} ${styles[showing ? "showing" : ""]}`}
             onClick={(e) => {
                 e.currentTarget.blur();
             }}
