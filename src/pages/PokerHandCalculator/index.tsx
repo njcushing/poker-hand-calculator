@@ -47,6 +47,7 @@ interface PokerHandCalculatorContext {
 
     shuffleHand: (index: number) => void;
     deleteHand: (index: number) => void;
+    showHand: (index: number) => void;
     shuffleBoard: () => void;
 }
 
@@ -56,6 +57,7 @@ const defaultPokerHandCalculatorContext: PokerHandCalculatorContext = {
 
     shuffleHand: () => {},
     deleteHand: () => {},
+    showHand: () => {},
     shuffleBoard: () => {},
 };
 
@@ -235,6 +237,17 @@ export function PokerHandCalculator() {
         [pokerHandCalculatorState],
     );
 
+    const showHand = useCallback(
+        (index: number) => {
+            const { numberOfHands, showingHand } = pokerHandCalculatorState;
+            setPokerHandCalculatorState({
+                ...pokerHandCalculatorState,
+                showingHand: index < numberOfHands && index !== showingHand ? index : -1,
+            });
+        },
+        [pokerHandCalculatorState],
+    );
+
     const shuffleBoard = useCallback(() => {
         let { currentDeck, board } = pokerHandCalculatorState;
 
@@ -261,6 +274,7 @@ export function PokerHandCalculator() {
 
                     shuffleHand,
                     deleteHand,
+                    showHand,
                     shuffleBoard,
                 }),
                 [
@@ -269,6 +283,7 @@ export function PokerHandCalculator() {
 
                     shuffleHand,
                     deleteHand,
+                    showHand,
                     shuffleBoard,
                 ],
             )}
