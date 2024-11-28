@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import { PokerHandCalculatorContext } from "@/pages/PokerHandCalculator";
 import styles from "./index.module.css";
 import { Card } from "../Card";
@@ -6,16 +6,31 @@ import { Card } from "../Card";
 export function Board() {
     const { pokerHandCalculatorState, shuffleBoard } = useContext(PokerHandCalculatorContext);
 
+    const board = useMemo(() => pokerHandCalculatorState.board, [pokerHandCalculatorState.board]);
+    const showingCards = useMemo(() => {
+        const { currentHands, showingHand } = pokerHandCalculatorState;
+        const handShowing = currentHands[showingHand];
+
+        return handShowing
+            ? board.map(
+                  (boardCard) =>
+                      handShowing.strength.cards.findIndex(
+                          (handCard) => handCard.order === boardCard.order,
+                      ) > -1,
+              )
+            : pokerHandCalculatorState.board.map(() => false);
+    }, [pokerHandCalculatorState, board]);
+
     return (
         <div className={styles["board"]}>
             <p className={styles["board-name"]}>Board</p>
             <div className={styles["cards"]}>
-                {pokerHandCalculatorState.board.map((card) => {
-                    return <Card info={card} key={card.order} />;
+                {board.map((card, i) => {
+                    return <Card info={card} showing={showingCards[i]} key={card.order} />;
                 })}
             </div>
             <div className={styles["board-options"]}>
-                {pokerHandCalculatorState.board.length > 0 && (
+                {board.length > 0 && (
                     <button
                         type="button"
                         className={`${styles["shuffle-board-button"]} material-symbols-sharp`}
