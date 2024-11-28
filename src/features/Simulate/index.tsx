@@ -4,6 +4,7 @@ import { v4 as uuid } from "uuid";
 import { Hand } from "./components/Hand";
 import { Board } from "./components/Board";
 import styles from "./index.module.css";
+import { CardSelection } from "./components/CardSelection";
 
 type TSelectingCard = [number, number] | null;
 
@@ -51,6 +52,7 @@ export function Simulate() {
                         })}
                     </div>
                 </div>
+                {selectingCard && <CardSelection />}
                 <Board />
             </div>
         </SimulateContext.Provider>
