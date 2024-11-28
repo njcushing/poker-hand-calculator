@@ -5,12 +5,14 @@ import { Data } from "@/features/Data";
 import { Design } from "@/features/Design";
 import { Simulate } from "@/features/Simulate";
 import {
+    Card,
     Deck,
     Hand,
     Board,
     createDeck,
     createHand,
     insertCards,
+    pickCard,
     pickCards,
     calculateHandStrength,
     findStrongestHands,
@@ -45,6 +47,7 @@ interface PokerHandCalculatorContext {
         value: PokerHandCalculatorState[K],
     ) => void;
 
+    swapCard: (handIndex: number, cardIndex: number, newCardOrder: Card["order"]) => void;
     shuffleHand: (index: number) => void;
     deleteHand: (index: number) => void;
     showHand: (index: number) => void;
@@ -55,6 +58,7 @@ const defaultPokerHandCalculatorContext: PokerHandCalculatorContext = {
     pokerHandCalculatorState: defaultPokerHandCalculatorState,
     setPokerHandCalculatorStateProperty: () => {},
 
+    swapCard: () => {},
     shuffleHand: () => {},
     deleteHand: () => {},
     showHand: () => {},
@@ -186,12 +190,55 @@ export function PokerHandCalculator() {
         });
     }, [pokerHandCalculatorState.board]);
 
+    const swapCard = useCallback(
+        (handIndex: number, cardIndex: number, newCardOrder: Card["order"]) => {
+            const { currentDeck, currentHands, board } = pokerHandCalculatorState;
+
+            let newCurrentDeck = [...currentDeck];
+            const newCurrentHands = [...currentHands];
+            const newBoard = [...board] as Board;
+
+            const result = pickCard(newCurrentDeck, newCardOrder);
+            if (!result) return;
+
+            let currentCard;
+            if (handIndex >= 0) {
+                // Hand
+                if (handIndex >= newCurrentHands.length) return;
+                const hand = newCurrentHands[handIndex];
+
+                if (cardIndex < 0 || cardIndex >= hand.cards.length) return;
+                currentCard = hand.cards[cardIndex];
+
+                newCurrentHands[handIndex].cards[cardIndex] = result.card;
+            } else {
+                // Board
+                if (cardIndex < 0 || cardIndex >= newBoard.length) return;
+                currentCard = newBoard[cardIndex];
+
+                newBoard[cardIndex] = result.card;
+            }
+
+            newCurrentDeck = result.deck;
+            newCurrentDeck = insertCards(newCurrentDeck, [currentCard], "random");
+
+            setPokerHandCalculatorState({
+                ...pokerHandCalculatorState,
+                currentDeck: newCurrentDeck,
+                currentHands: newCurrentHands,
+                strongestHands: findStrongestHands(newCurrentHands),
+                board: newBoard,
+            });
+        },
+        [pokerHandCalculatorState],
+    );
+
     const shuffleHand = useCallback(
         (index: number) => {
             let { currentDeck } = pokerHandCalculatorState;
             const { currentHands, board } = pokerHandCalculatorState;
 
-            if (index >= currentHands.length) return;
+            if (index < 0 || index >= currentHands.length) return;
 
             currentDeck = insertCards(currentDeck, currentHands[index].cards, "random");
 
@@ -214,7 +261,7 @@ export function PokerHandCalculator() {
             let { currentDeck } = pokerHandCalculatorState;
             const { currentHands, showingHand } = pokerHandCalculatorState;
 
-            if (index >= currentHands.length || currentHands.length === 1) return;
+            if (index < 0 || index >= currentHands.length || currentHands.length === 1) return;
 
             const hand = currentHands[index];
             currentDeck = insertCards(currentDeck, hand.cards, "random");
@@ -272,6 +319,7 @@ export function PokerHandCalculator() {
                     pokerHandCalculatorState,
                     setPokerHandCalculatorStateProperty,
 
+                    swapCard,
                     shuffleHand,
                     deleteHand,
                     showHand,
@@ -281,6 +329,7 @@ export function PokerHandCalculator() {
                     pokerHandCalculatorState,
                     setPokerHandCalculatorStateProperty,
 
+                    swapCard,
                     shuffleHand,
                     deleteHand,
                     showHand,
