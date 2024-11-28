@@ -10,7 +10,7 @@ export type THand = {
 };
 
 export function Hand({ info, number }: THand) {
-    const { pokerHandCalculatorState, shuffleHand, deleteHand } = useContext(
+    const { pokerHandCalculatorState, shuffleHand, deleteHand, showHand } = useContext(
         PokerHandCalculatorContext,
     );
 
@@ -71,6 +71,7 @@ export function Hand({ info, number }: THand) {
                     type="button"
                     className={`${styles["show-hand-button"]} material-symbols-sharp`}
                     onClick={(e) => {
+                        showHand(number - 1);
                         e.currentTarget.blur();
                     }}
                     onMouseLeave={(e) => {
