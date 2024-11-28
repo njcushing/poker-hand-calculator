@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { PokerHandCalculatorContext } from "@/pages/PokerHandCalculator";
 import { Hand as THandInfo } from "@/features/Deck/utils/deckFuncs";
+import { SimulateContext } from "../..";
 import { Card } from "../Card";
 import styles from "./index.module.css";
 
@@ -13,6 +14,7 @@ export function Hand({ info, number }: THand) {
     const { pokerHandCalculatorState, shuffleHand, deleteHand, showHand } = useContext(
         PokerHandCalculatorContext,
     );
+    const { setSelectingCard } = useContext(SimulateContext);
 
     const isStrongest = pokerHandCalculatorState.strongestHands.some(
         (hand) => hand.index === number - 1,
@@ -42,8 +44,16 @@ export function Hand({ info, number }: THand) {
                 )}
             </div>
             <div className={styles["cards"]}>
-                <Card info={info.cards[0]} showing={showingCards[0]} />
-                <Card info={info.cards[1]} showing={showingCards[1]} />
+                <Card
+                    info={info.cards[0]}
+                    showing={showingCards[0]}
+                    onClick={() => setSelectingCard([number - 1, 0])}
+                />
+                <Card
+                    info={info.cards[1]}
+                    showing={showingCards[1]}
+                    onClick={() => setSelectingCard([number - 1, 1])}
+                />
             </div>
             <p
                 className={styles["hand-strength"]}
