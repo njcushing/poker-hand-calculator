@@ -13,7 +13,7 @@ export type Board =
     | [Card, Card, Card, Card]
     | [Card, Card, Card, Card, Card];
 
-export const handStrengthRankOrder = [
+export const handRankOrder = [
     "High Card",
     "One Pair",
     "Two Pair",
@@ -29,7 +29,7 @@ export const handStrengthRankOrder = [
 export type HandStrength = {
     value: number;
     cards: Card[];
-    rank: (typeof handStrengthRankOrder)[number];
+    rank: (typeof handRankOrder)[number];
     information: string;
 };
 
@@ -282,10 +282,10 @@ export const calculateHandStrength = (handCards: Hand["cards"], board: Board): H
         return cards.sort((a, b) => b.value - a.value).slice(0, Math.min(cards.length, quantity));
     };
 
-    const getStrength = (rank: (typeof handStrengthRankOrder)[number], cards: Card[]): number => {
+    const getStrength = (rank: (typeof handRankOrder)[number], cards: Card[]): number => {
         const uniqueValues = 13;
         const additiveValues = [
-            handStrengthRankOrder.indexOf(rank) * uniqueValues ** 5,
+            handRankOrder.indexOf(rank) * uniqueValues ** 5,
             cards.length > 0 ? cards[0].value * uniqueValues ** 4 : 0,
             cards.length > 1 ? cards[1].value * uniqueValues ** 3 : 0,
             cards.length > 2 ? cards[2].value * uniqueValues ** 2 : 0,

@@ -4,7 +4,7 @@ import { Structural } from "@/components/structural";
 import { About } from "@/features/About";
 import { Data } from "@/features/Data";
 import { Design } from "@/features/Design";
-import { HandStrengths } from "@/features/HandStrengths";
+import { HandRankings } from "@/features/HandRankings";
 import { Simulate } from "@/features/Simulate";
 import {
     Card,
@@ -347,9 +347,9 @@ export function PokerHandCalculator() {
                     <Structural.TabSelector
                         tabs={{
                             design: { name: "Design", content: <Design />, position: "left" },
-                            handStrengths: {
-                                name: "Hand Strengths",
-                                content: <HandStrengths />,
+                            handRankings: {
+                                name: "Hand Rankings",
+                                content: <HandRankings />,
                                 position: "left",
                             },
                             about: { name: "About", content: <About />, position: "right" },

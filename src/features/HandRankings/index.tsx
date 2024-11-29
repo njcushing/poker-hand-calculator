@@ -1,14 +1,9 @@
 import { Card } from "@/features/Simulate/components/Card";
-import {
-    Card as TCard,
-    handStrengthRankOrder,
-    createDeck,
-    pickCard,
-} from "../Deck/utils/deckFuncs";
+import { Card as TCard, handRankOrder, createDeck, pickCard } from "../Deck/utils/deckFuncs";
 import styles from "./index.module.css";
 
-type THandStrength = {
-    name: (typeof handStrengthRankOrder)[number];
+type THandRanking = {
+    name: (typeof handRankOrder)[number];
     cards: { info: TCard; showing: boolean }[];
     description: string;
     additionalInformation?: string;
@@ -16,7 +11,7 @@ type THandStrength = {
 
 const deck = createDeck();
 
-const handStrengths: THandStrength[] = [
+const handRankings: THandRanking[] = [
     {
         name: "Royal Flush",
         cards: [
@@ -134,20 +129,20 @@ const handStrengths: THandStrength[] = [
     },
 ];
 
-export function HandStrengths() {
+export function HandRankings() {
     return (
-        <ul className={styles["hand-strengths"]}>
-            <p className={styles["hand-strengths-title"]}>
-                The following hand strengths are ordered from strongest to weakest. Highlighted
-                cards are the ones responsible for giving a hand its strength.
+        <ul className={styles["hand-rankings"]}>
+            <p className={styles["hand-rankings-title"]}>
+                The following hand rankings are ordered from strongest to weakest. Highlighted cards
+                are the ones responsible for giving a hand its ranking.
             </p>
-            {handStrengths.map((handStrength) => {
-                const { name, cards, description, additionalInformation } = handStrength;
+            {handRankings.map((handRanking) => {
+                const { name, cards, description, additionalInformation } = handRanking;
                 return (
-                    <li className={styles["hand-strength-container"]} key={name}>
+                    <li className={styles["hand-ranking-container"]} key={name}>
                         <div className={styles["separator"]}></div>
-                        <p className={styles["hand-strength-name"]}>{name}</p>
-                        <ul className={styles["hand-strength-cards"]}>
+                        <p className={styles["hand-ranking-name"]}>{name}</p>
+                        <ul className={styles["hand-ranking-cards"]}>
                             {cards.map((card) => {
                                 const { info, showing } = card;
                                 const { rank, suit } = info;
@@ -161,9 +156,9 @@ export function HandStrengths() {
                                 );
                             })}
                         </ul>
-                        <p className={styles["hand-strength-description"]}>{description}</p>
+                        <p className={styles["hand-ranking-description"]}>{description}</p>
                         {additionalInformation && (
-                            <p className={styles["hand-strength-additional-information"]}>
+                            <p className={styles["hand-ranking-additional-information"]}>
                                 {additionalInformation}
                             </p>
                         )}
