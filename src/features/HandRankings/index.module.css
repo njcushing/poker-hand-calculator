@@ -16,7 +16,7 @@
     padding: 8px;
 }
 
-.hand-rankings-title {
+.hand-rankings-intro {
     color: black;
     font-size: 0.9rem;
     font-style: italic;
@@ -61,4 +61,11 @@
     color: black;
     font-size: 0.8rem;
     font-style: italic;
+}
+
+.hand-rankings-winner-description {
+    color: black;
+    font-size: 0.9rem;
+    font-style: italic;
+    text-align: center;
 }
