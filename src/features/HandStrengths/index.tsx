@@ -27,6 +27,8 @@ const handStrengths: THandStrength[] = [
             { info: pickCard(deck, 1)!.card, showing: true },
         ],
         description: "Five consecutive suited cards from 10 to A.",
+        additionalInformation: `While technically a Straight Flush, this combination of cards is
+        given its own name as it is the best possible hand in the game, and will always win.`,
     },
     {
         name: "Straight Flush",
@@ -136,7 +138,8 @@ export function HandStrengths() {
     return (
         <ul className={styles["hand-strengths"]}>
             <p className={styles["hand-strengths-title"]}>
-                The following hand strengths are ordered from strongest to weakest.
+                The following hand strengths are ordered from strongest to weakest. Highlighted
+                cards are the ones responsible for giving a hand its strength.
             </p>
             {handStrengths.map((handStrength) => {
                 const { name, cards, description, additionalInformation } = handStrength;
