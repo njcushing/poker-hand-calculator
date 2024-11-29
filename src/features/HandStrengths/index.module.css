@@ -15,3 +15,49 @@
     height: 100%;
     padding: 8px;
 }
+
+.hand-strengths-title {
+    color: black;
+    font-size: 0.9rem;
+    font-style: italic;
+    text-align: center;
+}
+
+.hand-strength-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.separator {
+    background-color: rgba(0, 0, 0, 0.5);
+
+    width: 100%;
+    min-height: 2px;
+}
+
+.hand-strength-name {
+    color: black;
+    font-size: 1.2rem;
+    text-decoration: underline;
+}
+
+.hand-strength-cards {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+
+    width: 100%;
+}
+
+.hand-strength-description {
+    color: black;
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+.hand-strength-additional-information {
+    color: black;
+    font-size: 0.8rem;
+    font-style: italic;
+}
