@@ -13,7 +13,7 @@ export type Board =
     | [Card, Card, Card, Card]
     | [Card, Card, Card, Card, Card];
 
-const handStrengthRankOrder = [
+export const handStrengthRankOrder = [
     "High Card",
     "One Pair",
     "Two Pair",
