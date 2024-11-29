@@ -2,14 +2,14 @@ import { useContext } from "react";
 import { PokerHandCalculatorContext, PokerHandCalculatorState } from "@/pages/PokerHandCalculator";
 import styles from "./index.module.css";
 
-export function BoardStage() {
+export function Street() {
     const { pokerHandCalculatorState, setPokerHandCalculatorStateProperty } = useContext(
         PokerHandCalculatorContext,
     );
 
     return (
         <div className={styles["field-container"]}>
-            <p className={`${styles["field-name"]} truncate-ellipsis`}>Board Stage:</p>
+            <p className={`${styles["field-name"]} truncate-ellipsis`}>Street:</p>
             <select
                 id="board-stage"
                 name="board-stage"

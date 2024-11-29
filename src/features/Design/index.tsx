@@ -1,12 +1,12 @@
 import { NumberOfHands } from "./fields/NumberOfHands";
-import { BoardStage } from "./fields/BoardStage";
+import { Street } from "./fields/Street";
 import styles from "./index.module.css";
 
 export function Design() {
     return (
         <div className={styles["design"]}>
             <NumberOfHands />
-            <BoardStage />
+            <Street />
         </div>
     );
 }
