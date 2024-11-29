@@ -24,7 +24,17 @@ export function Card({ info, showing = false, onClick, displayOnly = false }: TC
             disabled={displayOnly}
         >
             <p className={styles["suit-top"]}>{suitSVG(info.suit)}</p>
-            <p className={styles["rank"]}>{info.rank}</p>
+            <svg viewBox="0 0 63 44">
+                <text
+                    className={styles["rank"]}
+                    x="50%"
+                    y="50%"
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                >
+                    {info.rank}
+                </text>
+            </svg>
             <p className={styles["suit-bottom"]}>{suitSVG(info.suit)}</p>
         </button>
     );
