@@ -6,9 +6,10 @@ export type TCard = {
     info: TCardInfo;
     showing?: boolean;
     onClick?: () => unknown;
+    displayOnly?: boolean;
 };
 
-export function Card({ info, showing = false, onClick }: TCard) {
+export function Card({ info, showing = false, onClick, displayOnly = false }: TCard) {
     return (
         <button
             type="button"
@@ -20,6 +21,7 @@ export function Card({ info, showing = false, onClick }: TCard) {
             onMouseLeave={(e) => {
                 e.currentTarget.blur();
             }}
+            disabled={displayOnly}
         >
             <p className={styles["suit-top"]}>{suitSVG(info.suit)}</p>
             <p className={styles["rank"]}>{info.rank}</p>

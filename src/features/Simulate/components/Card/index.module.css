@@ -24,14 +24,14 @@
 }
 
 @media (hover: hover) {
-    .card:hover {
+    .card:hover:not(:disabled) {
         cursor: pointer;
 
         outline: 2px solid black;
     }
 }
 
-.card:focus {
+.card:focus:not(:disabled) {
     outline: 2px solid black;
 }
 
