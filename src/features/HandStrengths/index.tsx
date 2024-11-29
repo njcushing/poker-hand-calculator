@@ -9,7 +9,7 @@ import styles from "./index.module.css";
 
 type THandStrength = {
     name: (typeof handStrengthRankOrder)[number];
-    cards: TCard[];
+    cards: { info: TCard; showing: boolean }[];
     description: string;
     additionalInformation?: string;
 };
@@ -20,43 +20,44 @@ const handStrengths: THandStrength[] = [
     {
         name: "Royal Flush",
         cards: [
-            pickCard(deck, 10)!.card,
-            pickCard(deck, 11)!.card,
-            pickCard(deck, 12)!.card,
-            pickCard(deck, 13)!.card,
-            pickCard(deck, 1)!.card,
+            { info: pickCard(deck, 10)!.card, showing: true },
+            { info: pickCard(deck, 11)!.card, showing: true },
+            { info: pickCard(deck, 12)!.card, showing: true },
+            { info: pickCard(deck, 13)!.card, showing: true },
+            { info: pickCard(deck, 1)!.card, showing: true },
         ],
         description: "Five consecutive suited cards from 10 to A.",
     },
     {
         name: "Straight Flush",
         cards: [
-            pickCard(deck, 18)!.card,
-            pickCard(deck, 19)!.card,
-            pickCard(deck, 20)!.card,
-            pickCard(deck, 21)!.card,
-            pickCard(deck, 22)!.card,
+            { info: pickCard(deck, 18)!.card, showing: true },
+            { info: pickCard(deck, 19)!.card, showing: true },
+            { info: pickCard(deck, 20)!.card, showing: true },
+            { info: pickCard(deck, 21)!.card, showing: true },
+            { info: pickCard(deck, 22)!.card, showing: true },
         ],
         description: "Five consecutive suited cards (excluding 10 to A; a Royal Flush).",
     },
     {
         name: "Four of a Kind",
         cards: [
-            pickCard(deck, 2)!.card,
-            pickCard(deck, 15)!.card,
-            pickCard(deck, 28)!.card,
-            pickCard(deck, 41)!.card,
+            { info: pickCard(deck, 2)!.card, showing: true },
+            { info: pickCard(deck, 15)!.card, showing: true },
+            { info: pickCard(deck, 28)!.card, showing: true },
+            { info: pickCard(deck, 41)!.card, showing: true },
+            { info: pickCard(deck, 30)!.card, showing: false },
         ],
         description: "Four cards of the same rank.",
     },
     {
         name: "Full House",
         cards: [
-            pickCard(deck, 3)!.card,
-            pickCard(deck, 16)!.card,
-            pickCard(deck, 29)!.card,
-            pickCard(deck, 4)!.card,
-            pickCard(deck, 17)!.card,
+            { info: pickCard(deck, 3)!.card, showing: true },
+            { info: pickCard(deck, 16)!.card, showing: true },
+            { info: pickCard(deck, 29)!.card, showing: true },
+            { info: pickCard(deck, 4)!.card, showing: true },
+            { info: pickCard(deck, 17)!.card, showing: true },
         ],
         description: "Three cards of the same rank, and two cards of a different rank.*",
         additionalInformation: `* In cases where the player has two sets of three of a kind, the
@@ -66,48 +67,67 @@ const handStrengths: THandStrength[] = [
     {
         name: "Flush",
         cards: [
-            pickCard(deck, 43)!.card,
-            pickCard(deck, 44)!.card,
-            pickCard(deck, 47)!.card,
-            pickCard(deck, 49)!.card,
-            pickCard(deck, 51)!.card,
+            { info: pickCard(deck, 43)!.card, showing: true },
+            { info: pickCard(deck, 44)!.card, showing: true },
+            { info: pickCard(deck, 47)!.card, showing: true },
+            { info: pickCard(deck, 49)!.card, showing: true },
+            { info: pickCard(deck, 51)!.card, showing: true },
         ],
         description: "Five cards of the same suit. Higher value cards are better.",
     },
     {
         name: "Straight",
         cards: [
-            pickCard(deck, 16)!.card,
-            pickCard(deck, 4)!.card,
-            pickCard(deck, 44)!.card,
-            pickCard(deck, 32)!.card,
-            pickCard(deck, 7)!.card,
+            { info: pickCard(deck, 16)!.card, showing: true },
+            { info: pickCard(deck, 4)!.card, showing: true },
+            { info: pickCard(deck, 44)!.card, showing: true },
+            { info: pickCard(deck, 32)!.card, showing: true },
+            { info: pickCard(deck, 7)!.card, showing: true },
         ],
         description: "Five consecutive cards that are not all of the same suit.",
     },
     {
         name: "Three of a Kind",
-        cards: [pickCard(deck, 9)!.card, pickCard(deck, 22)!.card, pickCard(deck, 48)!.card],
+        cards: [
+            { info: pickCard(deck, 9)!.card, showing: true },
+            { info: pickCard(deck, 22)!.card, showing: true },
+            { info: pickCard(deck, 48)!.card, showing: true },
+            { info: pickCard(deck, 3)!.card, showing: false },
+            { info: pickCard(deck, 41)!.card, showing: false },
+        ],
         description: "Three cards of the same rank.",
     },
     {
         name: "Two Pair",
         cards: [
-            pickCard(deck, 51)!.card,
-            pickCard(deck, 25)!.card,
-            pickCard(deck, 35)!.card,
-            pickCard(deck, 22)!.card,
+            { info: pickCard(deck, 51)!.card, showing: true },
+            { info: pickCard(deck, 25)!.card, showing: true },
+            { info: pickCard(deck, 35)!.card, showing: true },
+            { info: pickCard(deck, 22)!.card, showing: true },
+            { info: pickCard(deck, 37)!.card, showing: false },
         ],
         description: "Two cards of the same rank, and two cards of a different rank.",
     },
     {
         name: "One Pair",
-        cards: [pickCard(deck, 27)!.card, pickCard(deck, 1)!.card],
+        cards: [
+            { info: pickCard(deck, 27)!.card, showing: true },
+            { info: pickCard(deck, 1)!.card, showing: true },
+            { info: pickCard(deck, 34)!.card, showing: false },
+            { info: pickCard(deck, 43)!.card, showing: false },
+            { info: pickCard(deck, 16)!.card, showing: false },
+        ],
         description: "Two cards of the same rank.",
     },
     {
         name: "High Card",
-        cards: [pickCard(deck, 39)!.card],
+        cards: [
+            { info: pickCard(deck, 39)!.card, showing: true },
+            { info: pickCard(deck, 12)!.card, showing: false },
+            { info: pickCard(deck, 50)!.card, showing: false },
+            { info: pickCard(deck, 22)!.card, showing: false },
+            { info: pickCard(deck, 16)!.card, showing: false },
+        ],
         description: "The card with the highest value.",
     },
 ];
@@ -126,11 +146,14 @@ export function HandStrengths() {
                         <p className={styles["hand-strength-name"]}>{name}</p>
                         <ul className={styles["hand-strength-cards"]}>
                             {cards.map((card) => {
+                                const { info, showing } = card;
+                                const { rank, suit } = info;
                                 return (
                                     <Card
-                                        info={card}
+                                        info={info}
+                                        showing={showing}
                                         displayOnly
-                                        key={`card-${card.rank}-${card.suit}`}
+                                        key={`card-${rank}-${suit}`}
                                     />
                                 );
                             })}
