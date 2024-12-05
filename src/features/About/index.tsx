@@ -12,7 +12,7 @@ export function About() {
             <div className={styles["separator"]}></div>
             <p className={styles["section-title"]}>Hands</p>
             <p className={styles["section-text"]}>
-                {`Each hand is comprised of two 'hole cards'. Every hole card in each hand, as well
+                {`Each hand is composed of two 'hole cards'. Every hole card in each hand, as well
                 as the community cards, must be unique. There can be between 1 and 9 hands
                 inclusive.`}
             </p>
