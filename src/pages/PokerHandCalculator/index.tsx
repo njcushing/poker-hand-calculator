@@ -41,7 +41,7 @@ const defaultPokerHandCalculatorState: PokerHandCalculatorState = {
     board: [],
 };
 
-interface PokerHandCalculatorContext {
+export interface IPokerHandCalculatorContext {
     pokerHandCalculatorState: PokerHandCalculatorState;
     setPokerHandCalculatorStateProperty: <K extends keyof PokerHandCalculatorState>(
         property: K,
@@ -55,7 +55,7 @@ interface PokerHandCalculatorContext {
     shuffleBoard: () => void;
 }
 
-const defaultPokerHandCalculatorContext: PokerHandCalculatorContext = {
+const defaultPokerHandCalculatorContext: IPokerHandCalculatorContext = {
     pokerHandCalculatorState: defaultPokerHandCalculatorState,
     setPokerHandCalculatorStateProperty: () => {},
 
@@ -66,11 +66,15 @@ const defaultPokerHandCalculatorContext: PokerHandCalculatorContext = {
     shuffleBoard: () => {},
 };
 
-export const PokerHandCalculatorContext = createContext<PokerHandCalculatorContext>(
+export const PokerHandCalculatorContext = createContext<IPokerHandCalculatorContext>(
     defaultPokerHandCalculatorContext,
 );
 
-export function PokerHandCalculator() {
+export type TPokerHandCalculator = {
+    children?: JSX.Element | JSX.Element[] | null;
+};
+
+export function PokerHandCalculator({ children }: TPokerHandCalculator) {
     const [pokerHandCalculatorState, setPokerHandCalculatorState] =
         useState<PokerHandCalculatorState>(defaultPokerHandCalculatorState);
 
@@ -364,6 +368,7 @@ export function PokerHandCalculator() {
                     />
                 </div>
             </div>
+            {children}
         </PokerHandCalculatorContext.Provider>
     );
 }
