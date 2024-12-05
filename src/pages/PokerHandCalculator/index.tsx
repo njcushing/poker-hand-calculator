@@ -354,6 +354,7 @@ export function PokerHandCalculator() {
                             },
                             about: { name: "About", content: <About />, position: "right" },
                         }}
+                        selectedTabName="about"
                     />
                 </div>
                 <div className={styles["right-panel"]}>
