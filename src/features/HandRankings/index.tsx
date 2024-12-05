@@ -58,8 +58,8 @@ const handRankings: THandRanking[] = [
         ],
         description: "Three cards of the same rank, and two cards of a different rank.*",
         additionalInformation: `* In cases where the player has two sets of three of a kind, the
-        three cards of the same rank will be comprised from the set with the higher value, and the
-        two cards of the same rank will be comprised from the set with the lower value.`,
+        three cards of the same rank is composed of the set with the higher value, and the two cards
+        of the same rank will be composed of two of the cards from the set with the lower value.`,
     },
     {
         name: "Flush",
