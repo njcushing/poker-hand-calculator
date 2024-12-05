@@ -17,8 +17,12 @@ export type TTabSelector = {
 };
 
 export function TabSelector({ tabs, selectedTabName }: TTabSelector) {
-    const [selectedTab, setSelectedTab] = useState<keyof Tabs>(
-        selectedTabName || Object.keys(tabs)[0],
+    const [selectedTab, setSelectedTab] = useState<keyof Tabs | null>(
+        (() => {
+            if (selectedTabName && selectedTabName in tabs) return selectedTabName;
+            if (Object.keys(tabs).length > 0) return Object.keys(tabs)[0];
+            return null;
+        })(),
     );
 
     const createTab = useCallback(
@@ -64,7 +68,7 @@ export function TabSelector({ tabs, selectedTabName }: TTabSelector) {
                     })}
                 </ul>
             </div>
-            <div className={styles["tab-content"]}>{tabs[selectedTab].content}</div>
+            <div className={styles["tab-content"]}>{selectedTab && tabs[selectedTab].content}</div>
         </div>
     );
 }
