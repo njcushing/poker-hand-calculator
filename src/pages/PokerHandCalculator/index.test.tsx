@@ -2,7 +2,7 @@ import { vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { act } from "react";
-import { Card, Deck, Hand } from "@/features/Deck/utils/deckFuncs";
+import { Card, Deck, Hand, pickCards, insertCards } from "@/features/Deck/utils/deckFuncs";
 import { PokerHandCalculator, IPokerHandCalculatorContext, PokerHandCalculatorContext } from ".";
 
 // Mock deck
@@ -43,9 +43,12 @@ vi.mock("@/hooks/useResizeObserverElement", () => ({
 }));
 vi.mock("@/features/Deck/utils/deckFuncs", () => {
     return {
-        createDeck: () => newDeck(),
-        createHand: (deck: Deck): { hand: Hand; deck: Deck } => {
-            const cards: [Card, Card] = [deck.pop() as Card, deck.pop() as Card];
+        createDeck: vi.fn(() => newDeck()),
+        createHand: vi.fn((deck: Deck): { hand: Hand; deck: Deck } => {
+            const cards: [Card, Card] = [
+                deck.splice(Math.floor(Math.random() * deck.length), 1)[0] as Card,
+                deck.splice(Math.floor(Math.random() * deck.length), 1)[0] as Card,
+            ];
             return {
                 hand: {
                     cards,
@@ -53,21 +56,21 @@ vi.mock("@/features/Deck/utils/deckFuncs", () => {
                 },
                 deck,
             };
-        },
-        pickCard: (deck: Deck): { card: Card; deck: Deck } => {
+        }),
+        pickCard: vi.fn((deck: Deck): { card: Card; deck: Deck } => {
             const card = deck.pop() as Card;
             return { card, deck };
-        },
-        pickCards: (deck: Deck, quantity: number): { cards: Card[]; deck: Deck } => {
+        }),
+        pickCards: vi.fn((deck: Deck, quantity: number): { cards: Card[]; deck: Deck } => {
             const cards = deck.splice(deck.length - quantity, quantity);
             return { cards, deck };
-        },
-        insertCards: (deck: Deck, cards: Card[]): Deck => {
+        }),
+        insertCards: vi.fn((deck: Deck, cards: Card[]): Deck => {
             cards.forEach((card) => deck.push(card));
             return deck;
-        },
-        calculateHandStrength: () => ({}),
-        findStrongestHands: () => [],
+        }),
+        calculateHandStrength: vi.fn(() => ({})),
+        findStrongestHands: vi.fn(() => []),
     };
 });
 vi.mock("@/features/About", () => ({ About: () => <div>About</div> }));
@@ -137,6 +140,63 @@ describe("The PokerHandCalculator component...", () => {
             const boardAfter = structuredClone(contextValue.pokerHandCalculatorState.board);
 
             expect(boardBefore[2]).not.toStrictEqual(boardAfter[2]);
+        });
+
+        test("Including a function to delete an existing hand", async () => {
+            const { setPokerHandCalculatorStateProperty } = contextValue;
+
+            await act(async () => setPokerHandCalculatorStateProperty("numberOfHands", 5));
+
+            const currentHandsOld = structuredClone(
+                contextValue.pokerHandCalculatorState.currentHands,
+            );
+            const handToDelete = 2;
+
+            await act(async () => contextValue.deleteHand(handToDelete));
+
+            const currentHandsNew = structuredClone(
+                contextValue.pokerHandCalculatorState.currentHands,
+            );
+
+            expect(currentHandsNew.length).toBe(currentHandsOld.length - 1);
+            currentHandsOld.splice(handToDelete, 1);
+            expect(currentHandsNew).toStrictEqual(currentHandsOld);
+        });
+
+        test("Including a function to change the hand being shown (or toggle the current one off)", async () => {
+            const { setPokerHandCalculatorStateProperty } = contextValue;
+
+            await act(async () => setPokerHandCalculatorStateProperty("numberOfHands", 5));
+
+            expect(contextValue.pokerHandCalculatorState.showingHand).toBe(-1); // Should be off by default
+
+            await act(async () => contextValue.showHand(2));
+
+            expect(contextValue.pokerHandCalculatorState.showingHand).toBe(2);
+
+            await act(async () => contextValue.showHand(2)); // Toggle off
+
+            expect(contextValue.pokerHandCalculatorState.showingHand).toBe(-1);
+        });
+
+        test("Including a function to shuffle all the cards on the board", async () => {
+            const { setPokerHandCalculatorStateProperty } = contextValue;
+
+            await act(async () => setPokerHandCalculatorStateProperty("boardStage", "flop"));
+            await act(async () => contextValue.shuffleBoard());
+
+            expect(insertCards).toHaveBeenCalledWith(
+                contextValue.pokerHandCalculatorState.currentDeck,
+                contextValue.pokerHandCalculatorState.board,
+                "random",
+            );
+
+            expect(pickCards).toHaveBeenCalledWith(
+                contextValue.pokerHandCalculatorState.currentDeck,
+                3,
+            );
+
+            // No point asserting the board will change as there is a chance the cards remain the same
         });
     });
 
