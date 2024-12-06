@@ -2,7 +2,14 @@ import { vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { act } from "react";
-import { Card, Deck, Hand, pickCards, insertCards } from "@/features/Deck/utils/deckFuncs";
+import {
+    Card,
+    Deck,
+    Hand,
+    createHand,
+    pickCards,
+    insertCards,
+} from "@/features/Deck/utils/deckFuncs";
 import { PokerHandCalculator, IPokerHandCalculatorContext, PokerHandCalculatorContext } from ".";
 
 // Mock deck
@@ -62,8 +69,18 @@ vi.mock("@/features/Deck/utils/deckFuncs", () => {
             return { card, deck };
         }),
         pickCards: vi.fn((deck: Deck, quantity: number): { cards: Card[]; deck: Deck } => {
-            const cards = deck.splice(deck.length - quantity, quantity);
-            return { cards, deck };
+            const mutableDeck = [...deck];
+            const cards = [];
+
+            const cardsToAdd = Math.min(quantity, deck.length);
+            for (let i = 0; i < cardsToAdd; i++) {
+                const index = Math.floor(Math.random() * mutableDeck.length);
+                const card = mutableDeck[index];
+                mutableDeck.splice(index, 1);
+                cards.push(card);
+            }
+
+            return { cards, deck: mutableDeck };
         }),
         insertCards: vi.fn((deck: Deck, cards: Card[]): Deck => {
             cards.forEach((card) => deck.push(card));
@@ -92,6 +109,16 @@ describe("The PokerHandCalculator component...", () => {
                 </PokerHandCalculatorContext.Consumer>
             </PokerHandCalculator>,
         );
+
+        vi.spyOn(global.Math, "random");
+    });
+
+    afterEach(() => {
+        (createHand as jest.Mock).mockRestore();
+        (pickCards as jest.Mock).mockRestore();
+        (insertCards as jest.Mock).mockRestore();
+
+        (global.Math.random as jest.Mock).mockRestore();
     });
 
     test("Should render correctly", () => {
@@ -163,6 +190,24 @@ describe("The PokerHandCalculator component...", () => {
             expect(currentHandsNew).toStrictEqual(currentHandsOld);
         });
 
+        test("Including a function to shuffle a hand's cards", async () => {
+            let { currentDeck } = structuredClone(contextValue.pokerHandCalculatorState);
+            const { currentHands } = structuredClone(contextValue.pokerHandCalculatorState);
+
+            (global.Math.random as jest.Mock).mockReturnValueOnce(0.01).mockReturnValueOnce(0.01);
+
+            await act(async () => contextValue.shuffleHand(0));
+
+            expect(contextValue.pokerHandCalculatorState.currentHands[0].cards).toStrictEqual([
+                currentDeck[0],
+                currentDeck[1],
+            ]);
+
+            currentDeck.splice(0, 2);
+            currentDeck = currentDeck.concat(currentHands[0].cards);
+            expect(contextValue.pokerHandCalculatorState.currentDeck).toStrictEqual(currentDeck);
+        });
+
         test("Including a function to change the hand being shown (or toggle the current one off)", async () => {
             const { setPokerHandCalculatorStateProperty } = contextValue;
 
@@ -181,22 +226,22 @@ describe("The PokerHandCalculator component...", () => {
 
         test("Including a function to shuffle all the cards on the board", async () => {
             const { setPokerHandCalculatorStateProperty } = contextValue;
+            const { currentDeck } = structuredClone(contextValue.pokerHandCalculatorState);
 
             await act(async () => setPokerHandCalculatorStateProperty("boardStage", "flop"));
+
+            (global.Math.random as jest.Mock)
+                .mockReturnValueOnce(0.01)
+                .mockReturnValueOnce(0.01)
+                .mockReturnValueOnce(0.01);
+
             await act(async () => contextValue.shuffleBoard());
 
-            expect(insertCards).toHaveBeenCalledWith(
-                contextValue.pokerHandCalculatorState.currentDeck,
-                contextValue.pokerHandCalculatorState.board,
-                "random",
-            );
-
-            expect(pickCards).toHaveBeenCalledWith(
-                contextValue.pokerHandCalculatorState.currentDeck,
-                3,
-            );
-
-            // No point asserting the board will change as there is a chance the cards remain the same
+            expect(contextValue.pokerHandCalculatorState.board).toStrictEqual([
+                currentDeck[0],
+                currentDeck[1],
+                currentDeck[2],
+            ]);
         });
     });
 
