@@ -228,12 +228,17 @@ describe("The PokerHandCalculator component...", () => {
             const { setPokerHandCalculatorStateProperty } = contextValue;
             const { currentDeck } = structuredClone(contextValue.pokerHandCalculatorState);
 
+            (global.Math.random as jest.Mock) // Picking cards for board
+                .mockReturnValueOnce(0.99)
+                .mockReturnValueOnce(0.99)
+                .mockReturnValueOnce(0.99);
+
             await act(async () => setPokerHandCalculatorStateProperty("boardStage", "flop"));
 
-            (global.Math.random as jest.Mock)
-                .mockReturnValueOnce(0.01)
-                .mockReturnValueOnce(0.01)
-                .mockReturnValueOnce(0.01);
+            (global.Math.random as jest.Mock) // Shuffling cards for board
+                .mockReturnValueOnce(0.001)
+                .mockReturnValueOnce(0.001)
+                .mockReturnValueOnce(0.001);
 
             await act(async () => contextValue.shuffleBoard());
 
