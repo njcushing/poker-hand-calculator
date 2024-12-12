@@ -9,7 +9,9 @@ export function Street() {
 
     return (
         <div className={styles["field-container"]}>
-            <p className={`${styles["field-name"]} truncate-ellipsis`}>Street:</p>
+            <label className={`${styles["field-name"]} truncate-ellipsis`} htmlFor="board-stage">
+                Street:{" "}
+            </label>
             <select
                 id="board-stage"
                 name="board-stage"
