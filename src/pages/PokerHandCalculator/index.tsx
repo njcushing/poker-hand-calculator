@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect, useCallback, useRef, useMemo } from "react";
-import useResizeObserverElement from "@/hooks/useResizeObserverElement";
+import { useResizeObserverElement } from "@/hooks/useResizeObserverElement";
 import { Structural } from "@/components/structural";
 import { About } from "@/features/About";
 import { Design } from "@/features/Design";
@@ -22,6 +22,7 @@ import { version } from "../../../package.json";
 import styles from "./index.module.css";
 
 export type PokerHandCalculatorState = {
+    layout: "wide" | "thin";
     currentDeck: Deck;
     numberOfHands: number;
     currentHands: Hand[];
@@ -32,6 +33,7 @@ export type PokerHandCalculatorState = {
 };
 
 const defaultPokerHandCalculatorState: PokerHandCalculatorState = {
+    layout: "wide",
     currentDeck: createDeck(),
     numberOfHands: 1,
     currentHands: [],
@@ -80,12 +82,10 @@ export function PokerHandCalculator({ children }: TPokerHandCalculator) {
 
     const containerRef = useRef<HTMLDivElement>(null);
     const [containerSize] = useResizeObserverElement({ ref: containerRef });
-    const [layout, setLayout] = useState<"wide" | "thin">("wide");
 
-    useEffect(() => {
-        if (containerSize[0] >= 800) setLayout("wide");
-        else setLayout("thin");
-    }, [containerSize]);
+    const [layout, setLayout] = useState<PokerHandCalculatorState["layout"]>("wide");
+    useEffect(() => setLayout(containerSize[0] >= 800 ? "wide" : "thin"), [containerSize]);
+    useEffect(() => setPokerHandCalculatorState((current) => ({ ...current, layout })), [layout]);
 
     const setPokerHandCalculatorStateProperty = useCallback(
         <K extends keyof PokerHandCalculatorState>(
@@ -158,11 +158,7 @@ export function PokerHandCalculator({ children }: TPokerHandCalculator) {
                 const { cards, deck } = pickCards(newCurrentDeck, cardsToAdd);
                 newCurrentDeck = deck;
 
-                if (newBoard.length + cards.length === requiredNumberOfCards) {
-                    newBoard = [...newBoard, ...cards] as Board;
-                } else {
-                    newCurrentDeck = currentDeck;
-                }
+                newBoard = [...newBoard, ...cards] as Board;
             }
 
             if (newBoard.length > requiredNumberOfCards) {
@@ -342,7 +338,7 @@ export function PokerHandCalculator({ children }: TPokerHandCalculator) {
                 ],
             )}
         >
-            <div className={`${styles["page"]} ${styles[`${layout}`]}`} ref={containerRef}>
+            <div className={styles["page"]} ref={containerRef}>
                 <div className={styles["left-panel"]}>
                     <h1 className={styles["title"]}>Poker Hand Calculator</h1>
                     <p className={styles["name"]}>by njcushing</p>

@@ -46,7 +46,7 @@ function newDeck() {
 
 // Mock dependencies
 vi.mock("@/hooks/useResizeObserverElement", () => ({
-    default: vi.fn(() => [[800, 600]]),
+    useResizeObserverElement: vi.fn(() => [[800, 600]]),
 }));
 vi.mock("@/features/Deck/utils/deckFuncs", () => {
     return {
