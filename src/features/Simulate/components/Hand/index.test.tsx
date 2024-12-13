@@ -5,6 +5,7 @@ import {
     IPokerHandCalculatorContext,
     PokerHandCalculatorContext,
 } from "@/pages/PokerHandCalculator";
+import { RecursivePartial } from "@/utils/types";
 import { SimulateContext, ISimulateContext } from "../..";
 import { Hand, THand } from ".";
 import { TCard } from "../Card";
@@ -37,23 +38,24 @@ const defaultProps: THand = {
     number: 1,
 };
 
-const mockSetPokerHandCalculatorStateProperty = vi.fn();
 const mockShuffleHand = vi.fn();
 const mockDeleteHand = vi.fn();
 const mockShowHand = vi.fn();
-const mockPokerHandCalculatorContextValue = {
+const mockPokerHandCalculatorContextValue: RecursivePartial<IPokerHandCalculatorContext> = {
     pokerHandCalculatorState: {
         numberOfHands: 1,
-        strongestHands: [{ hand: [], index: defaultProps.number - 1 }],
-    },
-    setPokerHandCalculatorStateProperty: mockSetPokerHandCalculatorStateProperty,
+        strongestHands: [{ hand: defaultProps.info, index: defaultProps.number - 1 }],
+    } as Pick<
+        IPokerHandCalculatorContext["pokerHandCalculatorState"],
+        "numberOfHands" | "strongestHands"
+    >,
     shuffleHand: mockShuffleHand,
     deleteHand: mockDeleteHand,
     showHand: mockShowHand,
 };
 
 const mockSetSelectingCard = vi.fn();
-const mockSimulateContextValue = {
+const mockSimulateContextValue: RecursivePartial<ISimulateContext> = {
     selectingCard: [0, 0],
     setSelectingCard: mockSetSelectingCard,
 };
@@ -126,13 +128,15 @@ describe("The Street component...", () => {
         test(`And a 'showing' prop equal to 'true' if the hand is one of the strongest in the 'strongestHands' field in the PokerHandCalculator component's state and the card comprises the best hand`, () => {
             render(
                 <PokerHandCalculatorContext.Provider
-                    value={{
-                        ...(mockPokerHandCalculatorContextValue as unknown as IPokerHandCalculatorContext),
-                        pokerHandCalculatorState: {
-                            ...mockPokerHandCalculatorContextValue.pokerHandCalculatorState,
-                            showingHand: defaultProps.number - 1,
-                        },
-                    }}
+                    value={
+                        {
+                            ...mockPokerHandCalculatorContextValue,
+                            pokerHandCalculatorState: {
+                                ...mockPokerHandCalculatorContextValue.pokerHandCalculatorState,
+                                showingHand: defaultProps.number - 1,
+                            },
+                        } as unknown as IPokerHandCalculatorContext
+                    }
                 >
                     <SimulateContext.Provider
                         value={mockSimulateContextValue as unknown as ISimulateContext}
@@ -168,13 +172,15 @@ describe("The Street component...", () => {
         test(`And a 'showing' prop equal to 'true' if the hand is one of the strongest in the 'strongestHands' field in the PokerHandCalculator component's state and the card comprises the best hand`, () => {
             render(
                 <PokerHandCalculatorContext.Provider
-                    value={{
-                        ...(mockPokerHandCalculatorContextValue as unknown as IPokerHandCalculatorContext),
-                        pokerHandCalculatorState: {
-                            ...mockPokerHandCalculatorContextValue.pokerHandCalculatorState,
-                            showingHand: defaultProps.number - 1,
-                        },
-                    }}
+                    value={
+                        {
+                            ...mockPokerHandCalculatorContextValue,
+                            pokerHandCalculatorState: {
+                                ...mockPokerHandCalculatorContextValue.pokerHandCalculatorState,
+                                showingHand: defaultProps.number - 1,
+                            },
+                        } as unknown as IPokerHandCalculatorContext
+                    }
                 >
                     <SimulateContext.Provider
                         value={mockSimulateContextValue as unknown as ISimulateContext}
@@ -212,13 +218,15 @@ describe("The Street component...", () => {
         test("That, when clicked, should invoke the 'shuffleHand' function in the PokerHandCalculator component's context", () => {
             render(
                 <PokerHandCalculatorContext.Provider
-                    value={{
-                        ...(mockPokerHandCalculatorContextValue as unknown as IPokerHandCalculatorContext),
-                        pokerHandCalculatorState: {
-                            ...mockPokerHandCalculatorContextValue.pokerHandCalculatorState,
-                            numberOfHands: 2,
-                        },
-                    }}
+                    value={
+                        {
+                            ...mockPokerHandCalculatorContextValue,
+                            pokerHandCalculatorState: {
+                                ...mockPokerHandCalculatorContextValue.pokerHandCalculatorState,
+                                numberOfHands: 2,
+                            },
+                        } as unknown as IPokerHandCalculatorContext
+                    }
                 >
                     <Hand {...defaultProps} />
                 </PokerHandCalculatorContext.Provider>,
@@ -242,13 +250,15 @@ describe("The Street component...", () => {
         test("With the text: 'Delete'", () => {
             render(
                 <PokerHandCalculatorContext.Provider
-                    value={{
-                        ...(mockPokerHandCalculatorContextValue as unknown as IPokerHandCalculatorContext),
-                        pokerHandCalculatorState: {
-                            ...mockPokerHandCalculatorContextValue.pokerHandCalculatorState,
-                            numberOfHands: 2,
-                        },
-                    }}
+                    value={
+                        {
+                            ...mockPokerHandCalculatorContextValue,
+                            pokerHandCalculatorState: {
+                                ...mockPokerHandCalculatorContextValue.pokerHandCalculatorState,
+                                numberOfHands: 2,
+                            },
+                        } as unknown as IPokerHandCalculatorContext
+                    }
                 >
                     <Hand {...defaultProps} />
                 </PokerHandCalculatorContext.Provider>,
@@ -260,13 +270,15 @@ describe("The Street component...", () => {
         test("That, when clicked, should invoke the 'deleteHand' function in the PokerHandCalculator component's context", () => {
             render(
                 <PokerHandCalculatorContext.Provider
-                    value={{
-                        ...(mockPokerHandCalculatorContextValue as unknown as IPokerHandCalculatorContext),
-                        pokerHandCalculatorState: {
-                            ...mockPokerHandCalculatorContextValue.pokerHandCalculatorState,
-                            numberOfHands: 2,
-                        },
-                    }}
+                    value={
+                        {
+                            ...mockPokerHandCalculatorContextValue,
+                            pokerHandCalculatorState: {
+                                ...mockPokerHandCalculatorContextValue.pokerHandCalculatorState,
+                                numberOfHands: 2,
+                            },
+                        } as unknown as IPokerHandCalculatorContext
+                    }
                 >
                     <Hand {...defaultProps} />
                 </PokerHandCalculatorContext.Provider>,
@@ -285,13 +297,15 @@ describe("The Street component...", () => {
         test("With the text: 'Visibility' if the 'showingHand' field in the PokerHandCalculator component's state corresponds to this hand", () => {
             render(
                 <PokerHandCalculatorContext.Provider
-                    value={{
-                        ...(mockPokerHandCalculatorContextValue as unknown as IPokerHandCalculatorContext),
-                        pokerHandCalculatorState: {
-                            ...mockPokerHandCalculatorContextValue.pokerHandCalculatorState,
-                            showingHand: defaultProps.number - 1,
-                        },
-                    }}
+                    value={
+                        {
+                            ...mockPokerHandCalculatorContextValue,
+                            pokerHandCalculatorState: {
+                                ...mockPokerHandCalculatorContextValue.pokerHandCalculatorState,
+                                showingHand: defaultProps.number - 1,
+                            },
+                        } as unknown as IPokerHandCalculatorContext
+                    }
                 >
                     <Hand {...defaultProps} />
                 </PokerHandCalculatorContext.Provider>,
