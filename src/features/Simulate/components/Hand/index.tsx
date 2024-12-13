@@ -24,7 +24,7 @@ export function Hand({ info, number }: THand) {
         pokerHandCalculatorState.showingHand === number - 1
             ? info.cards.map(
                   (handCard) =>
-                      pokerHandCalculatorState.currentHands[number - 1].strength.cards.findIndex(
+                      info.strength.cards.findIndex(
                           (strengthCard) => strengthCard.order === handCard.order,
                       ) > -1,
               )

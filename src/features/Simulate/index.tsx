@@ -8,17 +8,17 @@ import { CardSelection } from "./components/CardSelection";
 
 type TSelectingCard = [number, number] | null;
 
-interface SimulateContext {
+export interface ISimulateContext {
     selectingCard: TSelectingCard;
     setSelectingCard: (handIndex: number, cardIndex: number) => void;
 }
 
-const defaultSimulateContext: SimulateContext = {
+const defaultSimulateContext: ISimulateContext = {
     selectingCard: null,
     setSelectingCard: () => {},
 };
 
-export const SimulateContext = createContext<SimulateContext>(defaultSimulateContext);
+export const SimulateContext = createContext<ISimulateContext>(defaultSimulateContext);
 
 export function Simulate() {
     const { pokerHandCalculatorState } = useContext(PokerHandCalculatorContext);
