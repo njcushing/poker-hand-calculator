@@ -20,7 +20,7 @@ vi.mock("./utils/suitSVGs", () => ({
     suitSVG: vi.fn(() => <svg></svg>),
 }));
 
-describe("The Street component...", () => {
+describe("The Card component...", () => {
     describe("Should render a button...", () => {
         afterEach(() => {
             (onClickMock as jest.Mock).mockRestore();

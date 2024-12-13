@@ -77,7 +77,7 @@ vi.mock("@/features/Simulate/components/Card", () => ({
     },
 }));
 
-describe("The Street component...", () => {
+describe("The Hand component...", () => {
     afterEach(() => {
         mockShuffleHand.mockRestore();
         mockDeleteHand.mockRestore();
