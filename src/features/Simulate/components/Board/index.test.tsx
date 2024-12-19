@@ -2,10 +2,12 @@ import { vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import {
-    PokerHandCalculatorContext,
     IPokerHandCalculatorContext,
+    PokerHandCalculatorContext,
 } from "@/pages/PokerHandCalculator";
 import { RecursivePartial } from "@/utils/types";
+import { Hand } from "@/features/Deck/utils/deckFuncs";
+import { SimulateContext, ISimulateContext } from "../..";
 import { Board } from ".";
 import { TCard } from "../Card";
 
@@ -43,15 +45,46 @@ const board = [
     },
 ];
 
+const handCards = [
+    {
+        rank: "6",
+        suit: "Heart",
+        value: 5,
+        order: 6,
+    },
+    {
+        rank: "7",
+        suit: "Heart",
+        value: 6,
+        order: 7,
+    },
+] as Hand["cards"];
+const hand: Hand = {
+    cards: handCards,
+    strength: {
+        value: 0,
+        cards: [...handCards, board[2], board[3], board[4]] as Hand["strength"]["cards"],
+        rank: "High Card",
+        information: "",
+    },
+};
+
 const mockShuffleBoard = vi.fn();
 const mockPokerHandCalculatorContextValue: RecursivePartial<IPokerHandCalculatorContext> = {
     pokerHandCalculatorState: {
-        currentHands: [],
+        currentHands: [hand],
+        strongestHands: [{ hand, index: 0 }],
         showingHand: 0,
         boardStage: "pre-flop",
         board: [],
     },
     shuffleBoard: mockShuffleBoard,
+};
+
+const mockSetSelectingCard = vi.fn();
+const mockSimulateContextValue: RecursivePartial<ISimulateContext> = {
+    selectingCard: [0, 0],
+    setSelectingCard: mockSetSelectingCard,
 };
 
 vi.mock("@/features/Simulate/components/Card", () => ({
@@ -73,6 +106,12 @@ vi.mock("@/features/Simulate/components/Card", () => ({
 }));
 
 describe("The Board component...", () => {
+    afterEach(() => {
+        mockShuffleBoard.mockRestore();
+
+        mockSetSelectingCard.mockRestore();
+    });
+
     test("Should render text identifying the board", () => {
         render(<Board />);
         const boardName = screen.getByText("Board");
@@ -84,7 +123,7 @@ describe("The Board component...", () => {
             const cards = screen.queryAllByLabelText("card");
             expect(cards).toHaveLength(0);
         });
-        test("Or three if the 'boardStage' field in the PokerHandCalculator component's state is equal to 'flop'", () => {
+        test("Or however many are in the 'board' field in the PokerHandCalculator component's state", () => {
             render(
                 <PokerHandCalculatorContext.Provider
                     value={
@@ -92,8 +131,14 @@ describe("The Board component...", () => {
                             ...mockPokerHandCalculatorContextValue,
                             pokerHandCalculatorState: {
                                 ...mockPokerHandCalculatorContextValue.pokerHandCalculatorState,
-                                boardStage: "flop",
-                                board: structuredClone([board[0], board[1], board[2]]),
+                                boardStage: "river",
+                                board: structuredClone([
+                                    board[0],
+                                    board[1],
+                                    board[2],
+                                    board[3],
+                                    board[4],
+                                ]),
                             },
                         } as unknown as IPokerHandCalculatorContext
                     }
@@ -102,17 +147,19 @@ describe("The Board component...", () => {
                 </PokerHandCalculatorContext.Provider>,
             );
 
-            let cards = screen.queryAllByLabelText("card");
-            expect(cards).toHaveLength(3);
+            let cards = screen.getAllByLabelText("card");
+            expect(cards).toHaveLength(5);
 
             cards = [
                 screen.getByText("A-Heart-false"),
                 screen.getByText("2-Heart-false"),
-                screen.getByText("3-Heart-false"),
+                screen.getByText("3-Heart-true"),
+                screen.getByText("4-Heart-true"),
+                screen.getByText("5-Heart-true"),
             ];
             cards.forEach((card) => expect(card).toBeInTheDocument());
         });
-        test("Or four if the 'boardStage' field in the PokerHandCalculator component's state is equal to 'turn'", () => {
+        test("And each card, when clicked, should invoke the 'setSelectingCard' function from the Interactive component's context", () => {
             render(
                 <PokerHandCalculatorContext.Provider
                     value={
@@ -121,27 +168,31 @@ describe("The Board component...", () => {
                             pokerHandCalculatorState: {
                                 ...mockPokerHandCalculatorContextValue.pokerHandCalculatorState,
                                 boardStage: "flop",
-                                board: structuredClone([board[0], board[1], board[2], board[3]]),
+                                board: structuredClone([
+                                    board[0],
+                                    board[1],
+                                    board[2],
+                                    board[3],
+                                    board[4],
+                                ]),
                             },
                         } as unknown as IPokerHandCalculatorContext
                     }
                 >
-                    <Board />
+                    <SimulateContext.Provider
+                        value={mockSimulateContextValue as unknown as ISimulateContext}
+                    >
+                        <Board />
+                    </SimulateContext.Provider>
                 </PokerHandCalculatorContext.Provider>,
             );
 
-            let cards = screen.queryAllByLabelText("card");
-            expect(cards).toHaveLength(4);
+            const cards = screen.getAllByLabelText("card");
+            cards.forEach((card) => fireEvent.click(card));
 
-            cards = [
-                screen.getByText("A-Heart-false"),
-                screen.getByText("2-Heart-false"),
-                screen.getByText("3-Heart-false"),
-                screen.getByText("4-Heart-false"),
-            ];
-            cards.forEach((card) => expect(card).toBeInTheDocument());
+            expect(mockSetSelectingCard).toHaveBeenCalledTimes(5);
         });
-        test("Or five if the 'boardStage' field in the PokerHandCalculator component's state is equal to 'river'", () => {
+        test("And any card that comprises the strongest combination of cards being shown should be passed a 'showing' prop equal to 'true'", () => {
             render(
                 <PokerHandCalculatorContext.Provider
                     value={
@@ -165,15 +216,12 @@ describe("The Board component...", () => {
                 </PokerHandCalculatorContext.Provider>,
             );
 
-            let cards = screen.queryAllByLabelText("card");
-            expect(cards).toHaveLength(5);
-
-            cards = [
+            const cards = [
                 screen.getByText("A-Heart-false"),
                 screen.getByText("2-Heart-false"),
-                screen.getByText("3-Heart-false"),
-                screen.getByText("4-Heart-false"),
-                screen.getByText("5-Heart-false"),
+                screen.getByText("3-Heart-true"),
+                screen.getByText("4-Heart-true"),
+                screen.getByText("5-Heart-true"),
             ];
             cards.forEach((card) => expect(card).toBeInTheDocument());
         });
