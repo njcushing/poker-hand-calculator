@@ -20,7 +20,11 @@ const defaultSimulateContext: ISimulateContext = {
 
 export const SimulateContext = createContext<ISimulateContext>(defaultSimulateContext);
 
-export function Simulate() {
+export type TSimulate = {
+    children?: JSX.Element | JSX.Element[] | null;
+};
+
+export function Simulate({ children }: TSimulate) {
     const { pokerHandCalculatorState } = useContext(PokerHandCalculatorContext);
 
     const [selectingCard, setSelectingCardSetter] = useState<TSelectingCard>(null);
@@ -28,13 +32,18 @@ export function Simulate() {
 
     const setSelectingCard = useCallback(
         (handIndex: number, cardIndex: number) => {
-            if (selectingCard && handIndex === selectingCard[0] && cardIndex === selectingCard[1]) {
-                setSelectingCardSetter(null);
-            } else {
-                setSelectingCardSetter([handIndex, cardIndex]);
-            }
+            setSelectingCardSetter((currentSelectingCard) => {
+                if (
+                    currentSelectingCard &&
+                    handIndex === currentSelectingCard[0] &&
+                    cardIndex === currentSelectingCard[1]
+                ) {
+                    return null;
+                }
+                return [handIndex, cardIndex];
+            });
         },
-        [selectingCard, setSelectingCardSetter],
+        [setSelectingCardSetter],
     );
 
     return (
@@ -55,6 +64,7 @@ export function Simulate() {
                 {selectingCard && <CardSelection />}
                 <Board />
             </div>
+            {children}
         </SimulateContext.Provider>
     );
 }
