@@ -1,5 +1,5 @@
 import { vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import {
     PokerHandCalculatorContext,
@@ -79,12 +79,12 @@ describe("The Board component...", () => {
         expect(boardName).toBeInTheDocument();
     });
     describe("Should display child Card components...", () => {
-        test(`Unless the 'boardStage' field in the PokerHandCalculator component's state is equal to 'pre-flop'`, () => {
+        test("Unless the 'boardStage' field in the PokerHandCalculator component's state is equal to 'pre-flop'", () => {
             render(<Board />);
             const cards = screen.queryAllByLabelText("card");
             expect(cards).toHaveLength(0);
         });
-        test(`Or three if the 'boardStage' field in the PokerHandCalculator component's state is equal to 'flop'`, () => {
+        test("Or three if the 'boardStage' field in the PokerHandCalculator component's state is equal to 'flop'", () => {
             render(
                 <PokerHandCalculatorContext.Provider
                     value={
@@ -112,7 +112,7 @@ describe("The Board component...", () => {
             ];
             cards.forEach((card) => expect(card).toBeInTheDocument());
         });
-        test(`Or four if the 'boardStage' field in the PokerHandCalculator component's state is equal to 'turn'`, () => {
+        test("Or four if the 'boardStage' field in the PokerHandCalculator component's state is equal to 'turn'", () => {
             render(
                 <PokerHandCalculatorContext.Provider
                     value={
@@ -141,7 +141,7 @@ describe("The Board component...", () => {
             ];
             cards.forEach((card) => expect(card).toBeInTheDocument());
         });
-        test(`Or five if the 'boardStage' field in the PokerHandCalculator component's state is equal to 'river'`, () => {
+        test("Or five if the 'boardStage' field in the PokerHandCalculator component's state is equal to 'river'", () => {
             render(
                 <PokerHandCalculatorContext.Provider
                     value={
@@ -176,6 +176,60 @@ describe("The Board component...", () => {
                 screen.getByText("5-Heart-false"),
             ];
             cards.forEach((card) => expect(card).toBeInTheDocument());
+        });
+    });
+    describe("Should display a 'shuffle board' button...", () => {
+        test("Unless the 'boardStage' field in the PokerHandCalculator component's state is equal to 'pre-flop'", () => {
+            render(<Board />);
+            const shuffleBoardButton = screen.queryByRole("button", { name: "Cycle" });
+            expect(shuffleBoardButton).not.toBeInTheDocument();
+        });
+        test("With the text: 'Cycle'", () => {
+            render(
+                <PokerHandCalculatorContext.Provider
+                    value={
+                        {
+                            ...mockPokerHandCalculatorContextValue,
+                            pokerHandCalculatorState: {
+                                ...mockPokerHandCalculatorContextValue.pokerHandCalculatorState,
+                                boardStage: "flop",
+                                board: structuredClone([board[0], board[1], board[2]]),
+                            },
+                        } as unknown as IPokerHandCalculatorContext
+                    }
+                >
+                    <Board />
+                </PokerHandCalculatorContext.Provider>,
+            );
+
+            const shuffleBoardButton = screen.getByRole("button", { name: "Cycle" });
+            expect(shuffleBoardButton).toBeInTheDocument();
+        });
+        test("That, when clicked, should invoke the 'shuffleBoard' function in the PokerHandCalculator component's context", () => {
+            render(
+                <PokerHandCalculatorContext.Provider
+                    value={
+                        {
+                            ...mockPokerHandCalculatorContextValue,
+                            pokerHandCalculatorState: {
+                                ...mockPokerHandCalculatorContextValue.pokerHandCalculatorState,
+                                boardStage: "flop",
+                                board: structuredClone([board[0], board[1], board[2]]),
+                            },
+                        } as unknown as IPokerHandCalculatorContext
+                    }
+                >
+                    <Board />
+                </PokerHandCalculatorContext.Provider>,
+            );
+
+            const shuffleHandButton = screen.getByRole("button", { name: "Cycle" });
+            expect(shuffleHandButton).toBeInTheDocument();
+
+            fireEvent.click(shuffleHandButton);
+            fireEvent.mouseLeave(shuffleHandButton);
+
+            expect(mockShuffleBoard).toHaveBeenCalled();
         });
     });
 });
