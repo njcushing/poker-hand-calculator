@@ -118,12 +118,7 @@ describe("The Board component...", () => {
         expect(boardName).toBeInTheDocument();
     });
     describe("Should display child Card components...", () => {
-        test("Unless the 'boardStage' field in the PokerHandCalculator component's state is equal to 'pre-flop'", () => {
-            render(<Board />);
-            const cards = screen.queryAllByLabelText("card");
-            expect(cards).toHaveLength(0);
-        });
-        test("Or however many are in the 'board' field in the PokerHandCalculator component's state", () => {
+        test("The quantity of which is defined by how many entries are in the 'board' field in the PokerHandCalculator component's state", () => {
             render(
                 <PokerHandCalculatorContext.Provider
                     value={
