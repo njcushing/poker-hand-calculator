@@ -16,23 +16,28 @@ export function CardSelection() {
                     .sort((a, b) => a.order - b.order)
                     .map((card) => {
                         return (
-                            <button
-                                type="button"
-                                className={styles["card"]}
-                                onClick={(e) => {
-                                    if (selectingCard) {
-                                        swapCard(selectingCard[0], selectingCard[1], card.order);
-                                    }
-                                    e.currentTarget.blur();
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.blur();
-                                }}
-                                key={`card-${card.order}`}
-                            >
-                                <p className={styles["suit"]}>{suitSVG(card.suit)}</p>
-                                <p className={styles["rank"]}>{card.rank}</p>
-                            </button>
+                            <li key={`card-${card.order}`}>
+                                <button
+                                    type="button"
+                                    className={styles["card"]}
+                                    onClick={(e) => {
+                                        if (selectingCard) {
+                                            swapCard(
+                                                selectingCard[0],
+                                                selectingCard[1],
+                                                card.order,
+                                            );
+                                        }
+                                        e.currentTarget.blur();
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.blur();
+                                    }}
+                                >
+                                    <p className={styles["suit"]}>{suitSVG(card.suit)}</p>
+                                    <p className={styles["rank"]}>{card.rank}</p>
+                                </button>
+                            </li>
                         );
                     })}
             </ul>
