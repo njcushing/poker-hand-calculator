@@ -10,7 +10,7 @@ export const options = () =>
 
 export type TOptionName = ReturnType<typeof options>[number]["name"];
 
-const themeSetter = (theme: TOptionName) => {
+export const themeSetter = (theme: TOptionName) => {
     let mutableTheme = options()
         .map((option) => option.name as TOptionName)
         .includes(theme)
@@ -39,12 +39,12 @@ export type TTheme = {
     children: React.ReactNode;
 };
 
-interface ThemeState {
+export interface IThemeState {
     theme: string;
     setTheme: React.Dispatch<React.SetStateAction<TOptionName>>;
 }
 
-const defaultState: ThemeState = {
+const defaultState: IThemeState = {
     theme: "default",
     setTheme: () => {},
 };
@@ -66,7 +66,7 @@ export const loadTheme = (): {
     };
 };
 
-export const ThemeContext = createContext<ThemeState>(defaultState);
+export const ThemeContext = createContext<IThemeState>(defaultState);
 
 export function Theme({ children }: TTheme) {
     const [theme, setTheme] = useState<TOptionName>(loadTheme().theme);
