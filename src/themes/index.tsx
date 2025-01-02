@@ -31,8 +31,9 @@ export const saveTheme = (theme: string) => {
             .includes(theme)
     ) {
         localStorage.setItem(`${import.meta.env.LOCALSTORAGE_PREFIX}-theme`, theme);
+    } else {
+        localStorage.setItem(`${import.meta.env.LOCALSTORAGE_PREFIX}-theme`, defaultState.theme);
     }
-    localStorage.setItem(`${import.meta.env.LOCALSTORAGE_PREFIX}-theme`, defaultState.theme);
 };
 
 export type TTheme = {

@@ -2,13 +2,10 @@ import { vi } from "vitest";
 import { render } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { act } from "react";
-import { options, themeSetter, IThemeState, loadTheme, ThemeContext, Theme } from ".";
+import { options, themeSetter, saveTheme, IThemeState, loadTheme, ThemeContext, Theme } from ".";
 
 // Mock dependencies
-Object.defineProperty(import.meta, "env", {
-    value: { LOCALSTORAGE_PREFIX: "myAppPrefix" },
-    configurable: true,
-});
+vi.stubEnv("LOCALSTORAGE_PREFIX", "myAppPrefix");
 
 Object.defineProperty(window, "matchMedia", {
     writable: true,
@@ -55,6 +52,21 @@ describe("The 'loadTheme' function...", () => {
         getItemSpy.mockImplementationOnce(() => "thisIsNotARealTheme");
         expect(loadTheme()).toStrictEqual({ theme: "default" });
         expect(getItemSpy).toHaveBeenCalled();
+    });
+});
+
+describe("The 'saveTheme' function...", () => {
+    describe("Should invoke the localStorage API's 'setItem' function...", () => {
+        test("With an appropriate key, and the theme provided as an argument as the value", () => {
+            const setItemSpy = vi.spyOn(Storage.prototype, "setItem");
+            saveTheme("light");
+            expect(setItemSpy).toHaveBeenCalledWith("myAppPrefix-theme", "light");
+        });
+        test("With 'default' as a backup when the theme value provided as an argument is not present in the object array returned by the 'options' function", () => {
+            const setItemSpy = vi.spyOn(Storage.prototype, "setItem");
+            saveTheme("thisIsNotARealTheme");
+            expect(setItemSpy).toHaveBeenCalledWith("myAppPrefix-theme", "default");
+        });
     });
 });
 
