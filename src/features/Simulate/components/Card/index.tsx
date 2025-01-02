@@ -1,5 +1,5 @@
 import { Card as TCardInfo } from "@/features/Deck/utils/deckFuncs";
-import { suitSVG } from "./utils/suitSVGs";
+import { suitSVG } from "./utils/suitSVG";
 import styles from "./index.module.css";
 
 export type TCard = {

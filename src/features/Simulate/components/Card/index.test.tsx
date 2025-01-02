@@ -16,7 +16,7 @@ const defaultProps: TCard = {
     onClick: onClickMock,
     displayOnly: false,
 };
-vi.mock("./utils/suitSVGs", () => ({
+vi.mock("./utils/suitSVG", () => ({
     suitSVG: vi.fn(() => <svg></svg>),
 }));
 

@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { PokerHandCalculatorContext } from "@/pages/PokerHandCalculator";
 import { SimulateContext } from "../..";
-import { suitSVG } from "../Card/utils/suitSVGs";
+import { suitSVG } from "../Card/utils/suitSVG";
 import styles from "./index.module.css";
 
 export function CardSelection() {

@@ -9,7 +9,7 @@ import { RecursivePartial } from "@/utils/types";
 import { Deck } from "@/features/Deck/utils/deckFuncs";
 import { SimulateContext, ISimulateContext } from "../..";
 import { CardSelection } from ".";
-import { suitSVG } from "../Card/utils/suitSVGs";
+import { suitSVG } from "../Card/utils/suitSVG";
 
 // Mock dependencies
 function newDeck(): Deck {
@@ -69,7 +69,7 @@ vi.mock("@/features/Deck/utils/deckFuncs", async (importOriginal) => {
     };
 });
 
-vi.mock("../Card/utils/suitSVGs", () => ({
+vi.mock("../Card/utils/suitSVG", () => ({
     suitSVG: vi.fn(() => <svg></svg>),
 }));
 
