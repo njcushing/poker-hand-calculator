@@ -244,8 +244,7 @@ export function PokerHandCalculator({ children }: TPokerHandCalculator) {
             currentDeck = insertCards(currentDeck, currentHands[index].cards, "random");
 
             const { hand, deck } = createHand(currentDeck, board);
-            if (!hand) return;
-            currentHands[index] = hand;
+            currentHands[index] = hand!;
 
             setPokerHandCalculatorState({
                 ...pokerHandCalculatorState,
@@ -314,49 +313,10 @@ export function PokerHandCalculator({ children }: TPokerHandCalculator) {
     }, [pokerHandCalculatorState]);
 
     const pageContent = useMemo(() => {
-        switch (layout) {
-            case "wide":
-                return (
-                    <>
-                        <div className={styles["left-panel"]}>
-                            <div className={styles["info"]}>
-                                <h1 className={styles["title"]}>Poker Hand Calculator</h1>
-                                <p className={styles["name"]}>by njcushing</p>
-                                <p className={styles["version"]}>{`v${version}`}</p>
-                            </div>
-                            <Structural.TabSelector
-                                tabs={{
-                                    design: {
-                                        name: "Design",
-                                        content: <Design />,
-                                        position: "left",
-                                    },
-                                    handRankings: {
-                                        name: "Hand Rankings",
-                                        content: <HandRankings />,
-                                        position: "left",
-                                    },
-                                    about: { name: "About", content: <About />, position: "right" },
-                                }}
-                                selectedTabName="about"
-                            />
-                        </div>
-                        <div className={styles["right-panel"]}>
-                            <Structural.TabSelector
-                                tabs={{
-                                    simulate: {
-                                        name: "Simulate",
-                                        content: <Simulate />,
-                                        position: "left",
-                                    },
-                                }}
-                            />
-                        </div>
-                    </>
-                );
-            case "thin":
-                return (
-                    <div className={styles["main-panel"]}>
+        if (layout === "wide") {
+            return (
+                <>
+                    <div className={styles["left-panel"]}>
                         <div className={styles["info"]}>
                             <h1 className={styles["title"]}>Poker Hand Calculator</h1>
                             <p className={styles["name"]}>by njcushing</p>
@@ -369,11 +329,6 @@ export function PokerHandCalculator({ children }: TPokerHandCalculator) {
                                     content: <Design />,
                                     position: "left",
                                 },
-                                simulate: {
-                                    name: "Simulate",
-                                    content: <Simulate />,
-                                    position: "left",
-                                },
                                 handRankings: {
                                     name: "Hand Rankings",
                                     content: <HandRankings />,
@@ -384,10 +339,50 @@ export function PokerHandCalculator({ children }: TPokerHandCalculator) {
                             selectedTabName="about"
                         />
                     </div>
-                );
-            default:
+                    <div className={styles["right-panel"]}>
+                        <Structural.TabSelector
+                            tabs={{
+                                simulate: {
+                                    name: "Simulate",
+                                    content: <Simulate />,
+                                    position: "left",
+                                },
+                            }}
+                        />
+                    </div>
+                </>
+            );
         }
-        return null;
+        return (
+            <div className={styles["main-panel"]}>
+                <div className={styles["info"]}>
+                    <h1 className={styles["title"]}>Poker Hand Calculator</h1>
+                    <p className={styles["name"]}>by njcushing</p>
+                    <p className={styles["version"]}>{`v${version}`}</p>
+                </div>
+                <Structural.TabSelector
+                    tabs={{
+                        design: {
+                            name: "Design",
+                            content: <Design />,
+                            position: "left",
+                        },
+                        simulate: {
+                            name: "Simulate",
+                            content: <Simulate />,
+                            position: "left",
+                        },
+                        handRankings: {
+                            name: "Hand Rankings",
+                            content: <HandRankings />,
+                            position: "left",
+                        },
+                        about: { name: "About", content: <About />, position: "right" },
+                    }}
+                    selectedTabName="about"
+                />
+            </div>
+        );
     }, [layout]);
 
     return (
