@@ -14,7 +14,7 @@ const mockContextValue = {
     setPokerHandCalculatorStateProperty: mockSetPokerHandCalculatorStateProperty,
 };
 
-describe("The Street component...", () => {
+describe("The NumberOfHands component...", () => {
     test("Should render a button with the text: 'Remove'", () => {
         render(<NumberOfHands />);
         const removeButton = screen.getByRole("button", { name: "Remove" });
