@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import styles from "./index.module.css";
 
 type Tab = {
@@ -24,6 +24,13 @@ export function TabSelector({ tabs, selectedTabName }: TTabSelector) {
             return null;
         })(),
     );
+    useEffect(() => {
+        if (!tabs[selectedTab || ""]) {
+            if (Object.keys(tabs).length > 0) {
+                setSelectedTab(Object.keys(tabs)[0]);
+            } else setSelectedTab(null);
+        }
+    }, [tabs, selectedTab]);
 
     const createTab = useCallback(
         (key: keyof Tabs) => {
@@ -68,7 +75,9 @@ export function TabSelector({ tabs, selectedTabName }: TTabSelector) {
                     })}
                 </ul>
             </div>
-            <div className={styles["tab-content"]}>{selectedTab && tabs[selectedTab].content}</div>
+            <div className={styles["tab-content"]}>
+                {selectedTab && tabs[selectedTab] && tabs[selectedTab].content}
+            </div>
         </div>
     );
 }
