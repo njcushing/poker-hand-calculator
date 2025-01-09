@@ -69,7 +69,7 @@ describe("The 'TabSelector' component...", () => {
             expect(screen.queryByText("Tab 3 Content")).toBeInTheDocument();
             expect(screen.queryByText("Tab 4 Content")).toBeNull();
         });
-        test("And the selected tab should default to the first one specified in the 'tabs' object if the 'selectedTabName' prop is undefined or does not match one of the keys in the 'tabs' object", async () => {
+        test("And the selected tab should default to the first one specified in the 'tabs' prop if the 'selectedTabName' prop is undefined or does not match one of the keys in the 'tabs' object", async () => {
             render(<TabSelector {...exampleProps} selectedTabName={undefined} />);
 
             expect(screen.queryByText("Tab 1 Content")).toBeInTheDocument();
@@ -84,6 +84,29 @@ describe("The 'TabSelector' component...", () => {
             expect(screen.queryByText("Tab 2 Content")).toBeNull();
             expect(screen.queryByText("Tab 3 Content")).toBeNull();
             expect(screen.queryByText("Tab 4 Content")).toBeNull();
+        });
+        test("Or if the selected tab is removed from the 'tabs' prop, in which case the selected tab will default to the first one specified in the 'tabs' prop", async () => {
+            const initialTabs: TTabSelector["tabs"] = {
+                tab_1: { name: "Tab 1", content: <div>Tab 1 Content</div>, position: "left" },
+                tab_2: { name: "Tab 2", content: <div>Tab 2 Content</div>, position: "left" },
+                tab_3: { name: "Tab 3", content: <div>Tab 3 Content</div>, position: "right" },
+                tab_4: { name: "Tab 4", content: <div>Tab 4 Content</div>, position: "right" },
+            };
+
+            const { rerender } = render(<TabSelector {...exampleProps} tabs={initialTabs} />);
+
+            expect(screen.queryByText("Tab 1 Content")).toBeNull();
+            expect(screen.queryByText("Tab 2 Content")).toBeNull();
+            expect(screen.queryByText("Tab 3 Content")).toBeInTheDocument();
+            expect(screen.queryByText("Tab 4 Content")).toBeNull();
+
+            const updatedTabs = { ...initialTabs };
+            delete updatedTabs.tab_3;
+
+            await act(async () => rerender(<TabSelector {...exampleProps} tabs={updatedTabs} />));
+
+            expect(screen.queryByText("Tab 1 Content")).toBeInTheDocument();
+            expect(screen.queryByText("Tab 3 Content")).toBeNull();
         });
     });
 });
