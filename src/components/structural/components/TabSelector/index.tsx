@@ -19,7 +19,7 @@ export type TTabSelector = {
 export function TabSelector({ tabs, selectedTabName }: TTabSelector) {
     const [selectedTab, setSelectedTab] = useState<keyof Tabs | null>(
         (() => {
-            if (selectedTabName && selectedTabName in tabs) return selectedTabName;
+            if (selectedTabName && tabs[selectedTabName]) return selectedTabName;
             if (Object.keys(tabs).length > 0) return Object.keys(tabs)[0];
             return null;
         })(),
