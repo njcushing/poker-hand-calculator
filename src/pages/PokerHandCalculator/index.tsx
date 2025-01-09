@@ -313,6 +313,83 @@ export function PokerHandCalculator({ children }: TPokerHandCalculator) {
         });
     }, [pokerHandCalculatorState]);
 
+    const pageContent = useMemo(() => {
+        switch (layout) {
+            case "wide":
+                return (
+                    <>
+                        <div className={styles["left-panel"]}>
+                            <div className={styles["info"]}>
+                                <h1 className={styles["title"]}>Poker Hand Calculator</h1>
+                                <p className={styles["name"]}>by njcushing</p>
+                                <p className={styles["version"]}>{`v${version}`}</p>
+                            </div>
+                            <Structural.TabSelector
+                                tabs={{
+                                    design: {
+                                        name: "Design",
+                                        content: <Design />,
+                                        position: "left",
+                                    },
+                                    handRankings: {
+                                        name: "Hand Rankings",
+                                        content: <HandRankings />,
+                                        position: "left",
+                                    },
+                                    about: { name: "About", content: <About />, position: "right" },
+                                }}
+                                selectedTabName="about"
+                            />
+                        </div>
+                        <div className={styles["right-panel"]}>
+                            <Structural.TabSelector
+                                tabs={{
+                                    simulate: {
+                                        name: "Simulate",
+                                        content: <Simulate />,
+                                        position: "left",
+                                    },
+                                }}
+                            />
+                        </div>
+                    </>
+                );
+            case "thin":
+                return (
+                    <div className={styles["main-panel"]}>
+                        <div className={styles["info"]}>
+                            <h1 className={styles["title"]}>Poker Hand Calculator</h1>
+                            <p className={styles["name"]}>by njcushing</p>
+                            <p className={styles["version"]}>{`v${version}`}</p>
+                        </div>
+                        <Structural.TabSelector
+                            tabs={{
+                                design: {
+                                    name: "Design",
+                                    content: <Design />,
+                                    position: "left",
+                                },
+                                simulate: {
+                                    name: "Simulate",
+                                    content: <Simulate />,
+                                    position: "left",
+                                },
+                                handRankings: {
+                                    name: "Hand Rankings",
+                                    content: <HandRankings />,
+                                    position: "left",
+                                },
+                                about: { name: "About", content: <About />, position: "right" },
+                            }}
+                            selectedTabName="about"
+                        />
+                    </div>
+                );
+            default:
+        }
+        return null;
+    }, [layout]);
+
     return (
         <PokerHandCalculatorContext.Provider
             value={useMemo(
@@ -338,31 +415,8 @@ export function PokerHandCalculator({ children }: TPokerHandCalculator) {
                 ],
             )}
         >
-            <div className={styles["page"]} ref={containerRef}>
-                <div className={styles["left-panel"]}>
-                    <h1 className={styles["title"]}>Poker Hand Calculator</h1>
-                    <p className={styles["name"]}>by njcushing</p>
-                    <p className={styles["version"]}>{`v${version}`}</p>
-                    <Structural.TabSelector
-                        tabs={{
-                            design: { name: "Design", content: <Design />, position: "left" },
-                            handRankings: {
-                                name: "Hand Rankings",
-                                content: <HandRankings />,
-                                position: "left",
-                            },
-                            about: { name: "About", content: <About />, position: "right" },
-                        }}
-                        selectedTabName="about"
-                    />
-                </div>
-                <div className={styles["right-panel"]}>
-                    <Structural.TabSelector
-                        tabs={{
-                            simulate: { name: "Simulate", content: <Simulate />, position: "left" },
-                        }}
-                    />
-                </div>
+            <div className={`${styles["page"]} ${styles[layout]}`} ref={containerRef}>
+                {pageContent}
             </div>
             {children}
         </PokerHandCalculatorContext.Provider>
