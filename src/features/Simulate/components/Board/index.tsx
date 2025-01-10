@@ -38,8 +38,8 @@ export function Board() {
                     );
                 })}
             </div>
-            <div className={styles["board-options"]}>
-                {board.length > 0 && (
+            {board.length > 0 && (
+                <div className={styles["board-options"]}>
                     <button
                         type="button"
                         className={`${styles["shuffle-board-button"]} material-symbols-sharp`}
@@ -53,8 +53,8 @@ export function Board() {
                     >
                         Cycle
                     </button>
-                )}
-            </div>
+                </div>
+            )}
         </div>
     );
 }
