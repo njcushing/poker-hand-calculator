@@ -44,11 +44,15 @@
 }
 
 .hand-ranking-cards {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    display: flex;
     gap: 4px;
 
     width: 100%;
+}
+
+.hand-ranking-cards > * {
+    width: 100%;
+    max-width: 80px;
 }
 
 .hand-ranking-description {
