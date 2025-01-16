@@ -11,6 +11,12 @@ export function CardSelection() {
 
     const cardBeingSwapped = useMemo((): TCardInfo | null => {
         if (!selectingCard) return null;
+        if (selectingCard[0] > pokerHandCalculatorState.currentHands.length) return null;
+        if (
+            selectingCard[1] > pokerHandCalculatorState.currentHands[selectingCard[0]].cards.length
+        ) {
+            return null;
+        }
         return pokerHandCalculatorState.currentHands[selectingCard[0]].cards[selectingCard[1]];
     }, [pokerHandCalculatorState.currentHands, selectingCard]);
 
@@ -39,7 +45,7 @@ export function CardSelection() {
                     <Card info={cardBeingSwapped} displayOnly />
                 </div>
             </div>
-            <ul className={styles["card-list"]}>
+            <div className={styles["card-list"]}>
                 {pokerHandCalculatorState.currentDeck
                     .sort((a, b) => a.order - b.order)
                     .map((card) => {
@@ -55,7 +61,7 @@ export function CardSelection() {
                             />
                         );
                     })}
-            </ul>
+            </div>
         </div>
     );
 }

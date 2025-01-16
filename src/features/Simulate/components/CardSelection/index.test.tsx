@@ -1,15 +1,15 @@
 import { vi } from "vitest";
-import { render, screen, fireEvent, within } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import {
     IPokerHandCalculatorContext,
     PokerHandCalculatorContext,
 } from "@/pages/PokerHandCalculator";
 import { RecursivePartial } from "@/utils/types";
-import { Deck } from "@/features/Deck/utils/deckFuncs";
+import { Deck, Hand } from "@/features/Deck/utils/deckFuncs";
 import { SimulateContext, ISimulateContext } from "../..";
 import { CardSelection } from ".";
-import { suitSVG } from "../Card/utils/suitSVG";
+import { TCard } from "../Card";
 
 // Mock dependencies
 function newDeck(): Deck {
@@ -43,10 +43,25 @@ function newDeck(): Deck {
     ];
 }
 
+const mockDeck = newDeck();
+
+const mockHand: Hand = {
+    cards: [mockDeck[0], mockDeck[1]],
+    strength: {
+        value: 0,
+        cards: [mockDeck[0], mockDeck[1]],
+        rank: "High Card",
+        information: "",
+    },
+};
+
+mockDeck.splice(0, 2);
+
 const mockSwapCard = vi.fn();
 const mockPokerHandCalculatorContextValue: RecursivePartial<IPokerHandCalculatorContext> = {
     pokerHandCalculatorState: {
-        currentDeck: newDeck(),
+        currentDeck: mockDeck,
+        currentHands: [mockHand],
     },
     swapCard: mockSwapCard,
 };
@@ -56,6 +71,24 @@ const mockSimulateContextValue: RecursivePartial<ISimulateContext> = {
     selectingCard: [0, 0],
     setSelectingCard: mockSetSelectingCard,
 };
+
+vi.mock("@/features/Simulate/components/Card", () => ({
+    Card: (props: TCard) => {
+        const { info, onClick } = props;
+        const { rank, suit } = info;
+        return (
+            <button
+                type="button"
+                aria-label="Card Component"
+                onClick={() => {
+                    if (onClick) onClick();
+                }}
+            >
+                {`${rank}-${suit}`}
+            </button>
+        );
+    },
+}));
 
 vi.mock("@/features/HandRankings", () => ({
     HandRankings: () => <div>HandRankings Component</div>,
@@ -69,160 +102,137 @@ vi.mock("@/features/Deck/utils/deckFuncs", async (importOriginal) => {
     };
 });
 
-vi.mock("../Card/utils/suitSVG", () => ({
-    suitSVG: vi.fn(() => <svg></svg>),
-}));
+type renderFuncArgs = {
+    PokerHandCalculatorContextOverride?: IPokerHandCalculatorContext;
+    SimulateContextOverride?: ISimulateContext;
+};
+const renderFunc = (args: renderFuncArgs = {}) => {
+    const { PokerHandCalculatorContextOverride, SimulateContextOverride } = args;
+
+    let PokerHandCalculatorContextValue!: IPokerHandCalculatorContext;
+    let SimulateContextValue!: ISimulateContext;
+
+    const { rerender } = render(
+        <PokerHandCalculatorContext.Provider
+            value={
+                PokerHandCalculatorContextOverride ||
+                (mockPokerHandCalculatorContextValue as unknown as IPokerHandCalculatorContext)
+            }
+        >
+            <PokerHandCalculatorContext.Consumer>
+                {(value) => {
+                    PokerHandCalculatorContextValue = value;
+                    return null;
+                }}
+            </PokerHandCalculatorContext.Consumer>
+            <SimulateContext.Provider
+                value={
+                    SimulateContextOverride ||
+                    (mockSimulateContextValue as unknown as ISimulateContext)
+                }
+            >
+                <SimulateContext.Consumer>
+                    {(value) => {
+                        SimulateContextValue = value;
+                        return null;
+                    }}
+                </SimulateContext.Consumer>
+                <CardSelection />
+            </SimulateContext.Provider>
+        </PokerHandCalculatorContext.Provider>,
+    );
+
+    return { rerender, PokerHandCalculatorContextValue, SimulateContextValue };
+};
 
 describe("The Hand component...", () => {
     afterEach(() => {
         vi.restoreAllMocks();
     });
 
-    test("Should render a paragraph element with text identifying that the component is displaying the available cards", () => {
-        render(<CardSelection />);
-        const title = screen.getByText("Available Cards");
-        expect(title.tagName).toBe("P");
-        expect(title).toBeInTheDocument();
-    });
-
     describe("Should render an unordered list element...", () => {
-        test("Containing a listitem element for each entry in the 'currentDeck' field in the PokerHandCalculator component's state", () => {
-            render(<CardSelection />);
+        test("Should render a Card component for the card being swapped", () => {
+            const { PokerHandCalculatorContextValue, SimulateContextValue } = renderFunc();
 
-            const deckLength = newDeck().length;
+            const { pokerHandCalculatorState } = PokerHandCalculatorContextValue;
+            const { currentHands } = pokerHandCalculatorState;
+            const { selectingCard } = SimulateContextValue;
 
-            const unorderedList = screen.getByRole("list");
-            expect(unorderedList).toBeInTheDocument();
+            expect(selectingCard).not.toBeNull();
 
-            const listItems = screen.getAllByRole("listitem");
-            expect(listItems).toHaveLength(deckLength);
+            const selectedHand = currentHands[selectingCard![0]];
+            const selectedCard = selectedHand.cards[selectingCard![1]];
+            const { rank, suit } = selectedCard;
 
-            listItems.forEach((listItem) => expect(unorderedList).toContainElement(listItem));
+            expect(screen.getByText(`${rank}-${suit}`)).toBeInTheDocument();
         });
-        test("That, in turn, each contain a button element", () => {
-            render(<CardSelection />);
+        test("Unless the 'selectingCard' state on the Simulate component's context is 'null'", () => {
+            const { SimulateContextValue } = renderFunc({
+                SimulateContextOverride: {
+                    ...mockSimulateContextValue,
+                    selectingCard: null,
+                } as unknown as ISimulateContext,
+            });
 
-            const deckLength = newDeck().length;
+            const { selectingCard } = SimulateContextValue;
 
-            const listItems = screen.getAllByRole("listitem");
-            expect(listItems).toHaveLength(deckLength);
+            expect(selectingCard).toBeNull();
 
-            listItems.forEach((listItem) => {
-                const button = within(listItem).getByRole("button");
-                expect(button).toBeInTheDocument();
+            expect(screen.queryAllByLabelText("Card Component")).toHaveLength(0);
+        });
+        test("Or the 'selectingCard' state on the Simulate component's context does not represent a valid hand", () => {
+            const { SimulateContextValue } = renderFunc({
+                SimulateContextOverride: {
+                    ...mockSimulateContextValue,
+                    selectingCard: [8, 0],
+                } as unknown as ISimulateContext,
+            });
+
+            const { selectingCard } = SimulateContextValue;
+
+            expect(selectingCard).toStrictEqual([8, 0]);
+
+            expect(screen.queryAllByLabelText("Card Component")).toHaveLength(0);
+        });
+        test("Or the 'selectingCard' state on the Simulate component's context does not represent a valid card", () => {
+            const { SimulateContextValue } = renderFunc({
+                SimulateContextOverride: {
+                    ...mockSimulateContextValue,
+                    selectingCard: [0, 12],
+                } as unknown as ISimulateContext,
+            });
+
+            const { selectingCard } = SimulateContextValue;
+
+            expect(selectingCard).toStrictEqual([0, 12]);
+
+            expect(screen.queryAllByLabelText("Card Component")).toHaveLength(0);
+        });
+        test("Should render a Card component for each entry in the 'currentDeck' field in the PokerHandCalculator component's state", () => {
+            renderFunc();
+
+            mockDeck.forEach((card) => {
+                const { rank, suit } = card;
+                expect(screen.getByText(`${rank}-${suit}`)).toBeInTheDocument();
             });
         });
         test("That, when clicked, should invoke the 'swapCard' function in the PokerHandCalculator component's context", () => {
-            let contextValue: IPokerHandCalculatorContext;
+            const { PokerHandCalculatorContextValue } = renderFunc();
 
-            render(
-                <PokerHandCalculatorContext.Provider
-                    value={
-                        mockPokerHandCalculatorContextValue as unknown as IPokerHandCalculatorContext
-                    }
-                >
-                    <PokerHandCalculatorContext.Consumer>
-                        {(value) => {
-                            contextValue = value;
-                            return null;
-                        }}
-                    </PokerHandCalculatorContext.Consumer>
-                    <SimulateContext.Provider
-                        value={mockSimulateContextValue as unknown as ISimulateContext}
-                    >
-                        <CardSelection />
-                    </SimulateContext.Provider>
-                </PokerHandCalculatorContext.Provider>,
-            );
+            const CardComponents = mockDeck.map((card) => {
+                const { rank, suit } = card;
+                return screen.getByText(`${rank}-${suit}`);
+            });
+            expect(CardComponents).toHaveLength(mockDeck.length);
 
-            const deckLength = newDeck().length;
-
-            const listItems = screen.getAllByRole("listitem");
-            expect(listItems).toHaveLength(deckLength);
-
-            listItems.forEach((listItem, i) => {
-                const button = within(listItem).getByRole("button");
-                expect(button).toBeInTheDocument();
-
-                fireEvent.click(button!);
-                fireEvent.mouseLeave(button!);
+            CardComponents.forEach((CardComponent, i) => {
+                fireEvent.click(CardComponent!);
+                fireEvent.mouseLeave(CardComponent!);
 
                 expect(mockSwapCard).toHaveBeenCalledWith(
                     mockSimulateContextValue.selectingCard![0],
                     mockSimulateContextValue.selectingCard![1],
-                    contextValue.pokerHandCalculatorState.currentDeck[i].order,
-                );
-            });
-        });
-        test("And each button should contain a paragraph element with text equal to the 'rank' of that card", () => {
-            let contextValue: IPokerHandCalculatorContext;
-
-            render(
-                <PokerHandCalculatorContext.Provider
-                    value={
-                        mockPokerHandCalculatorContextValue as unknown as IPokerHandCalculatorContext
-                    }
-                >
-                    <PokerHandCalculatorContext.Consumer>
-                        {(value) => {
-                            contextValue = value;
-                            return null;
-                        }}
-                    </PokerHandCalculatorContext.Consumer>
-                    <SimulateContext.Provider
-                        value={mockSimulateContextValue as unknown as ISimulateContext}
-                    >
-                        <CardSelection />
-                    </SimulateContext.Provider>
-                </PokerHandCalculatorContext.Provider>,
-            );
-
-            const deckLength = newDeck().length;
-
-            const listItems = screen.getAllByRole("listitem");
-            expect(listItems).toHaveLength(deckLength);
-
-            listItems.forEach((listItem, i) => {
-                const button = within(listItem).getByRole("button");
-                expect(button).toBeInTheDocument();
-
-                const rank = within(button!).getByText(
-                    contextValue.pokerHandCalculatorState.currentDeck[i].rank,
-                );
-                expect(rank).toBeInTheDocument();
-            });
-        });
-        test("And should call the 'suitSVG' function with the 'suit' of that card as the argument", () => {
-            let contextValue: IPokerHandCalculatorContext;
-
-            render(
-                <PokerHandCalculatorContext.Provider
-                    value={
-                        mockPokerHandCalculatorContextValue as unknown as IPokerHandCalculatorContext
-                    }
-                >
-                    <PokerHandCalculatorContext.Consumer>
-                        {(value) => {
-                            contextValue = value;
-                            return null;
-                        }}
-                    </PokerHandCalculatorContext.Consumer>
-                    <SimulateContext.Provider
-                        value={mockSimulateContextValue as unknown as ISimulateContext}
-                    >
-                        <CardSelection />
-                    </SimulateContext.Provider>
-                </PokerHandCalculatorContext.Provider>,
-            );
-
-            const deckLength = newDeck().length;
-
-            const listItems = screen.getAllByRole("listitem");
-            expect(listItems).toHaveLength(deckLength);
-
-            listItems.forEach((listItem, i) => {
-                expect(suitSVG).toHaveBeenCalledWith(
-                    contextValue.pokerHandCalculatorState.currentDeck[i].suit,
+                    PokerHandCalculatorContextValue.pokerHandCalculatorState.currentDeck[i].order,
                 );
             });
         });
@@ -230,18 +240,13 @@ describe("The Hand component...", () => {
 
     describe("Should display a 'close' button...", () => {
         test("With the text: 'Close'", () => {
-            render(<CardSelection />);
+            renderFunc();
+
             const closeButton = screen.getByRole("button", { name: "Close" });
             expect(closeButton).toBeInTheDocument();
         });
         test("That, when clicked, should invoke the 'setSelectingCard' function in the Simulate component's context, using the existing 'selectingCard' state as its arguments", () => {
-            render(
-                <SimulateContext.Provider
-                    value={mockSimulateContextValue as unknown as ISimulateContext}
-                >
-                    <CardSelection />
-                </SimulateContext.Provider>,
-            );
+            const { SimulateContextValue } = renderFunc();
 
             const closeButton = screen.getByRole("button", { name: "Close" });
             expect(closeButton).toBeInTheDocument();
@@ -250,8 +255,8 @@ describe("The Hand component...", () => {
             fireEvent.mouseLeave(closeButton);
 
             expect(mockSetSelectingCard).toHaveBeenCalledWith(
-                mockSimulateContextValue.selectingCard![0],
-                mockSimulateContextValue.selectingCard![1],
+                SimulateContextValue.selectingCard![0],
+                SimulateContextValue.selectingCard![1],
             );
         });
     });
