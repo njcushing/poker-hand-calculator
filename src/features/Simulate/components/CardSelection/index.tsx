@@ -11,14 +11,27 @@ export function CardSelection() {
 
     const cardBeingSwapped = useMemo((): TCardInfo | null => {
         if (!selectingCard) return null;
-        if (selectingCard[0] > pokerHandCalculatorState.currentHands.length) return null;
-        if (
-            selectingCard[1] > pokerHandCalculatorState.currentHands[selectingCard[0]].cards.length
-        ) {
-            return null;
+
+        // Hand
+        if (selectingCard[0] >= 0) {
+            if (selectingCard[0] > pokerHandCalculatorState.currentHands.length) return null;
+            if (
+                selectingCard[1] >
+                pokerHandCalculatorState.currentHands[selectingCard[0]].cards.length
+            ) {
+                return null;
+            }
+            return pokerHandCalculatorState.currentHands[selectingCard[0]].cards[selectingCard[1]];
         }
-        return pokerHandCalculatorState.currentHands[selectingCard[0]].cards[selectingCard[1]];
-    }, [pokerHandCalculatorState.currentHands, selectingCard]);
+
+        // Board
+        if (selectingCard[0] === -1) {
+            if (selectingCard[1] > pokerHandCalculatorState.board.length) return null;
+            return pokerHandCalculatorState.board[selectingCard[1]];
+        }
+
+        return null;
+    }, [pokerHandCalculatorState.currentHands, pokerHandCalculatorState.board, selectingCard]);
 
     if (!cardBeingSwapped) return null;
 
