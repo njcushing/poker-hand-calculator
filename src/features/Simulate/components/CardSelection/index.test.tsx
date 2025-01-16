@@ -6,7 +6,7 @@ import {
     PokerHandCalculatorContext,
 } from "@/pages/PokerHandCalculator";
 import { RecursivePartial } from "@/utils/types";
-import { Deck, Hand } from "@/features/Deck/utils/deckFuncs";
+import { Board, Deck, Hand } from "@/features/Deck/utils/deckFuncs";
 import { SimulateContext, ISimulateContext } from "../..";
 import { CardSelection } from ".";
 import { TCard } from "../Card";
@@ -57,11 +57,14 @@ const mockHand: Hand = {
 
 mockDeck.splice(0, 2);
 
+const mockBoard: Board = mockDeck.splice(0, 5) as Board;
+
 const mockSwapCard = vi.fn();
 const mockPokerHandCalculatorContextValue: RecursivePartial<IPokerHandCalculatorContext> = {
     pokerHandCalculatorState: {
         currentDeck: mockDeck,
         currentHands: [mockHand],
+        board: mockBoard,
     },
     swapCard: mockSwapCard,
 };
@@ -151,7 +154,7 @@ describe("The Hand component...", () => {
     });
 
     describe("Should render an unordered list element...", () => {
-        test("Should render a Card component for the card being swapped", () => {
+        test("Should render a Card component for the card being swapped (in a hand)", () => {
             const { PokerHandCalculatorContextValue, SimulateContextValue } = renderFunc();
 
             const { pokerHandCalculatorState } = PokerHandCalculatorContextValue;
@@ -162,6 +165,25 @@ describe("The Hand component...", () => {
 
             const selectedHand = currentHands[selectingCard![0]];
             const selectedCard = selectedHand.cards[selectingCard![1]];
+            const { rank, suit } = selectedCard;
+
+            expect(screen.getByText(`${rank}-${suit}`)).toBeInTheDocument();
+        });
+        test("Should render a Card component for the card being swapped (on the board)", () => {
+            const { PokerHandCalculatorContextValue, SimulateContextValue } = renderFunc({
+                SimulateContextOverride: {
+                    ...mockSimulateContextValue,
+                    selectingCard: [-1, 0],
+                } as unknown as ISimulateContext,
+            });
+
+            const { pokerHandCalculatorState } = PokerHandCalculatorContextValue;
+            const { board } = pokerHandCalculatorState;
+            const { selectingCard } = SimulateContextValue;
+
+            expect(selectingCard).not.toBeNull();
+
+            const selectedCard = board[selectingCard![1]];
             const { rank, suit } = selectedCard;
 
             expect(screen.getByText(`${rank}-${suit}`)).toBeInTheDocument();
@@ -180,7 +202,7 @@ describe("The Hand component...", () => {
 
             expect(screen.queryAllByLabelText("Card Component")).toHaveLength(0);
         });
-        test("Or the 'selectingCard' state on the Simulate component's context does not represent a valid hand", () => {
+        test("Or the 'selectingCard' state on the Simulate component's context does not represent the index of a valid hand (or -1 for the board)", () => {
             const { SimulateContextValue } = renderFunc({
                 SimulateContextOverride: {
                     ...mockSimulateContextValue,
@@ -194,7 +216,21 @@ describe("The Hand component...", () => {
 
             expect(screen.queryAllByLabelText("Card Component")).toHaveLength(0);
         });
-        test("Or the 'selectingCard' state on the Simulate component's context does not represent a valid card", () => {
+        test("Or is lower than -1", () => {
+            const { SimulateContextValue } = renderFunc({
+                SimulateContextOverride: {
+                    ...mockSimulateContextValue,
+                    selectingCard: [-10, 0],
+                } as unknown as ISimulateContext,
+            });
+
+            const { selectingCard } = SimulateContextValue;
+
+            expect(selectingCard).toStrictEqual([-10, 0]);
+
+            expect(screen.queryAllByLabelText("Card Component")).toHaveLength(0);
+        });
+        test("Or does not represent a valid card (in a hand)", () => {
             const { SimulateContextValue } = renderFunc({
                 SimulateContextOverride: {
                     ...mockSimulateContextValue,
@@ -205,6 +241,20 @@ describe("The Hand component...", () => {
             const { selectingCard } = SimulateContextValue;
 
             expect(selectingCard).toStrictEqual([0, 12]);
+
+            expect(screen.queryAllByLabelText("Card Component")).toHaveLength(0);
+        });
+        test("Or does not represent a valid card (on the board)", () => {
+            const { SimulateContextValue } = renderFunc({
+                SimulateContextOverride: {
+                    ...mockSimulateContextValue,
+                    selectingCard: [-1, 12],
+                } as unknown as ISimulateContext,
+            });
+
+            const { selectingCard } = SimulateContextValue;
+
+            expect(selectingCard).toStrictEqual([-1, 12]);
 
             expect(screen.queryAllByLabelText("Card Component")).toHaveLength(0);
         });
