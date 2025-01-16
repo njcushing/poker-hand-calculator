@@ -24,43 +24,45 @@ export function Board() {
     }, [pokerHandCalculatorState, board]);
 
     return (
-        <div className={styles["board"]}>
-            <p className={styles["board-name"]}>Board</p>
-            {board.length > 0 ? (
-                <>
-                    <div className={styles["cards"]}>
-                        {board.map((card, i) => {
-                            return (
-                                <Card
-                                    info={card}
-                                    showing={showingCards[i]}
-                                    onClick={() => setSelectingCard(-1, i)}
-                                    key={card.order}
-                                />
-                            );
-                        })}
-                    </div>
-                    <div className={styles["board-options"]}>
-                        <button
-                            type="button"
-                            className={`${styles["shuffle-board-button"]} material-symbols-sharp`}
-                            onClick={(e) => {
-                                shuffleBoard();
-                                e.currentTarget.blur();
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.blur();
-                            }}
-                        >
-                            Cycle
-                        </button>
-                    </div>
-                </>
-            ) : (
-                <p className={styles["board-stage-message"]}>
-                    {`Set the current street in the 'Design' tab.`}
-                </p>
-            )}
+        <div className={styles["container"]}>
+            <div className={styles["board"]}>
+                <p className={styles["board-name"]}>Board</p>
+                {board.length > 0 ? (
+                    <>
+                        <div className={styles["cards"]}>
+                            {board.map((card, i) => {
+                                return (
+                                    <Card
+                                        info={card}
+                                        showing={showingCards[i]}
+                                        onClick={() => setSelectingCard(-1, i)}
+                                        key={card.order}
+                                    />
+                                );
+                            })}
+                        </div>
+                        <div className={styles["board-options"]}>
+                            <button
+                                type="button"
+                                className={`${styles["shuffle-board-button"]} material-symbols-sharp`}
+                                onClick={(e) => {
+                                    shuffleBoard();
+                                    e.currentTarget.blur();
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.blur();
+                                }}
+                            >
+                                Cycle
+                            </button>
+                        </div>
+                    </>
+                ) : (
+                    <p className={styles["board-stage-message"]}>
+                        {`Set the current street in the 'Design' tab.`}
+                    </p>
+                )}
+            </div>
         </div>
     );
 }

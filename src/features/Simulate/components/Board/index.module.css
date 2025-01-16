@@ -1,21 +1,25 @@
+.container {
+    container-type: inline-size;
+
+    width: 100%;
+}
+
 .board {
     position: relative;
 
-    display: grid;
-    grid-template-rows: 100%;
-    grid-template-columns: 1fr auto;
+    display: flex;
+    flex-wrap: nowrap;
     gap: 8px;
 
     border: 1px solid #000;
 
-    height: 150px;
     width: 100%;
     padding: 8px;
 }
 
 .board-name {
     position: absolute;
-    translate: 4px -50%;
+    translate: 4px -100%;
 
     background-color: white;
 
@@ -23,30 +27,41 @@
 }
 
 .cards {
-    grid-area: 1 / 1 / -1 / 2;
-
     display: flex;
-    flex-direction: row;
     justify-content: center;
-    align-items: center;
-    flex-wrap: nowrap;
-    gap: 8px;
+    gap: 4px;
 
-    height: 100%;
-    padding: 4px 0px 0px;
+    overflow-x: auto;
+
+    width: 100%;
+    max-width: 100%;
+    padding: 4px;
+}
+
+@container (width < 300px) {
+    .board {
+        flex-direction: column;
+        gap: 4px;
+
+        padding: 4px;
+    }
+}
+
+.cards > * {
+    width: 100%;
+    max-width: 90px;
 }
 
 .board-options {
-    grid-area: 1 / 2 / -1 / -1;
-
     display: flex;
     flex-direction: column;
+    align-items: end;
     gap: 8px;
 
     height: 100%;
 }
 
-.shuffle-board-button {
+.board-options > * {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -54,18 +69,16 @@
     pointer-events: all;
 
     color: rgba(0, 0, 0, 0.7);
-    font-size: 4px;
 
     border: none;
     border-radius: 9999px;
     background-color: transparent;
 
-    aspect-ratio: 1;
     padding: 4px;
 }
 
 @media (hover: hover) {
-    .shuffle-board-button:hover {
+    .board-options > *:hover {
         cursor: pointer;
 
         color: rgb(15, 192, 53);
@@ -73,10 +86,20 @@
     }
 }
 
-.shuffle-board-button:focus {
+.board-options > *:focus {
     cursor: pointer;
 
     color: rgb(15, 192, 53);
     outline: 1px solid #000;
     background-color: rgba(0, 0, 0, 0.1);
+}
+
+.board-stage-message {
+    color: rgb(30, 30, 30);
+    font-family: Roboto;
+    font-size: 0.9rem;
+    font-style: italic;
+    text-align: center;
+
+    width: 100%;
 }
