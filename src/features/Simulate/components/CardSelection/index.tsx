@@ -1,46 +1,23 @@
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import { PokerHandCalculatorContext } from "@/pages/PokerHandCalculator";
+import { Card as TCardInfo } from "@/features/Deck/utils/deckFuncs";
 import { SimulateContext } from "../..";
-import { suitSVG } from "../Card/utils/suitSVG";
 import styles from "./index.module.css";
+import { Card } from "../Card";
 
 export function CardSelection() {
     const { pokerHandCalculatorState, swapCard } = useContext(PokerHandCalculatorContext);
     const { selectingCard, setSelectingCard } = useContext(SimulateContext);
 
+    const cardBeingSwapped = useMemo((): TCardInfo | null => {
+        if (!selectingCard) return null;
+        return pokerHandCalculatorState.currentHands[selectingCard[0]].cards[selectingCard[1]];
+    }, [pokerHandCalculatorState.currentHands, selectingCard]);
+
+    if (!cardBeingSwapped) return null;
+
     return (
         <div className={styles["card-selection"]}>
-            <p className={styles["card-selection-name"]}>Available Cards</p>
-            <ul className={styles["card-list"]}>
-                {pokerHandCalculatorState.currentDeck
-                    .sort((a, b) => a.order - b.order)
-                    .map((card) => {
-                        return (
-                            <li key={`card-${card.order}`}>
-                                <button
-                                    type="button"
-                                    className={styles["card"]}
-                                    onClick={(e) => {
-                                        if (selectingCard) {
-                                            swapCard(
-                                                selectingCard[0],
-                                                selectingCard[1],
-                                                card.order,
-                                            );
-                                        }
-                                        e.currentTarget.blur();
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.blur();
-                                    }}
-                                >
-                                    <p className={styles["suit"]}>{suitSVG(card.suit)}</p>
-                                    <p className={styles["rank"]}>{card.rank}</p>
-                                </button>
-                            </li>
-                        );
-                    })}
-            </ul>
             <div className={styles["card-selection-options"]}>
                 <button
                     type="button"
@@ -56,6 +33,29 @@ export function CardSelection() {
                     Close
                 </button>
             </div>
+            <div className={styles["card-being-swapped-container"]}>
+                <p className={styles["descriptor"]}>Current card:</p>
+                <div className={styles["card-being-swapped"]}>
+                    <Card info={cardBeingSwapped} displayOnly />
+                </div>
+            </div>
+            <ul className={styles["card-list"]}>
+                {pokerHandCalculatorState.currentDeck
+                    .sort((a, b) => a.order - b.order)
+                    .map((card) => {
+                        return (
+                            <Card
+                                info={card}
+                                onClick={() => {
+                                    if (selectingCard) {
+                                        swapCard(selectingCard[0], selectingCard[1], card.order);
+                                    }
+                                }}
+                                key={`card-${card.order}`}
+                            />
+                        );
+                    })}
+            </ul>
         </div>
     );
 }

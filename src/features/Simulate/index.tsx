@@ -61,8 +61,12 @@ export function Simulate({ children }: TSimulate) {
                         })}
                     </div>
                 </div>
-                {selectingCard && <CardSelection />}
                 <Board />
+                {selectingCard && (
+                    <div className={styles["card-selection-container"]}>
+                        <CardSelection />
+                    </div>
+                )}
             </div>
             {children}
         </SimulateContext.Provider>
