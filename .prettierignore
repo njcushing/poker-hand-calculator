@@ -42,3 +42,6 @@ coverage/
 # Config files
 .eslintrc.json
 .prettierrc.json
+
+# README
+README.md
