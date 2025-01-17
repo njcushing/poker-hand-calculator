@@ -14,6 +14,7 @@
     An application that allows the user to create a scenario in a game of Texas Hold 'Em poker in order to determine which hand(s) is/are the winner(s).
     <br />
     <br />
+    <!-- <a href="https://njcushing-poker-hand-calculator.fly.dev">View Live Demo</a> -->
   </p>
 </div>
 
@@ -137,9 +138,11 @@ A hand has multiple options:
 
 - Shuffle: choose two new hole cards for this hand at random from the available cards remaining in the deck. The hand's cards are deposited into the deck first, so it is possible for the same cards to be reselected.
 - Delete: delete this hand (this option will not be available if there is only one hand currently in the simulation).
-- Show: display the best five-card combination between this hand's hole cards and the community cards on the board. If the current street is 'pre-flop', there will be no cards on the board to highlight.
+- Show: display the best five-card combination between this hand's hole cards and the community cards on the board. If the current street is 'Pre-flop', there will be no cards on the board to highlight.
 
 ![Hands](https://res.cloudinary.com/djzqtvl9l/image/upload/v1737134670/poker-hand-calculator/hands_aqjngv.png)
+
+In the above image, Hand 1 is the winner, indicated by the green tick and thicker outline.
 
 <p align="right">(<a href="#readme-top">Back to Top</a>)</p>
 
