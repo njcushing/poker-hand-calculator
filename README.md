@@ -57,7 +57,7 @@
 
 ## About the Project
 
-![Overview](https://res.cloudinary.com/djzqtvl9l/image/upload/v1717156400/overview_ew416a.png)
+![Overview](https://res.cloudinary.com/djzqtvl9l/image/upload/v1737132057/poker-hand-calculator/overview_1280_960_q4xn9s.png)
 
 This application allows the user to design a scenario in a game of Texas Hold 'Em poker. The rules for how the strongest hand(s) is/are determined is explained in the application's 'Hand Rankings' tab. By setting the number of hands in play, the current 'street' to determine the number of cards on the board, and by selecting the cards in each hand and on the board, any Texas Hold 'Em hand can be simulated for between 1 and 9 players inclusive. The application will tell you which hand(s) is/are currently in the strongest position or, if the current street is 'river' (all the board cards have been dealt), which hand(s) is/are the winner(s).
 
