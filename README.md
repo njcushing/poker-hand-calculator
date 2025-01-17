@@ -124,7 +124,7 @@ Locate the 'Design' tab in the application. In this view, there should be settin
 
 The Simulate tab contains the hands you've designed and the cards on the board.
 
-![Simulate tab](https://res.cloudinary.com/djzqtvl9l/image/upload/v1737134671/poker-hand-calculator/simulate_tab_qdicvd.png)
+![Simulate tab](https://res.cloudinary.com/djzqtvl9l/image/upload/v1737135817/poker-hand-calculator/simulate_tab_smaller_jnl306.png)
 
 <p align="right">(<a href="#readme-top">Back to Top</a>)</p>
 
@@ -163,7 +163,7 @@ Similarly to each hand, the board has a shuffle button, which replaces all the c
 
 The game of Texas Hold 'Em uses a standard 52-card deck. Each hand, as well as the board when the current street is anything other than 'Pre-flop', will display a number of cards. These cards can be changed manually by clicking them; this opens an additional UI displaying the current card to be swapped, in addition to a list of the available cards remaining in the deck (as every card currently 'in play' must be unique). Simply clicking one of the available cards will cause it to replace the one to be swapped.
 
-![Card selection UI](https://res.cloudinary.com/djzqtvl9l/image/upload/v1737134669/poker-hand-calculator/card_selection_ui_ei3fpw.png)
+![Card selection UI](https://res.cloudinary.com/djzqtvl9l/image/upload/v1737135817/poker-hand-calculator/hands_smaller_nkqfbp.png)
 
 <p align="right">(<a href="#readme-top">Back to Top</a>)</p>
 
@@ -171,7 +171,7 @@ The game of Texas Hold 'Em uses a standard 52-card deck. Each hand, as well as t
 
 The Hand Rankings tab displays each of the possible rankings a hand can have in a typical Texas Hold 'Em scenario, and describes what causes a specific combination of cards to have that ranking.
 
-![Hand Rankings tab](https://res.cloudinary.com/djzqtvl9l/image/upload/v1737134670/poker-hand-calculator/hand_rankings_tab_oullff.png)
+![Hand Rankings tab](https://res.cloudinary.com/djzqtvl9l/image/upload/v1737135816/poker-hand-calculator/hand_rankings_tab_smaller_dhhhlj.png)
 
 <p align="right">(<a href="#readme-top">Back to Top</a>)</p>
 
