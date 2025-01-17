@@ -63,6 +63,10 @@ This application allows the user to design a scenario in a game of Texas Hold 'E
 
 The application uses a responsive layout; this makes it suitable for many screen sizes.
 
+<p align="center">
+  <img src="https://res.cloudinary.com/djzqtvl9l/image/upload/v1737133919/poker-hand-calculator/mobile_layout_360_800_sgzyn4.png" alt="Mobile layout" style="width:285px;"/>
+</p>
+
 <p align="right">(<a href="#readme-top">Back to Top</a>)</p>
 
 ### Built With
@@ -111,11 +115,15 @@ Locate the 'Design' tab in the application. In this view, there should be settin
 - 'Number of Hands': the number of hands to be included in the simulation
 - 'Street': the current 'phase' of the game; this contains a number of options and determines the quantity of cards on the board
 
+![Design tab](https://res.cloudinary.com/djzqtvl9l/image/upload/v1737134224/poker-hand-calculator/design_tab_kavdvj.png)
+
 <p align="right">(<a href="#readme-top">Back to Top</a>)</p>
 
 ### Simulator
 
 The Simulate tab contains the hands you've designed and the cards on the board.
+
+![Simulate tab](https://res.cloudinary.com/djzqtvl9l/image/upload/v1737134671/poker-hand-calculator/simulate_tab_qdicvd.png)
 
 <p align="right">(<a href="#readme-top">Back to Top</a>)</p>
 
@@ -131,6 +139,8 @@ A hand has multiple options:
 - Delete: delete this hand (this option will not be available if there is only one hand currently in the simulation).
 - Show: display the best five-card combination between this hand's hole cards and the community cards on the board. If the current street is 'pre-flop', there will be no cards on the board to highlight.
 
+![Hands](https://res.cloudinary.com/djzqtvl9l/image/upload/v1737134670/poker-hand-calculator/hands_aqjngv.png)
+
 <p align="right">(<a href="#readme-top">Back to Top</a>)</p>
 
 #### Board
@@ -144,15 +154,21 @@ The number of cards displayed on the board is determined by the current 'street'
 
 Similarly to each hand, the board has a shuffle button, which replaces all the cards on the board with ones at random from the available cards remaining in the deck. Again, the board's cards are deposited into the deck first, so it is possible for the same cards to be reselected.
 
+![Board](https://res.cloudinary.com/djzqtvl9l/image/upload/v1737134669/poker-hand-calculator/board_nepv2q.png)
+
 #### Cards
 
 The game of Texas Hold 'Em uses a standard 52-card deck. Each hand, as well as the board when the current street is anything other than 'Pre-flop', will display a number of cards. These cards can be changed manually by clicking them; this opens an additional UI displaying the current card to be swapped, in addition to a list of the available cards remaining in the deck (as every card currently 'in play' must be unique). Simply clicking one of the available cards will cause it to replace the one to be swapped.
+
+![Card selection UI](https://res.cloudinary.com/djzqtvl9l/image/upload/v1737134669/poker-hand-calculator/card_selection_ui_ei3fpw.png)
 
 <p align="right">(<a href="#readme-top">Back to Top</a>)</p>
 
 ### Hand Rankings
 
 The Hand Rankings tab displays each of the possible rankings a hand can have in a typical Texas Hold 'Em scenario, and describes what causes a specific combination of cards to have that ranking.
+
+![Hand Rankings tab](https://res.cloudinary.com/djzqtvl9l/image/upload/v1737134670/poker-hand-calculator/hand_rankings_tab_oullff.png)
 
 <p align="right">(<a href="#readme-top">Back to Top</a>)</p>
 
