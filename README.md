@@ -124,7 +124,7 @@ Locate the 'Design' tab in the application. In this view, there should be settin
 
 The Simulate tab contains the hands you've designed and the cards on the board.
 
-![Simulate tab](https://res.cloudinary.com/djzqtvl9l/image/upload/v1737135817/poker-hand-calculator/simulate_tab_smaller_jnl306.png)
+![Simulate tab](https://res.cloudinary.com/djzqtvl9l/image/upload/v1737136018/poker-hand-calculator/simulate_tab_smaller_lffiua.png)
 
 <p align="right">(<a href="#readme-top">Back to Top</a>)</p>
 
