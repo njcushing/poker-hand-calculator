@@ -45,6 +45,30 @@ function newDeck() {
     ];
 }
 
+const renderFunc = () => {
+    let PokerHandCalculatorContextValue!: IPokerHandCalculatorContext;
+
+    const component = (
+        <PokerHandCalculator>
+            <PokerHandCalculatorContext.Consumer>
+                {(value) => {
+                    PokerHandCalculatorContextValue = value;
+                    return null;
+                }}
+            </PokerHandCalculatorContext.Consumer>
+        </PokerHandCalculator>
+    );
+
+    const { rerender } = render(component);
+
+    const getContextValue = () => PokerHandCalculatorContextValue;
+
+    return {
+        rerender,
+        getContextValue,
+    };
+};
+
 // Mock dependencies
 let mockDimensions = [800, 600];
 vi.mock("@/hooks/useResizeObserverElement", () => ({
@@ -105,22 +129,7 @@ vi.mock("@/features/HandRankings", () => ({ HandRankings: () => <div>Hand Rankin
 vi.mock("@/features/Simulate", () => ({ Simulate: () => <div>Simulate</div> }));
 
 describe("The PokerHandCalculator component...", () => {
-    let rerenderFunc: (ui: React.ReactNode) => void;
-    let contextValue: IPokerHandCalculatorContext;
-
     beforeEach(async () => {
-        const { rerender } = render(
-            <PokerHandCalculator>
-                <PokerHandCalculatorContext.Consumer>
-                    {(value) => {
-                        contextValue = value;
-                        return null;
-                    }}
-                </PokerHandCalculatorContext.Consumer>
-            </PokerHandCalculator>,
-        );
-        rerenderFunc = rerender;
-
         vi.spyOn(global.Math, "random");
     });
 
@@ -133,76 +142,97 @@ describe("The PokerHandCalculator component...", () => {
     });
 
     test("Should render correctly", () => {
+        renderFunc();
+
         const component = screen.getByRole("heading", { name: "Poker Hand Calculator" });
         expect(component).toBeInTheDocument();
     });
 
     describe("Should pass context to its descendant components...", () => {
         test("Including the application state", async () => {
-            expect(contextValue.pokerHandCalculatorState).toBeDefined();
-            expect(contextValue.pokerHandCalculatorState.boardStage).toBe("pre-flop");
-            expect(contextValue.pokerHandCalculatorState.numberOfHands).toBe(1);
+            const { getContextValue } = renderFunc();
+            const { pokerHandCalculatorState } = getContextValue();
+
+            expect(pokerHandCalculatorState).toBeDefined();
+            expect(pokerHandCalculatorState.boardStage).toBe("pre-flop");
+            expect(pokerHandCalculatorState.numberOfHands).toBe(1);
         });
 
         test("Including a setter function for updating the application state", async () => {
-            const { setPokerHandCalculatorStateProperty } = contextValue;
+            const { getContextValue } = renderFunc();
+            const { setPokerHandCalculatorStateProperty } = getContextValue();
 
             await act(async () => {
                 setPokerHandCalculatorStateProperty("boardStage", "flop");
             });
 
-            expect(contextValue.pokerHandCalculatorState.boardStage).toBe("flop");
+            expect(getContextValue().pokerHandCalculatorState.boardStage).toBe("flop");
         });
 
         describe("Including the 'swapCard' function...", () => {
             test("Which should swap a card in the defined hand to the specified card if the 'handIndex' argument is greater than or equal to 0", async () => {
-                const { pokerHandCalculatorState, swapCard } = contextValue;
+                const { getContextValue } = renderFunc();
+                const { pokerHandCalculatorState, swapCard } = getContextValue();
 
                 const handBefore = structuredClone(pokerHandCalculatorState.currentHands[0]);
 
                 await act(async () => swapCard(0, 1, 0));
 
-                const handAfter = structuredClone(pokerHandCalculatorState.currentHands[0]);
+                const handAfter = structuredClone(
+                    getContextValue().pokerHandCalculatorState.currentHands[0],
+                );
 
                 expect(handBefore.cards[1]).not.toStrictEqual(handAfter.cards[1]);
             });
             test("Or swap a card on the board to the specified card if the 'handIndex' argument is lower than 0", async () => {
-                const { setPokerHandCalculatorStateProperty } = contextValue;
+                const { getContextValue } = renderFunc();
+                const { pokerHandCalculatorState, setPokerHandCalculatorStateProperty } =
+                    getContextValue();
 
                 await act(async () => setPokerHandCalculatorStateProperty("boardStage", "flop"));
 
-                const boardBefore = structuredClone(contextValue.pokerHandCalculatorState.board);
+                const boardBefore = structuredClone(pokerHandCalculatorState.board);
 
-                await act(async () => contextValue.swapCard(-1, 2, 0));
+                await act(async () => getContextValue().swapCard(-1, 2, 0));
 
-                const boardAfter = structuredClone(contextValue.pokerHandCalculatorState.board);
+                const boardAfter = structuredClone(
+                    getContextValue().pokerHandCalculatorState.board,
+                );
 
                 expect(boardBefore[2]).not.toStrictEqual(boardAfter[2]);
             });
             test("Unless the provided 'handIndex' argument is larger than or equal to the length of the 'currentHands' state array when swapping a card in a hand", async () => {
-                const { pokerHandCalculatorState, swapCard } = contextValue;
+                const { getContextValue } = renderFunc();
 
-                const handBefore = structuredClone(pokerHandCalculatorState.currentHands[0]);
+                const handBefore = structuredClone(
+                    getContextValue().pokerHandCalculatorState.currentHands[0],
+                );
 
-                await act(async () => swapCard(1, 1, 0));
+                await act(async () => getContextValue().swapCard(1, 1, 0));
 
-                const handAfter = structuredClone(pokerHandCalculatorState.currentHands[0]);
+                const handAfter = structuredClone(
+                    getContextValue().pokerHandCalculatorState.currentHands[0],
+                );
 
                 expect(handBefore.cards[1]).toStrictEqual(handAfter.cards[1]);
             });
             test("Or the provided 'cardIndex' argument is lower than 0 when swapping a card in a hand", async () => {
-                const { pokerHandCalculatorState, swapCard } = contextValue;
+                const { getContextValue } = renderFunc();
+                const { pokerHandCalculatorState, swapCard } = getContextValue();
 
                 const handBefore = structuredClone(pokerHandCalculatorState.currentHands[0]);
 
                 await act(async () => swapCard(0, -1, 0));
 
-                const handAfter = structuredClone(pokerHandCalculatorState.currentHands[0]);
+                const handAfter = structuredClone(
+                    getContextValue().pokerHandCalculatorState.currentHands[0],
+                );
 
                 expect(handBefore.cards[1]).toStrictEqual(handAfter.cards[1]);
             });
             test("Or the provided 'cardIndex' argument is greater than the number of cards in the hand when swapping a card in a hand", async () => {
-                const { pokerHandCalculatorState, swapCard } = contextValue;
+                const { getContextValue } = renderFunc();
+                const { pokerHandCalculatorState, swapCard } = getContextValue();
 
                 const handBefore = structuredClone(pokerHandCalculatorState.currentHands[0]);
 
@@ -213,29 +243,36 @@ describe("The PokerHandCalculator component...", () => {
                 expect(handBefore.cards[1]).toStrictEqual(handAfter.cards[1]);
             });
             test("Unless the provided 'cardIndex' argument is lower than 0 when swapping a card on the board", async () => {
-                const { pokerHandCalculatorState } = contextValue;
+                const { getContextValue } = renderFunc();
+                const { pokerHandCalculatorState, swapCard } = getContextValue();
 
                 const handBefore = structuredClone(pokerHandCalculatorState.currentHands[0]);
 
-                await act(async () => contextValue.swapCard(-1, -1, 0));
+                await act(async () => swapCard(-1, -1, 0));
 
-                const handAfter = structuredClone(pokerHandCalculatorState.currentHands[0]);
+                const handAfter = structuredClone(
+                    getContextValue().pokerHandCalculatorState.currentHands[0],
+                );
 
                 expect(handBefore.cards[1]).toStrictEqual(handAfter.cards[1]);
             });
             test("Or the provided 'cardIndex' argument is greater than the number of cards on the board when swapping a card on the board", async () => {
-                const { pokerHandCalculatorState } = contextValue;
+                const { getContextValue } = renderFunc();
+                const { pokerHandCalculatorState, swapCard } = getContextValue();
 
                 const handBefore = structuredClone(pokerHandCalculatorState.currentHands[0]);
 
-                await act(async () => contextValue.swapCard(-1, 5, 0));
+                await act(async () => swapCard(-1, 5, 0));
 
-                const handAfter = structuredClone(pokerHandCalculatorState.currentHands[0]);
+                const handAfter = structuredClone(
+                    getContextValue().pokerHandCalculatorState.currentHands[0],
+                );
 
                 expect(handBefore.cards[1]).toStrictEqual(handAfter.cards[1]);
             });
             test("Or if the result of the 'pickCard' function is invalid when swapping a card in a hand or on the board", async () => {
-                const { pokerHandCalculatorState, swapCard } = contextValue;
+                const { getContextValue } = renderFunc();
+                const { pokerHandCalculatorState, swapCard } = getContextValue();
 
                 const handBefore = structuredClone(pokerHandCalculatorState.currentHands[0]);
 
@@ -243,7 +280,9 @@ describe("The PokerHandCalculator component...", () => {
 
                 await act(async () => swapCard(0, 1, 0));
 
-                const handAfter = structuredClone(pokerHandCalculatorState.currentHands[0]);
+                const handAfter = structuredClone(
+                    getContextValue().pokerHandCalculatorState.currentHands[0],
+                );
 
                 expect(handBefore.cards[1]).toStrictEqual(handAfter.cards[1]);
             });
@@ -251,19 +290,20 @@ describe("The PokerHandCalculator component...", () => {
 
         describe("Including the 'deleteHand' function...", () => {
             test("Which should delete an existing hand", async () => {
-                const { setPokerHandCalculatorStateProperty } = contextValue;
+                const { getContextValue } = renderFunc();
+                const { setPokerHandCalculatorStateProperty } = getContextValue();
 
                 await act(async () => setPokerHandCalculatorStateProperty("numberOfHands", 5));
 
                 const currentHandsOld = structuredClone(
-                    contextValue.pokerHandCalculatorState.currentHands,
+                    getContextValue().pokerHandCalculatorState.currentHands,
                 );
                 const handToDelete = 2;
 
-                await act(async () => contextValue.deleteHand(handToDelete));
+                await act(async () => getContextValue().deleteHand(handToDelete));
 
                 const currentHandsNew = structuredClone(
-                    contextValue.pokerHandCalculatorState.currentHands,
+                    getContextValue().pokerHandCalculatorState.currentHands,
                 );
 
                 expect(currentHandsNew.length).toBe(currentHandsOld.length - 1);
@@ -271,134 +311,147 @@ describe("The PokerHandCalculator component...", () => {
                 expect(currentHandsNew).toStrictEqual(currentHandsOld);
             });
             test("Unless the provided 'index' argument is less than 0", async () => {
-                const { setPokerHandCalculatorStateProperty } = contextValue;
+                const { getContextValue } = renderFunc();
+                const { setPokerHandCalculatorStateProperty } = getContextValue();
 
                 await act(async () => setPokerHandCalculatorStateProperty("numberOfHands", 5));
 
                 const currentHandsOld = structuredClone(
-                    contextValue.pokerHandCalculatorState.currentHands,
+                    getContextValue().pokerHandCalculatorState.currentHands,
                 );
 
-                await act(async () => contextValue.deleteHand(-1));
+                await act(async () => getContextValue().deleteHand(-1));
 
                 const currentHandsNew = structuredClone(
-                    contextValue.pokerHandCalculatorState.currentHands,
+                    getContextValue().pokerHandCalculatorState.currentHands,
                 );
 
                 expect(currentHandsNew.length).toBe(currentHandsOld.length);
                 expect(currentHandsNew).toStrictEqual(currentHandsOld);
             });
             test("Or the provided 'index' argument is larger than or equal to the length of the 'currentHands' state array", async () => {
-                const { setPokerHandCalculatorStateProperty } = contextValue;
+                const { getContextValue } = renderFunc();
+                const { setPokerHandCalculatorStateProperty } = getContextValue();
 
                 await act(async () => setPokerHandCalculatorStateProperty("numberOfHands", 5));
 
                 const currentHandsOld = structuredClone(
-                    contextValue.pokerHandCalculatorState.currentHands,
+                    getContextValue().pokerHandCalculatorState.currentHands,
                 );
 
                 await act(async () =>
-                    contextValue.deleteHand(
-                        contextValue.pokerHandCalculatorState.currentHands.length,
+                    getContextValue().deleteHand(
+                        getContextValue().pokerHandCalculatorState.currentHands.length,
                     ),
                 );
 
                 const currentHandsNew = structuredClone(
-                    contextValue.pokerHandCalculatorState.currentHands,
+                    getContextValue().pokerHandCalculatorState.currentHands,
                 );
 
                 expect(currentHandsNew.length).toBe(currentHandsOld.length);
                 expect(currentHandsNew).toStrictEqual(currentHandsOld);
             });
             test("Or the length of the 'currentHands' state array is equal to 1", async () => {
-                const { setPokerHandCalculatorStateProperty } = contextValue;
+                const { getContextValue } = renderFunc();
+                const { setPokerHandCalculatorStateProperty } = getContextValue();
 
                 await act(async () => setPokerHandCalculatorStateProperty("numberOfHands", 1));
 
                 const currentHandsOld = structuredClone(
-                    contextValue.pokerHandCalculatorState.currentHands,
+                    getContextValue().pokerHandCalculatorState.currentHands,
                 );
 
-                await act(async () => contextValue.deleteHand(0));
+                await act(async () => getContextValue().deleteHand(0));
 
                 const currentHandsNew = structuredClone(
-                    contextValue.pokerHandCalculatorState.currentHands,
+                    getContextValue().pokerHandCalculatorState.currentHands,
                 );
 
                 expect(currentHandsNew.length).toBe(currentHandsOld.length);
                 expect(currentHandsNew).toStrictEqual(currentHandsOld);
             });
             test("And should decrease the 'showingHand' state value by 1 if it exceeds the value of the provided 'index' argument", async () => {
-                const { setPokerHandCalculatorStateProperty } = contextValue;
+                const { getContextValue } = renderFunc();
+                const { setPokerHandCalculatorStateProperty } = getContextValue();
 
                 await act(async () => setPokerHandCalculatorStateProperty("showingHand", 3));
                 await act(async () => setPokerHandCalculatorStateProperty("numberOfHands", 5));
 
-                expect(contextValue.pokerHandCalculatorState.showingHand).toBe(3);
+                expect(getContextValue().pokerHandCalculatorState.showingHand).toBe(3);
 
-                await act(async () => contextValue.deleteHand(0));
+                await act(async () => getContextValue().deleteHand(0));
 
-                expect(contextValue.pokerHandCalculatorState.showingHand).toBe(2);
+                expect(getContextValue().pokerHandCalculatorState.showingHand).toBe(2);
             });
             test("And should set the 'showingHand' state value to -1 if it matches the value of the provided 'index' argument", async () => {
-                const { setPokerHandCalculatorStateProperty } = contextValue;
+                const { getContextValue } = renderFunc();
+                const { setPokerHandCalculatorStateProperty } = getContextValue();
 
                 await act(async () => setPokerHandCalculatorStateProperty("showingHand", 0));
                 await act(async () => setPokerHandCalculatorStateProperty("numberOfHands", 5));
 
-                expect(contextValue.pokerHandCalculatorState.showingHand).toBe(0);
+                expect(getContextValue().pokerHandCalculatorState.showingHand).toBe(0);
 
-                await act(async () => contextValue.deleteHand(0));
+                await act(async () => getContextValue().deleteHand(0));
 
-                expect(contextValue.pokerHandCalculatorState.showingHand).toBe(-1);
+                expect(getContextValue().pokerHandCalculatorState.showingHand).toBe(-1);
             });
         });
 
         describe("Including the 'shuffleHand' function...", () => {
             test("Which should shuffle a hand's cards", async () => {
-                let { currentDeck } = structuredClone(contextValue.pokerHandCalculatorState);
-                const { currentHands } = structuredClone(contextValue.pokerHandCalculatorState);
+                const { getContextValue } = renderFunc();
+                let { currentDeck } = structuredClone(getContextValue().pokerHandCalculatorState);
+                const { currentHands } = structuredClone(
+                    getContextValue().pokerHandCalculatorState,
+                );
 
                 (global.Math.random as jest.Mock)
                     .mockReturnValueOnce(0.01)
                     .mockReturnValueOnce(0.01);
 
-                await act(async () => contextValue.shuffleHand(0));
+                await act(async () => getContextValue().shuffleHand(0));
 
-                expect(contextValue.pokerHandCalculatorState.currentHands[0].cards).toStrictEqual([
-                    currentDeck[0],
-                    currentDeck[1],
-                ]);
+                expect(
+                    getContextValue().pokerHandCalculatorState.currentHands[0].cards,
+                ).toStrictEqual([currentDeck[0], currentDeck[1]]);
 
                 currentDeck.splice(0, 2);
                 currentDeck = currentDeck.concat(currentHands[0].cards);
-                expect(contextValue.pokerHandCalculatorState.currentDeck).toStrictEqual(
+                expect(getContextValue().pokerHandCalculatorState.currentDeck).toStrictEqual(
                     currentDeck,
                 );
             });
             test("Unless the provided 'index' argument is less than 0", async () => {
-                const { currentDeck } = structuredClone(contextValue.pokerHandCalculatorState);
-                const { currentHands } = structuredClone(contextValue.pokerHandCalculatorState);
+                const { getContextValue } = renderFunc();
+                const { currentDeck } = structuredClone(getContextValue().pokerHandCalculatorState);
+                const { currentHands } = structuredClone(
+                    getContextValue().pokerHandCalculatorState,
+                );
 
-                await act(async () => contextValue.shuffleHand(-1));
+                await act(async () => getContextValue().shuffleHand(-1));
 
-                expect(contextValue.pokerHandCalculatorState.currentDeck).toStrictEqual(
+                expect(getContextValue().pokerHandCalculatorState.currentDeck).toStrictEqual(
                     currentDeck,
                 );
-                expect(contextValue.pokerHandCalculatorState.currentHands).toStrictEqual(
+                expect(getContextValue().pokerHandCalculatorState.currentHands).toStrictEqual(
                     currentHands,
                 );
             });
             test("Or the provided 'index' argument is larger than or equal to the length of the 'currentHands' state array", async () => {
-                const { currentDeck } = structuredClone(contextValue.pokerHandCalculatorState);
-                const { currentHands } = structuredClone(contextValue.pokerHandCalculatorState);
+                const { getContextValue } = renderFunc();
+                const { currentDeck } = structuredClone(getContextValue().pokerHandCalculatorState);
+                const { currentHands } = structuredClone(
+                    getContextValue().pokerHandCalculatorState,
+                );
 
-                await act(async () => contextValue.shuffleHand(1));
+                await act(async () => getContextValue().shuffleHand(1));
 
-                expect(contextValue.pokerHandCalculatorState.currentDeck).toStrictEqual(
+                expect(getContextValue().pokerHandCalculatorState.currentDeck).toStrictEqual(
                     currentDeck,
                 );
-                expect(contextValue.pokerHandCalculatorState.currentHands).toStrictEqual(
+                expect(getContextValue().pokerHandCalculatorState.currentHands).toStrictEqual(
                     currentHands,
                 );
             });
@@ -406,26 +459,28 @@ describe("The PokerHandCalculator component...", () => {
 
         describe("Including the 'showHand' function", () => {
             test("Which should change the hand being shown (or toggle the current one off)", async () => {
-                const { setPokerHandCalculatorStateProperty } = contextValue;
+                const { getContextValue } = renderFunc();
+                const { setPokerHandCalculatorStateProperty } = getContextValue();
 
                 await act(async () => setPokerHandCalculatorStateProperty("numberOfHands", 5));
 
-                expect(contextValue.pokerHandCalculatorState.showingHand).toBe(-1); // Should be off by default
+                expect(getContextValue().pokerHandCalculatorState.showingHand).toBe(-1); // Should be off by default
 
-                await act(async () => contextValue.showHand(2));
+                await act(async () => getContextValue().showHand(2));
 
-                expect(contextValue.pokerHandCalculatorState.showingHand).toBe(2);
+                expect(getContextValue().pokerHandCalculatorState.showingHand).toBe(2);
 
-                await act(async () => contextValue.showHand(2)); // Toggle off
+                await act(async () => getContextValue().showHand(2)); // Toggle off
 
-                expect(contextValue.pokerHandCalculatorState.showingHand).toBe(-1);
+                expect(getContextValue().pokerHandCalculatorState.showingHand).toBe(-1);
             });
         });
 
         describe("Including the 'shuffleBoard' function...", () => {
             test("Which should shuffle all the cards on the board", async () => {
-                const { setPokerHandCalculatorStateProperty } = contextValue;
-                const { currentDeck } = structuredClone(contextValue.pokerHandCalculatorState);
+                const { getContextValue } = renderFunc();
+                const { setPokerHandCalculatorStateProperty } = getContextValue();
+                const { currentDeck } = structuredClone(getContextValue().pokerHandCalculatorState);
 
                 (global.Math.random as jest.Mock) // Picking cards for board
                     .mockReturnValueOnce(0.99)
@@ -439,57 +494,120 @@ describe("The PokerHandCalculator component...", () => {
                     .mockReturnValueOnce(0.001)
                     .mockReturnValueOnce(0.001);
 
-                await act(async () => contextValue.shuffleBoard());
+                await act(async () => getContextValue().shuffleBoard());
 
-                expect(contextValue.pokerHandCalculatorState.board).toStrictEqual([
+                expect(getContextValue().pokerHandCalculatorState.board).toStrictEqual([
                     currentDeck[0],
                     currentDeck[1],
                     currentDeck[2],
                 ]);
             });
         });
+
+        describe("Which, when consumed by a component other than the PokerHandCalculator component, should contain the same state, state setter and functions...", () => {
+            test("But none of those functions should do anything when invoked, and should exit gracefully", async () => {
+                let PokerHandCalculatorContextValue!: IPokerHandCalculatorContext;
+
+                render(
+                    <div>
+                        <PokerHandCalculatorContext.Consumer>
+                            {(value) => {
+                                PokerHandCalculatorContextValue = value;
+                                return null;
+                            }}
+                        </PokerHandCalculatorContext.Consumer>
+                    </div>,
+                );
+
+                expect(PokerHandCalculatorContextValue).toBeDefined();
+
+                const {
+                    pokerHandCalculatorState,
+                    setPokerHandCalculatorStateProperty,
+
+                    swapCard,
+                    shuffleHand,
+                    deleteHand,
+                    showHand,
+                    shuffleBoard,
+                } = PokerHandCalculatorContextValue;
+
+                expect(pokerHandCalculatorState).toBeDefined();
+                expect(() =>
+                    setPokerHandCalculatorStateProperty("boardStage", "flop"),
+                ).not.toThrow();
+
+                expect(() => swapCard(0, 1, 0)).not.toThrow();
+                expect(() => shuffleHand(0)).not.toThrow();
+                expect(() => deleteHand(0)).not.toThrow();
+                expect(() => showHand(0)).not.toThrow();
+                expect(() => shuffleBoard()).not.toThrow();
+            });
+        });
     });
 
     test("Should change the number of hands when the 'numberOfHands' state is changed", async () => {
-        const { setPokerHandCalculatorStateProperty } = contextValue;
+        const { getContextValue } = renderFunc();
 
-        expect(contextValue.pokerHandCalculatorState.currentHands.length).toBe(1);
-        await act(async () => setPokerHandCalculatorStateProperty("numberOfHands", 4));
-        expect(contextValue.pokerHandCalculatorState.currentHands.length).toBe(4);
-        await act(async () => setPokerHandCalculatorStateProperty("numberOfHands", 6));
-        expect(contextValue.pokerHandCalculatorState.currentHands.length).toBe(6);
-        await act(async () => setPokerHandCalculatorStateProperty("numberOfHands", 2));
-        expect(contextValue.pokerHandCalculatorState.currentHands.length).toBe(2);
+        expect(getContextValue().pokerHandCalculatorState.currentHands.length).toBe(1);
+        await act(async () =>
+            getContextValue().setPokerHandCalculatorStateProperty("numberOfHands", 4),
+        );
+        expect(getContextValue().pokerHandCalculatorState.currentHands.length).toBe(4);
+        await act(async () =>
+            getContextValue().setPokerHandCalculatorStateProperty("numberOfHands", 6),
+        );
+        expect(getContextValue().pokerHandCalculatorState.currentHands.length).toBe(6);
+        await act(async () =>
+            getContextValue().setPokerHandCalculatorStateProperty("numberOfHands", 2),
+        );
+        expect(getContextValue().pokerHandCalculatorState.currentHands.length).toBe(2);
     });
 
     test("Should change the number of cards on the board when the 'boardStage' state is changed", async () => {
-        const { setPokerHandCalculatorStateProperty } = contextValue;
+        const { getContextValue } = renderFunc();
 
-        expect(contextValue.pokerHandCalculatorState.board.length).toBe(0);
-        await act(async () => setPokerHandCalculatorStateProperty("boardStage", "flop"));
-        expect(contextValue.pokerHandCalculatorState.board.length).toBe(3);
-        await act(async () => setPokerHandCalculatorStateProperty("boardStage", "turn"));
-        expect(contextValue.pokerHandCalculatorState.board.length).toBe(4);
-        await act(async () => setPokerHandCalculatorStateProperty("boardStage", "river"));
-        expect(contextValue.pokerHandCalculatorState.board.length).toBe(5);
-        await act(async () => setPokerHandCalculatorStateProperty("boardStage", "pre-flop"));
-        expect(contextValue.pokerHandCalculatorState.board.length).toBe(0);
+        expect(getContextValue().pokerHandCalculatorState.board.length).toBe(0);
+        await act(async () =>
+            getContextValue().setPokerHandCalculatorStateProperty("boardStage", "flop"),
+        );
+        expect(getContextValue().pokerHandCalculatorState.board.length).toBe(3);
+        await act(async () =>
+            getContextValue().setPokerHandCalculatorStateProperty("boardStage", "turn"),
+        );
+        expect(getContextValue().pokerHandCalculatorState.board.length).toBe(4);
+        await act(async () =>
+            getContextValue().setPokerHandCalculatorStateProperty("boardStage", "river"),
+        );
+        expect(getContextValue().pokerHandCalculatorState.board.length).toBe(5);
+        await act(async () =>
+            getContextValue().setPokerHandCalculatorStateProperty("boardStage", "pre-flop"),
+        );
+        expect(getContextValue().pokerHandCalculatorState.board.length).toBe(0);
     });
 
     test("Should have a 'wide' layout when the container element's size exceeds or is equal to 800px, and should display two TabSelector components", async () => {
+        const { getContextValue } = renderFunc();
+        const { pokerHandCalculatorState } = getContextValue();
+
         expect(screen.queryAllByText("Tab Selector")).toHaveLength(2);
-        expect(contextValue.pokerHandCalculatorState.layout).toBe("wide");
+        expect(pokerHandCalculatorState.layout).toBe("wide");
     });
     test("Should have a 'thin' layout when the container element's size is lower than 800px, and should display one TabSelector component", async () => {
+        const { getContextValue, rerender } = renderFunc();
+        const { pokerHandCalculatorState } = getContextValue();
+
         expect(screen.queryAllByText("Tab Selector")).toHaveLength(2);
-        expect(contextValue.pokerHandCalculatorState.layout).toBe("wide");
+        expect(pokerHandCalculatorState.layout).toBe("wide");
+
+        let newPokerHandCalculatorContextValue!: IPokerHandCalculatorContext;
 
         updateMockDimensions(799, 600);
-        rerenderFunc(
+        rerender(
             <PokerHandCalculator>
                 <PokerHandCalculatorContext.Consumer>
                     {(value) => {
-                        contextValue = value;
+                        newPokerHandCalculatorContextValue = value;
                         return null;
                     }}
                 </PokerHandCalculatorContext.Consumer>
@@ -497,6 +615,6 @@ describe("The PokerHandCalculator component...", () => {
         );
 
         expect(screen.queryAllByText("Tab Selector")).toHaveLength(1);
-        expect(contextValue.pokerHandCalculatorState.layout).toBe("thin");
+        expect(newPokerHandCalculatorContextValue.pokerHandCalculatorState.layout).toBe("thin");
     });
 });
