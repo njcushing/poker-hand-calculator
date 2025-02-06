@@ -84,6 +84,47 @@ const mockPokerHandCalculatorContextValue: RecursivePartial<IPokerHandCalculator
     pokerHandCalculatorState: { currentHands: [...hands] },
 };
 
+type renderFuncArgs = {
+    PokerHandCalculatorContextOverride?: IPokerHandCalculatorContext;
+};
+const renderFunc = (args: renderFuncArgs = {}) => {
+    const { PokerHandCalculatorContextOverride } = args;
+
+    let PokerHandCalculatorContextValue!: IPokerHandCalculatorContext;
+    let SimulateContextValue!: ISimulateContext;
+
+    const { rerender } = render(
+        <PokerHandCalculatorContext.Provider
+            value={
+                PokerHandCalculatorContextOverride ||
+                (mockPokerHandCalculatorContextValue as unknown as IPokerHandCalculatorContext)
+            }
+        >
+            <PokerHandCalculatorContext.Consumer>
+                {(value) => {
+                    PokerHandCalculatorContextValue = value;
+                    return null;
+                }}
+            </PokerHandCalculatorContext.Consumer>
+            <Simulate>
+                <SimulateContext.Consumer>
+                    {(value) => {
+                        SimulateContextValue = value;
+                        return null;
+                    }}
+                </SimulateContext.Consumer>
+            </Simulate>
+        </PokerHandCalculatorContext.Provider>,
+    );
+
+    const getContextValue = () => ({
+        PokerHandCalculatorContextValue,
+        SimulateContextValue,
+    });
+
+    return { rerender, getContextValue };
+};
+
 vi.mock("@/features/Simulate/components/Hand", () => ({
     Hand: (props: THand) => {
         const { info, number } = props;
@@ -110,60 +151,83 @@ vi.mock("@/features/Simulate/components/Board", () => ({
 }));
 
 describe("The Simulate component...", () => {
-    let contextValue: ISimulateContext;
-
-    beforeEach(() => {
-        render(
-            <PokerHandCalculatorContext.Provider
-                value={
-                    mockPokerHandCalculatorContextValue as unknown as IPokerHandCalculatorContext
-                }
-            >
-                <Simulate>
-                    <SimulateContext.Consumer>
-                        {(value) => {
-                            contextValue = value;
-                            return null;
-                        }}
-                    </SimulateContext.Consumer>
-                </Simulate>
-            </PokerHandCalculatorContext.Provider>,
-        );
-    });
-
     describe("Should pass context to its descendant components...", () => {
         test("Including a 'selectingCard' field which should be 'null' by default", async () => {
-            expect(contextValue.selectingCard).toBeNull();
+            const { getContextValue } = renderFunc();
+            const { SimulateContextValue } = getContextValue();
+            const { selectingCard } = SimulateContextValue;
+
+            expect(selectingCard).toBeNull();
         });
 
         describe("Including a setter function for updating the 'selectingCard' field...", () => {
             test("Which should set the value as expected", async () => {
-                const { setSelectingCard } = contextValue;
+                const { getContextValue } = renderFunc();
+                const { SimulateContextValue } = getContextValue();
+                const { setSelectingCard } = SimulateContextValue;
 
                 await act(async () => setSelectingCard(0, 0));
 
-                expect(contextValue.selectingCard).toStrictEqual([0, 0]);
+                expect(getContextValue().SimulateContextValue.selectingCard).toStrictEqual([0, 0]);
             });
             test("Unless the provided arguments match the existing 'selectingCard' state, in which case 'selectingCard' should be set to 'null'", async () => {
-                const { setSelectingCard } = contextValue;
+                const { getContextValue } = renderFunc();
+                const { SimulateContextValue } = getContextValue();
+                const { setSelectingCard } = SimulateContextValue;
 
                 await act(async () => setSelectingCard(0, 0));
 
-                expect(contextValue.selectingCard).toStrictEqual([0, 0]);
+                expect(getContextValue().SimulateContextValue.selectingCard).toStrictEqual([0, 0]);
 
-                await act(async () => setSelectingCard(0, 0));
+                await act(async () => {
+                    getContextValue().SimulateContextValue.setSelectingCard(0, 0);
+                });
 
-                expect(contextValue.selectingCard).toBeNull();
+                expect(getContextValue().SimulateContextValue.selectingCard).toBeNull();
+            });
+        });
+
+        describe("Which, when consumed by a component other than the SimulateContext component, should contain the same context...", () => {
+            test("But any functions within the context should do nothing when invoked, and should exit gracefully", async () => {
+                let SimulateContextValue!: ISimulateContext;
+
+                render(
+                    <PokerHandCalculatorContext.Provider
+                        value={
+                            mockPokerHandCalculatorContextValue as unknown as IPokerHandCalculatorContext
+                        }
+                    >
+                        <div>
+                            <SimulateContext.Consumer>
+                                {(value) => {
+                                    SimulateContextValue = value;
+                                    return null;
+                                }}
+                            </SimulateContext.Consumer>
+                        </div>
+                    </PokerHandCalculatorContext.Provider>,
+                );
+
+                expect(SimulateContextValue).toBeDefined();
+
+                const { selectingCard, setSelectingCard } = SimulateContextValue;
+
+                expect(selectingCard).toBeDefined();
+                expect(() => setSelectingCard(0, 0)).not.toThrow();
             });
         });
     });
 
     describe("Should render child Card components...", () => {
         test("The quantity of which is defined by how many entries are in the 'currentHands' field in the PokerHandCalculator component's state", () => {
+            renderFunc();
+
             const handComponents = screen.getAllByLabelText("hand");
             expect(handComponents).toHaveLength(3);
         });
         test("And an incrementing integer for its 'number' prop, starting at 1", () => {
+            renderFunc();
+
             let handComponents = screen.getAllByLabelText("hand");
             expect(handComponents).toHaveLength(3);
 
@@ -175,6 +239,8 @@ describe("The Simulate component...", () => {
             handComponents.forEach((handComponent) => expect(handComponent).toBeInTheDocument());
         });
         test("And each hand should be passed the correct value for its 'info' prop", () => {
+            renderFunc();
+
             let handComponents = screen.getAllByLabelText("hand");
             expect(handComponents).toHaveLength(3);
 
@@ -210,11 +276,15 @@ describe("The Simulate component...", () => {
     });
 
     test("Should not render the CardSelection component if the 'selectingCard' state is equal to 'null'", async () => {
+        renderFunc();
+
         const cardSelection = screen.queryByLabelText("card-selection");
         expect(cardSelection).not.toBeInTheDocument();
     });
     test("Should render the CardSelection component if the 'selectingCard' state is not equal to 'null'", async () => {
-        const { setSelectingCard } = contextValue;
+        const { getContextValue } = renderFunc();
+        const { SimulateContextValue } = getContextValue();
+        const { setSelectingCard } = SimulateContextValue;
 
         await act(async () => setSelectingCard(0, 0));
 
@@ -222,6 +292,8 @@ describe("The Simulate component...", () => {
         expect(cardSelection).toBeInTheDocument();
     });
     test("Should render the Board component", async () => {
+        renderFunc();
+
         const board = screen.getByLabelText("board");
         expect(board).toBeInTheDocument();
     });
