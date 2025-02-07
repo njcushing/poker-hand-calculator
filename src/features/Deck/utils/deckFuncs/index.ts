@@ -250,7 +250,7 @@ export const calculateHandStrength = (handCards: Hand["cards"], board: Board): H
         for (let i = 1; i < cards.length; i++) {
             if (
                 cards[i].value !== cards[i - 1].value + 1 &&
-                !(cards[i].value === 13 && cards[i - 1].value === 4) // Account for A-5 straight
+                !(cards[i - 1].value === 13 && cards[i].value === 1) // Account for A-5 straight
             ) {
                 return false;
             }
@@ -308,34 +308,39 @@ export const calculateHandStrength = (handCards: Hand["cards"], board: Board): H
     );
 
     if (cards.length >= 5 && largestSuitSize >= 5) {
-        const mutableCards = [...cardsBySuitAndAscendingValue];
+        let mutableCards = [...cardsBySuitAndAscendingValue];
+
+        // Remove all excess cards
+        mutableCards = mutableCards.filter((card) => suits.get(card.suit)! >= 5);
+
+        // Add a duplicate A to the start of the array if there is one
+        if (mutableCards[mutableCards.length - 1].rank === "A") {
+            mutableCards = [mutableCards[mutableCards.length - 1], ...mutableCards];
+        }
 
         for (let i = mutableCards.length - 1; i > 3; i--) {
             if (mutableCards[i].suit === mutableCards[i - 4].suit) {
-                const suitedCards = [...mutableCards].splice(i - 4, 5);
-                const areConsecutive = areCardsConsecutive(suitedCards);
-                if (areConsecutive) {
+                if (areCardsConsecutive(mutableCards.slice(i - 4, i + 1))) {
+                    const bestCards = mutableCards.slice(i - 4, i + 1);
+
                     // Royal Flush
-                    if (suitedCards[0].value === 9) {
+                    if (bestCards[0].value === 9) {
                         return {
-                            value: getStrength("Royal Flush", suitedCards),
-                            cards: suitedCards,
+                            value: getStrength("Royal Flush", bestCards),
+                            cards: bestCards,
                             rank: "Royal Flush",
-                            information: `${suitedCards[0].suit}s`,
+                            information: `${bestCards[0].suit}s`,
                         };
                     }
 
                     // Straight Flush
                     return {
-                        value: getStrength("Straight Flush", suitedCards),
-                        cards: suitedCards,
+                        value: getStrength("Straight Flush", bestCards),
+                        cards: bestCards,
                         rank: "Straight Flush",
                         information: (() => {
-                            const { suit } = suitedCards[0];
-                            const range =
-                                suitedCards[4].value === 13 && suitedCards[3].value === 4
-                                    ? `${suitedCards[4].rank} to ${suitedCards[3].rank}`
-                                    : `${suitedCards[0].rank} to ${suitedCards[4].rank}`;
+                            const { suit } = bestCards[0];
+                            const range = `${bestCards[0].rank} to ${bestCards[4].rank}`;
                             return `${suit}s, ${range}`;
                         })(),
                     };
@@ -429,7 +434,7 @@ export const calculateHandStrength = (handCards: Hand["cards"], board: Board): H
     // Straight
     if (cards.length >= 5) {
         const mutableCards = [...cardsByAscendingValue];
-        const noDuplicates = [...mutableCards];
+        let noDuplicates = [...mutableCards];
 
         for (let i = mutableCards.length - 2; i > 0; i--) {
             if (mutableCards[i].value === mutableCards[i + 1].value) {
@@ -438,6 +443,11 @@ export const calculateHandStrength = (handCards: Hand["cards"], board: Board): H
         }
 
         if (noDuplicates.length >= 5) {
+            // Add a duplicate A to the start of the array if there is one
+            if (noDuplicates[noDuplicates.length - 1].rank === "A") {
+                noDuplicates = [noDuplicates[noDuplicates.length - 1], ...noDuplicates];
+            }
+
             for (let i = noDuplicates.length - 1; i > 3; i--) {
                 if (areCardsConsecutive(noDuplicates.slice(i - 4, i + 1))) {
                     const bestCards = noDuplicates.slice(i - 4, i + 1);
@@ -445,13 +455,7 @@ export const calculateHandStrength = (handCards: Hand["cards"], board: Board): H
                         value: getStrength("Straight", bestCards),
                         cards: bestCards,
                         rank: "Straight",
-                        information: (() => {
-                            const range =
-                                bestCards[4].value === 13 && bestCards[3].value === 4
-                                    ? `${bestCards[4].rank} to ${bestCards[3].rank}`
-                                    : `${bestCards[0].rank} to ${bestCards[4].rank}`;
-                            return `${range}`;
-                        })(),
+                        information: `${bestCards[0].rank} to ${bestCards[4].rank}`,
                     };
                 }
             }
