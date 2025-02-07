@@ -31,5 +31,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   'Simulate' tab for observing and mutating simulation state.
 
 [unreleased]: https://github.com/njcushing/poker-hand-calculator/compare/v1.0.1...HEAD
-[1.1.1]: https://github.com/njcushing/poker-hand-calculator/compare/v1.0.0...v1.0.1
+[1.0.1]: https://github.com/njcushing/poker-hand-calculator/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/njcushing/poker-hand-calculator/releases/tag/v1.0.0
