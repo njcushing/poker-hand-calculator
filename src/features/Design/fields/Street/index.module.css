@@ -10,7 +10,7 @@
 select {
     justify-self: end;
 
-    color: black;
+    color: var(--text-primary);
     font-size: 0.9rem;
     font-family: Roboto;
     text-transform: capitalize;
@@ -18,9 +18,10 @@ select {
 
     border: none;
     border-radius: 2px;
-    outline: 1px solid black;
+    outline: 1px solid var(--outline-secondary);
+    background-color: var(--background-tertiary);
 
-    padding: 2px 0px;
+    padding: 2px;
 }
 
 @media (hover: hover) {
@@ -30,14 +31,17 @@ select {
 }
 
 option {
-    color: black;
-    font-family: Roboto;
+    appearance: none;
+
+    color: var(--text-primary);
+    font-family: Roboto, sans-serif;
+    text-align: center;
 }
 
 option:nth-child(2n-1) {
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: var(--option-odd-background);
 }
 
 option:nth-child(2n) {
-    background-color: rgba(0, 0, 0, 0.16);
+    background-color: var(--option-even-background);
 }

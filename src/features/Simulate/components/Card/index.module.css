@@ -7,7 +7,7 @@
     gap: 4%;
 
     border-radius: 4px;
-    border: 1px solid #000;
+    border: 1px solid var(--outline-secondary);
     outline: none;
     background-color: transparent;
 
@@ -19,7 +19,7 @@
 
 .card.showing {
     border: 1px solid rgb(255, 215, 0);
-    outline: 1px solid black;
+    outline: 1px solid var(--outline-secondary);
     background-color: rgba(255, 215, 0, 0.1);
 }
 
@@ -27,12 +27,12 @@
     .card:hover:not(:disabled) {
         cursor: pointer;
 
-        outline: 2px solid black;
+        outline: 2px solid var(--outline-secondary);
     }
 }
 
 .card:focus:not(:disabled) {
-    outline: 2px solid black;
+    outline: 2px solid var(--outline-secondary);
 }
 
 .suit-top,
@@ -50,7 +50,8 @@
 }
 
 .rank {
-    color: black;
+    fill: var(--text-primary);
+    font-family: Roboto;
     font-size: 2rem;
     font-weight: bold;
 }
