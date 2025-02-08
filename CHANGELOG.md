@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -   Changelog.
 -   Dark mode styling.
+-   Improved accessibility:
+    -   Card components now have accessible names.
+    -   TabSelector components' tabs now have focus styles.
 
 ### Fixed
 

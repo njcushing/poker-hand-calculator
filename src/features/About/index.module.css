@@ -43,6 +43,14 @@
     text-align: left;
 }
 
+.section-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    list-style: inside;
+}
+
 .section-list-item {
     color: var(--text-secondary);
     font-size: 1rem;

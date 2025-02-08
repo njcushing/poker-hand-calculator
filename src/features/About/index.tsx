@@ -27,18 +27,20 @@ export function About() {
                 will display this tick.
             </p>
             <p className={styles["section-text"]}>A hand has multiple options:</p>
-            <li className={styles["section-list-item"]}>
-                Shuffle: choose two new hole cards for this hand at random.
-            </li>
-            <li className={styles["section-list-item"]}>
-                Delete: delete this hand (this option will not be available if there is only one
-                hand).
-            </li>
-            <li className={styles["section-list-item"]}>
-                {`Show: display the best five-card combination between this hand's hole cards and
-                the community cards (the best cards will have different styles to the other
-                cards).`}
-            </li>
+            <ul className={styles["section-list"]}>
+                <li className={styles["section-list-item"]}>
+                    Shuffle: choose two new hole cards for this hand at random.
+                </li>
+                <li className={styles["section-list-item"]}>
+                    Delete: delete this hand (this option will not be available if there is only one
+                    hand).
+                </li>
+                <li className={styles["section-list-item"]}>
+                    {`Show: display the best five-card combination between this hand's hole cards and
+                    the community cards (the best cards will have different styles to the other
+                    cards).`}
+                </li>
+            </ul>
             <div className={styles["separator"]}></div>
             <p className={styles["section-title"]}>Board</p>
             <p className={styles["section-text"]}>
@@ -47,18 +49,22 @@ export function About() {
             </p>
             <p className={styles["section-text"]}>
                 {`The number of community cards depends on the current 'street' for the hand (this
-                can be changed in the Design tab):`}
+                    can be changed in the Design tab):`}
             </p>
-            <li className={styles["section-list-item"]}>
-                Pre-flop: All hole cards have been dealt, but the board is empty.
-            </li>
-            <li className={styles["section-list-item"]}>Flop: Three community cards are dealt.</li>
-            <li className={styles["section-list-item"]}>
-                Turn: An additional fourth community card is dealt.
-            </li>
-            <li className={styles["section-list-item"]}>
-                River: An additional fifth community card is dealt.
-            </li>
+            <ul className={styles["section-list"]}>
+                <li className={styles["section-list-item"]}>
+                    Pre-flop: All hole cards have been dealt, but the board is empty.
+                </li>
+                <li className={styles["section-list-item"]}>
+                    Flop: Three community cards are dealt.
+                </li>
+                <li className={styles["section-list-item"]}>
+                    Turn: An additional fourth community card is dealt.
+                </li>
+                <li className={styles["section-list-item"]}>
+                    River: An additional fifth community card is dealt.
+                </li>
+            </ul>
             <p className={styles["section-text"]}>
                 {`A community card can be changed by clicking a card; this will open a 'card
                 selection' UI where a new card can be selected (only available cards are displayed

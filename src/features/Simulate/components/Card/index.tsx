@@ -13,6 +13,7 @@ export function Card({ info, showing = false, onClick, displayOnly = false }: TC
     return (
         <button
             type="button"
+            aria-label={`${info.rank} ${info.suit}`}
             className={`${styles["card"]} ${styles[showing ? "showing" : ""]}`}
             onClick={(e) => {
                 if (onClick) onClick();
@@ -25,6 +26,7 @@ export function Card({ info, showing = false, onClick, displayOnly = false }: TC
         >
             <p className={styles["suit-top"]}>{suitSVG(info.suit)}</p>
             <svg viewBox="0 0 63 44">
+                <title>{info.rank}</title>
                 <text
                     className={styles["rank"]}
                     x="50%"
