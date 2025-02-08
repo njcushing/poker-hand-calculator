@@ -21,7 +21,8 @@
 
     pointer-events: all;
 
-    border: 1px solid var(--outline-secondary);
+    outline: 1px solid var(--outline-secondary);
+    border: none;
     border-radius: 9999px;
     background-color: transparent;
 
@@ -35,6 +36,7 @@
     .increase-button:hover {
         cursor: pointer;
 
+        outline: 2px solid var(--outline-secondary);
         background-color: var(--button-primary-hover);
     }
 }
@@ -43,6 +45,7 @@
 .increase-button:focus {
     cursor: pointer;
 
+    outline: 2px solid var(--outline-secondary);
     background-color: var(--button-primary-focus);
 }
 

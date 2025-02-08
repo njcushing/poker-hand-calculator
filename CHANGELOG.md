@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+-   Improved accessibility:
+    -   Simulation options' elements now have focus styles where applicable.
+
 ### Fixed
 
 -   Broken unit tests for Card component.

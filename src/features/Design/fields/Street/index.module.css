@@ -30,6 +30,12 @@ select {
     }
 }
 
+select:focus {
+    cursor: pointer;
+
+    outline: 2px solid var(--outline-secondary);
+}
+
 option {
     appearance: none;
 
