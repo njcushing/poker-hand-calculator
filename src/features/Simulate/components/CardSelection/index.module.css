@@ -101,16 +101,18 @@
 .card-list {
     grid-area: 2 / 2 / -1 / -1;
 
-    overflow-y: auto;
-
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+    grid-auto-rows: minmax(1fr, 80px);
+    justify-content: center;
+    align-content: start;
     gap: 4px;
 
-    pointer-events: all;
+    overflow-y: auto;
+    overflow-x: hidden;
 
-    width: 100%;
-    padding: 4px;
+    border: 1px solid #000;
 
-    border: 1px solid var(--outline-secondary);
+    max-width: 100%;
+    padding: 8px;
 }
