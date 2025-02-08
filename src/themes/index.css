@@ -97,8 +97,8 @@
 
     /* Background */
     --background-primary: rgb(6, 6, 6);
-    --background-secondary: rgb(31, 31, 31);
-    --background-tertiary: rgb(56, 56, 56);
+    --background-secondary: rgb(44, 44, 44);
+    --background-tertiary: rgb(28, 28, 28);
     --box-shadow-color: transparent;
 
     /* Borders & Outlines */

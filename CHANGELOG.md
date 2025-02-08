@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -   Broken unit tests for Card component.
 
+### Changed
+
+-   Background colours for dark mode.
+
 ## [1.0.2] - 2025-02-08
 
 ### Added
